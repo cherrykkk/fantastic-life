@@ -62,20 +62,15 @@ Family.prototype.checkDemands = function(){
       return
     let behaviorTree = [
       {
-        limit: cost*5,
+        limit: cost*2,
         check: 0.5,
-        success: "你的父母为家庭购置了一台车",
-        failure: "你的父母本想为家里添置一台车，斟酌许久后还是决定再看看",
-      },{
-        limit: cost*3,
-        check: 0.5,
-        success: "你的父母觉得家里还是应该有一辆车，于是你在不久后就坐上了自家的车",
-        failure: "你的父母本想为家里添置一台车，斟酌许久后还是决定再看",
+        success: "你家购置了一台车",
+        failure: "你家本计划添置一台车，斟酌许久后还是决定再看看",
       },{
         limit: cost*1,
         check: 0.5,
-        success: "你的父母咬牙买了一台车，花掉了家里所有的流动资金",
-        failure: "你的父母本想为家里添置一台车，但考虑到家里不能缺少流动资金，还是放弃了",
+        success: "你家咬牙买了一台车，花掉了家里所有的流动资金",
+        failure: "你家本欲添置一台车，但考虑到家里不能缺少流动资金，还是放弃了",
       }
     ]
     for( let e of behaviorTree){
@@ -105,13 +100,13 @@ Family.prototype.checkDemands = function(){
       {
         limit: cost*2,
         check: 0.2,
-        success: "你的父母投资性买了套房",
-        failure: "你的父母本想用手头的钱投资一套房，然而看来看去都不太满意",
+        success: "你家投资性买了套房",
+        failure: "你家想用手头的钱投资一套房，然而看来看去都不太满意",
       },{
         limit: cost*1,
         check: 0.4,
-        success: "你的父母兴致勃勃地看了许久的房，最终选购了一套比较满意的",
-        failure: "你的父母对于买房这事非常谨慎，决定再多看看",
+        success: "你家在仔细斟酌后，选购了一套比较满意的房子",
+        failure: "你家对买房这事非常谨慎，故而决定再多看看",
       }
     ]
     for( let e of behaviorTree){

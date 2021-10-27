@@ -130,8 +130,8 @@ function Body(){
 
 
 let illnessLiberary = {
-  disease: ["哮喘","心脏病","鼻炎"],
-  unHealthy: ["近视"],
+  disease: ["哮喘","心脏病","鼻炎","感冒","发烧","冠心病","心绞痛","心肌梗塞","中暑","急性肠道疾病"],
+  unHealthy: ["近视","过敏"],
   appearanceFlaw: ["唇裂"]
 }
 

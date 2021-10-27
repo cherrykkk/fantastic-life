@@ -28,11 +28,15 @@
         <span>父亲<span v-if="!yourLife.family.state.father">(亡故)</span></span>
         <span>母亲<span v-if="!yourLife.family.state.mother">(亡故)</span></span><br>
         <span>流动资产{{yourLife.family.state.wealthy}}</span><br>
-        <span>固定资产 
-          <span v-for="(e) in yourLife.family.property.car" :key="e">{{e}}</span>
-          <span v-for="(e) in yourLife.family.property.house" :key="e">{{e}}</span>
-        </span>
       </div>
+      <ul class="list-info">
+        <li v-for="(e) in yourLife.family.property.car" :key="e">
+          <span>{{e}}</span>
+        </li>
+        <li v-for="(e) in yourLife.family.property.house" :key="e">
+          <span>{{e}}</span>
+        </li>
+      </ul>
       <div class="events">
         <div v-for="(e,i) in eventsLiberary.classification.family" :key="i">
           {{e.message}}
@@ -48,7 +52,7 @@
       </div>
       <ul class="list-info">
         <li v-for="(e) in yourLife.intercourse.relationships" :key="e">
-          <span>{{e.target}}</span><br>
+          <span :class="[e.targetSex=='男'?'boy':'girl']">{{e.target}}</span><br>
           <span class="extra">{{e.type}}~{{e.level}}</span>
         </li>
       </ul>
@@ -71,9 +75,9 @@
     </div>
     <div class="buttons">
       <template  v-if="living">
-        <button @click="stepMonth()">next month</button>
-        <button @click="autoStep()" v-if="!autoNext">auto next month</button>
-        <button @click="autoStep()" v-if="autoNext">stop auto next month</button>
+        <button @click="stepMonth()">进入次月</button>
+        <button @click="autoStep()" v-if="!autoNext">自动运行</button>
+        <button @click="autoStep()" v-if="autoNext">暂停自动</button>
       </template>
       <template v-if="!living">
         <div v-if="!living">你死了</div>
@@ -127,7 +131,7 @@ export default ({
       else{
         timeHandler.value = setInterval(()=>{
           stepMonth()
-        },100)
+        },500)
         autoNext.value = true
       }
     }
@@ -161,6 +165,11 @@ export default ({
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
+    button{
+      height: 60px;
+      width: 60px;
+      border-radius: 50%;
+    }
   }
   .body{
     width: 200px;
@@ -207,6 +216,14 @@ export default ({
           font-size: 12px;
         }
       }
+      .boy{
+        border: solid 1px blue;
+        border-radius: 10%;
+      }
+      .girl{
+        border: solid 1px red;
+        border-radius: 10%;
+      }
     }
   }
 }
@@ -215,9 +232,15 @@ export default ({
   .window{
     box-shadow: 0 0 3px 0 blue;
   }
+  button{
+    box-shadow: 0 0 3px 0 blue;
+  }
 }
 .girl{
   .window{
+    box-shadow: 0 0 3px 0 red;
+  }
+  button{
     box-shadow: 0 0 3px 0 red;
   }
 }
@@ -226,7 +249,7 @@ export default ({
   position: absolute;
   .window{
     width: 90%;
-    height: 23%;
+    height: 40%;
     margin: 5px;
     padding: 5px;
   }

@@ -3,8 +3,10 @@
     体质{{initScore.body}}<br>
     家境{{initScore.family}}
   </div>
-  <button @click="lottery()">随机天赋点</button>
-  <button @click="onLifeStart()">start</button>
+  <div class="buttons">
+    <button @click="lottery()">随机天赋点</button>
+    <button @click="onLifeStart()">进入人生</button>
+  </div>
 </template>
 
 <script>
@@ -33,3 +35,21 @@ export default ({
   }
 })
 </script>
+
+<style lang="less" scoped>
+
+ .buttons{
+    position: fixed;
+    bottom: 30px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    button{
+      height: 60px;
+      width: 60px;
+      border-radius: 50%;
+    }
+  }
+
+</style>
