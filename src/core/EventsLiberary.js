@@ -10,6 +10,10 @@ function EventsLiberary(){
     }
     this.classification[type].push(event)
   }
+  this.init = ()=>{
+    this.liberary = []
+    this.classification = {}
+  }
 }
 
 function Event(message,type,month){

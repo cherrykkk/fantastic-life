@@ -135,6 +135,7 @@ let illnessLiberary = {
   appearanceFlaw: ["唇裂"]
 }
 
+
 let events = [
   "你出生了",
   "你学会了走路"

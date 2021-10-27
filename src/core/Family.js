@@ -37,7 +37,6 @@ function Family(){
           e.occured = false
           e.latent = e.recurrence
           body.illness.disease[i] = e
-          console.log(body.illness.disease)
         }
         else{
           this.addEvent(`你的家庭无力支持你的${e.title}的治疗`)

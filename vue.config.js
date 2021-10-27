@@ -1,5 +1,5 @@
 module.exports = {
-  publicPath: '/dist/',
+  publicPath: './',
   devServer: {
     port: 8080, 
     proxy: {

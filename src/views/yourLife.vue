@@ -76,7 +76,8 @@
     <div class="buttons">
       <template  v-if="living">
         <button @click="stepMonth()">进入次月</button>
-        <button @click="autoStep()" v-if="!autoNext">自动运行</button>
+        <button @click="autoStep(50)" v-if="!autoNext">火箭人生</button>
+        <button @click="autoStep(500)" v-if="!autoNext">自动运行</button>
         <button @click="autoStep()" v-if="autoNext">暂停自动</button>
       </template>
       <template v-if="!living">
@@ -95,7 +96,7 @@ import eventsLiberary from '@/core/EventsLiberary.js'
 
 export default ({
 	setup() {
-    const lifePreparing = ref(true)
+    eventsLiberary.init()
     const living = ref(true)
 		const age = ref(0)
     const autoNext = ref(false)
@@ -109,6 +110,7 @@ export default ({
     yourLife.value = initYourLife(route.query.bodyScore,route.query.familyScore)
 
     const restart = ()=>{
+      eventsLiberary.init()
       router.push("/")
     }
 		const stepMonth = ()=>{
@@ -123,7 +125,7 @@ export default ({
         autoStep()
       }
 		}
-    const autoStep = ()=>{
+    const autoStep = (time)=>{
       if(autoNext.value){
         clearTimeout(timeHandler.value)
         autoNext.value = false
@@ -131,7 +133,7 @@ export default ({
       else{
         timeHandler.value = setInterval(()=>{
           stepMonth()
-        },500)
+        },time)
         autoNext.value = true
       }
     }
@@ -144,7 +146,6 @@ export default ({
       autoNext,
       familyWealthy,
       living,
-      lifePreparing,
       mobile,
       router,
       restart

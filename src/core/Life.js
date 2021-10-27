@@ -3,6 +3,7 @@ import Intercourse from './system/Intercourse.js'
 import Study from './system/Study.js'
 import {randCheck} from './utils.js'
 
+export default Life
 
 function Life(family){
   this.surname = null
@@ -22,8 +23,9 @@ function Life(family){
   }
 
   this.stepMonth = ()=>{
-    this.body.stepMonth();
+    this.body.stepMonth()
     this.family.stepMonth()
+    this.intercourse.stepMonth()
 
     // if(this.body.inNeed.length>0){
     //   this.family.familySupport(this.body)
@@ -56,5 +58,3 @@ function Life(family){
     }
   }
 }
-
-export default Life
