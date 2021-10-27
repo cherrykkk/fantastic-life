@@ -1,17 +1,18 @@
 import Body from './system/Body.js'
-import Family from './system/Family.js'
 import Intercourse from './system/Intercourse.js'
 import Study from './system/Study.js'
-import randCheck from './utils.js'
+import {randCheck} from './utils.js'
 
 
-function Life(){
+function Life(family){
   this.surname = null
   this.givenName = null
   this.intercourse = new Intercourse()
-  this.family = new Family()
+  this.family = family
   this.body = new Body()
   this.study = new Study()
+  
+  this.needs = []
   
   this.setSex = sex => this.body.sex = sex
   this.getSex = () => this.body.sex
@@ -19,18 +20,23 @@ function Life(){
     this.surname = surname
     this.givenName = givenName
   }
+
   this.stepMonth = ()=>{
     this.body.stepMonth();
     this.family.stepMonth()
-    if(this.body.inNeed.length>0){
-      this.family.familySupport(this.body)
-    }
+
+    // if(this.body.inNeed.length>0){
+    //   this.family.familySupport(this.body)
+    // }
     
-    if(randCheck(0.96))
+    this.lookAfterYourself()
+
+    if( randCheck(0.90) && randCheck((10-this.body.appearance)/10))
       this.intercourse.meetNew()
     
     return this.body.healthy > 0
   }
+
   this.getAge = ()=> {
     return [Math.floor(this.body.month/12),this.body.month%12]
   }
@@ -41,6 +47,13 @@ function Life(){
   this.living = ()=>{
     let died = this.body.consititution<=0 || this.body.healthy <=0
     return !died
+  }
+
+  this.lookAfterYourself = ()=>{
+    for(let e of this.body.illness.disease){
+      if(e.occured == true){
+      }
+    }
   }
 }
 

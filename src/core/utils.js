@@ -3,4 +3,10 @@ function randCheck(level){
     return true
   else return false
 }
-export default randCheck
+
+function getName(sex){
+  return fetch(`../api/getRandom_name.php?sex=${sex}`).then( res=> res.json())
+}
+
+export {getName}
+export {randCheck}

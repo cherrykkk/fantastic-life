@@ -1,12 +1,16 @@
 import eventsLiberary from "../EventsLiberary.js"
+import { getName } from '../utils.js'
 
 function Intercourse(){
   this.relationships = []
 
   this.meetNew = ()=>{
-    let relationship = new Relationship("xx","朋友")
-    this.relationships.push(relationship)
-    this.addEvent("认识了新朋友，叫做xx")
+    getName().then( data =>{
+      let name = data.surname+data.givenName
+      let relationship = new Relationship(name,"朋友")
+      this.relationships.push(relationship)
+      this.addEvent(`认识了新朋友，叫做${name}`)
+    })
   }
   this.familyInit = (family)=>{
     if(family.state.mother){
