@@ -18,13 +18,14 @@ function Intercourse(){
 
   this.stepMonth = ()=>{
     let rela = getArrayRandom(this.relationships)
-    let upgrade =  randCheck(0.4)
-    let events = upgrade ? upgradeEvents : degradeEvents
-    let event = getArrayRandom(events[rela.type]).replace("xxx",rela.target)
+    if(rela){
+      let upgrade =  randCheck(0.4)
+      let events = upgrade ? upgradeEvents : degradeEvents
+      let event = getArrayRandom(events[rela.type]).replace("xxx",rela.target)
 
-    this.addEvent(event)
-    rela.level += upgrade ? 1 : -1
-
+      this.addEvent(event)
+      rela.level += upgrade ? 1 : -1
+    }
   }
 
   this.familyInit = (family)=>{

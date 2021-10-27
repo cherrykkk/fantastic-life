@@ -81,7 +81,7 @@
         <button @click="autoStep()" v-if="autoNext">暂停自动</button>
       </template>
       <template v-if="!living">
-        <div v-if="!living">你死了</div>
+        <button>你死了</button>
         <button @click="restart()">重新开始</button>
       </template>
     </div>
@@ -162,7 +162,11 @@ export default ({
   .buttons{
     position: fixed;
     bottom: 30px;
-    width: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    height: 20%;
+    width: 20%;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
