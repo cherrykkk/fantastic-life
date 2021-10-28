@@ -3,7 +3,7 @@ import Life from './Life'
 import {getName} from './utils.js'
 export default initYourLife
 
-function initYourLife(bodyScore,familyScore){
+function initYourLife(initScore){
 
   let yourFamily = new Family()
   let yourLife = new Life(yourFamily)
@@ -16,9 +16,15 @@ function initYourLife(bodyScore,familyScore){
 
   yourLife.setSex(sex)
 
-  yourLife.body.init(bodyScore,0)
+  let initBody = {
+    consititutionScore: initScore.body,
+    apperanceScore: initScore.apperance,
+    intelligenceScore: initScore.intelligence,
+    age: 0
+  }
+  yourLife.body.init( initBody )
 
-  yourFamily.init(yourLife,familyScore)
+  yourFamily.init( yourLife,initScore.family )
 
   yourLife.init()
   

@@ -76,6 +76,7 @@
     <div class="buttons">
       <template  v-if="living">
         <button @click="stepMonth()">进入次月</button>
+        <button>行为点{{yourLife.body.actionPoint}}</button>
         <button @click="autoStep(50)" v-if="!autoNext">火箭人生</button>
         <button @click="autoStep(500)" v-if="!autoNext">自动运行</button>
         <button @click="autoStep()" v-if="autoNext">暂停自动</button>
@@ -107,7 +108,8 @@ export default ({
 
     const route = useRoute()
     const router = useRouter()
-    yourLife.value = initYourLife(route.query.bodyScore,route.query.familyScore)
+    let initScore = JSON.parse(localStorage.getItem("initScore"));
+    yourLife.value = initYourLife(initScore)
 
     const restart = ()=>{
       eventsLiberary.init()
@@ -166,8 +168,9 @@ export default ({
     left: 50%;
     transform: translate(-50%,-50%);
     height: 20%;
-    width: 20%;
+    width: 120px;
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-evenly;
     button{
@@ -251,12 +254,23 @@ export default ({
 }
 
 .mobile{
-  position: absolute;
+  position: fixed;
+  overflow-y: auto;
+  height: 80%;
   .window{
     width: 90%;
     height: 40%;
     margin: 5px;
     padding: 5px;
+  }
+  .buttons{
+    position: fixed;
+    height: 70px;
+    width: 100%;
+    left: 0;
+    top: auto;
+    bottom: 0;
+    transform: none;
   }
 }
 </style>

@@ -16,7 +16,7 @@ function Body(){
   this.intelligence = 10
   this.appearance = 10
 
-  this.inNeed = []
+  this.actionPoint = 0
 
   this.stepMonth = ()=>{
     this.month ++;
@@ -24,12 +24,23 @@ function Body(){
     this.monthCheckIllness()
     this.monthCheckAge()
 
+    this.getMonthAction()
+
+  }
+  
+  this.getMonthAction = ()=>{
+    this.actionPoint = Math.floor((this.consititution-2)/5)+1
   }
 
   this.monthCheckIllness = ()=>{
     this.healthyChange = 0
     for( let e of this.illness.disease){
-      if( e.occured ){
+      if( randCheck(0.9-this.consititution/20) ){
+        e.occured = false
+        e.latent = e.recurrence
+        this.addEvent(`你的${e.title}自愈了`)
+      }
+      else if( e.occured ){
         this.healthyChange -= e.hurt
         this.addEvent(`你的${e.title}未得到合适的照料（-${e.hurt}）`)
       }
@@ -95,16 +106,17 @@ function Body(){
     }
   }
 
-  this.init = ( score, age=0 )=>{
+  this.init = ( config )=>{
+    let age = config.age || 0
     this.month = age*12
-    this.initRandom(score)
+    this.initRandom(config.consititutionScore,config.apperanceScore,config.intelligenceScore,)
     this.initIllness()
     this.initAlreadyGrowth(age)
   }
-  this.initRandom = (score)=>{
-    this.consititution = Math.floor(score/2+Math.random()*score/2)
-    this.appearance = Math.floor(score/2+Math.random()*score/2)
-    this.intelligence =  Math.floor(score/3+Math.random()*score/3*2)
+  this.initRandom = (consititutionScore,apperanceScore,intelligenceScore)=>{
+    this.consititution = randCheck(0.5) ? consititutionScore : ( randCheck(0.5) ? consititutionScore+1 : consititutionScore-1 )
+    this.appearance =  randCheck(0.5) ? apperanceScore : ( randCheck(0.5) ? apperanceScore+1 : apperanceScore-1 )
+    this.intelligence =  randCheck(0.5) ? intelligenceScore : ( randCheck(0.5) ? intelligenceScore+1 : intelligenceScore-1 )
   }
   this.initIllness = ()=>{
     if(this.consititution<4){

@@ -36,7 +36,6 @@ function Family(){
           this.addEvent(`家庭花费了${e.cost}调养你的${e.title}`)
           e.occured = false
           e.latent = e.recurrence
-          body.illness.disease[i] = e
         }
         else{
           this.addEvent(`你的家庭无力支持你的${e.title}的治疗`)
