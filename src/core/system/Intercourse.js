@@ -6,6 +6,11 @@ export default Intercourse
 function Intercourse(){
   this.relationships = []
 
+  this.tryIntercourse = ()=>{
+    if( randCheck(0.95) )
+      this.meetNew()
+  }
+
   this.meetNew = ()=>{
     let sex = Math.random()<0.5? "男":"女"
     getName(sex).then( data =>{

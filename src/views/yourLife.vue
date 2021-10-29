@@ -65,18 +65,19 @@
     <div class="study window">
       <div class="title">学业</div>
       <div class="basic-info">
-        成绩排名(省):前{{yourLife.study.ranking}}%
+        <span>知识{{yourLife.study.knowledge}}</span>
+        <span>成绩排名(省):前{{yourLife.study.ranking}}%</span>
       </div>
       <div class="events">
         <div v-for="(e,i) in eventsLiberary.classification.study" :key="i">
-          {{e.message}}({{Math.floor(e.occurMonth/12)}})
+          {{e.message}}
         </div>
       </div>
     </div>
     <div class="buttons">
       <template  v-if="living">
         <button @click="stepMonth()">进入次月</button>
-        <button>行为点{{yourLife.body.actionPoint}}</button>
+        <button @click="actionEdit=true">行为点{{yourLife.actionPoint}}</button>
         <button @click="autoStep(50)" v-if="!autoNext">火箭人生</button>
         <button @click="autoStep(500)" v-if="!autoNext">自动运行</button>
         <button @click="autoStep()" v-if="autoNext">暂停自动</button>
@@ -85,6 +86,12 @@
         <button>你死了</button>
         <button @click="restart()">重新开始</button>
       </template>
+    </div>
+    <div v-if="actionEdit" class="edit-board">
+      <button @click="actionEdit=false">返回</button>
+      <button @click="setActionStrategy('运动')" :class="{actived:yourLife.actionStrategy=='运动'}">运动</button>
+      <button @click="setActionStrategy('交际')" :class="{actived:yourLife.actionStrategy=='交际'}">交际</button>
+      <button @click="setActionStrategy('学习')" :class="{actived:yourLife.actionStrategy=='学习'}">学习</button>
     </div>
   </div>
 </template>
@@ -101,6 +108,8 @@ export default ({
     const living = ref(true)
 		const age = ref(0)
     const autoNext = ref(false)
+    const actionEdit = ref(false)
+    const actionStrategy = ref(null)
     const timeHandler = ref()
     const familyWealthy = ref(0)
     const yourLife = ref(null)
@@ -127,6 +136,9 @@ export default ({
         autoStep()
       }
 		}
+    const setActionStrategy = ( actionStrategy )=>{
+      yourLife.value.actionStrategy = actionStrategy
+    }
     const autoStep = (time)=>{
       if(autoNext.value){
         clearTimeout(timeHandler.value)
@@ -150,7 +162,9 @@ export default ({
       living,
       mobile,
       router,
-      restart
+      restart,
+      actionEdit,
+      setActionStrategy
 		}
 	},
 })
@@ -177,6 +191,21 @@ export default ({
       height: 60px;
       width: 60px;
       border-radius: 50%;
+    }
+  }
+  .edit-board{
+    position: fixed;
+    width: 150px;
+    height: 150px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    button{
+      width: 50%;
+      height: 50%;
+    }
+    .actived{
+      border: inset;
     }
   }
   .body{
@@ -243,6 +272,9 @@ export default ({
   button{
     box-shadow: 0 0 3px 0 blue;
   }
+  .actived{
+    color: blue;
+  }
 }
 .girl{
   .window{
@@ -250,6 +282,9 @@ export default ({
   }
   button{
     box-shadow: 0 0 3px 0 red;
+  }
+  .actived{
+    color: red;
   }
 }
 

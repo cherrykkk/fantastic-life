@@ -32,6 +32,7 @@ export default ({
     const minSize = 3
     const router = useRouter()
     const onLifeStart = ()=>{
+      localStorage.setItem("initScore",JSON.stringify(initScore));
       router.push({path: "/yourLife"})
     }
     const lottery = ()=>{

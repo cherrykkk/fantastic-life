@@ -16,20 +16,26 @@ function Body(){
   this.intelligence = 10
   this.appearance = 10
 
-  this.actionPoint = 0
-
   this.stepMonth = ()=>{
     this.month ++;
 
     this.monthCheckIllness()
     this.monthCheckAge()
 
-    this.getMonthAction()
-
   }
   
-  this.getMonthAction = ()=>{
-    this.actionPoint = Math.floor((this.consititution-2)/5)+1
+  this.tryExercise = ()=>{
+    if( randCheck(0.96) ){
+      if(this.consititution<10){
+        this.addEvent("努力运动...体质真的提高了！") 
+        this.consititution++
+      }
+      else  
+        this.addEvent("努力运动...体质已经很棒了")
+    }
+    else{
+      this.addEvent("努力运动...体质好像提高了？")
+    }
   }
 
   this.monthCheckIllness = ()=>{

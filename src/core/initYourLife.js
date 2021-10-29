@@ -1,5 +1,6 @@
 import Family from './Family'
 import Life from './Life'
+import Study from './system/Study'
 import {getName} from './utils.js'
 export default initYourLife
 
@@ -27,6 +28,7 @@ function initYourLife(initScore){
   yourFamily.init( yourLife,initScore.family )
 
   yourLife.init()
+  yourLife.study.yourLife = yourLife
   
   return yourLife
 }
