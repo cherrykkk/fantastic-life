@@ -1,5 +1,8 @@
 # steplife
 
+试玩地址：
+http://47.97.42.118/html/steplife/dist/index.html#/
+
 ## Project setup
 ```
 npm install
