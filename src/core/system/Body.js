@@ -1,7 +1,7 @@
 import eventsLiberary from '../EventsLiberary.js'
 import {randCheck} from '../utils.js'
 
-function Body(){
+function Body( config ){
   this.month = 0
   this.sex = null
 
@@ -112,45 +112,26 @@ function Body(){
     }
   }
 
-  this.init = ( config )=>{
-    let age = config.age || 0
-    this.month = age*12
-    this.initRandom(config.consititutionScore,config.apperanceScore,config.intelligenceScore,)
-    this.initIllness()
-    this.initAlreadyGrowth(age)
-  }
-  this.initRandom = (consititutionScore,apperanceScore,intelligenceScore)=>{
-    this.consititution = randCheck(0.5) ? consititutionScore : ( randCheck(0.5) ? consititutionScore+1 : consititutionScore-1 )
-    this.appearance =  randCheck(0.5) ? apperanceScore : ( randCheck(0.5) ? apperanceScore+1 : apperanceScore-1 )
-    this.intelligence =  randCheck(0.5) ? intelligenceScore : ( randCheck(0.5) ? intelligenceScore+1 : intelligenceScore-1 )
-  }
-  this.initIllness = ()=>{
-    if(this.consititution<4){
-      this.addEvent("你的体质先天不足，需要长期调养")
-      let disease = {
-        "title": "先天不足",
-        "cost": (4-this.consititution)*2000,
-        "recurrence": 2,
-        "latent": 0,
-        "occured": true,
-        "hurt": (4-this.consititution),
-      }
-      this.illness.disease.push(disease)
-    }
-  }
-  this.initAlreadyGrowth = (age)=>{
-    switch( age ){
-      case 3 : this.walkAble = true
-      case 0 : this.addEvent("你出生了")
-    }
-  }
+  this.init( config )
 }
 
 
 let illnessLiberary = {
   disease: ["哮喘","心脏病","鼻炎","感冒","发烧","冠心病","心绞痛","心肌梗塞","中暑","急性肠道疾病"],
   unHealthy: ["近视","过敏"],
-  appearanceFlaw: ["唇裂"]
+  appearanceFlaw: ["唇裂"],
+  congenital: [
+    {
+      probability: 0.0029,
+      name: "先天性心脏病",
+      curable: true,
+      cost: 5*10000
+    },{
+      probability: 0.0015,
+      name: "21三体综合征",
+      curable: false
+    }
+  ]
 }
 
 
@@ -172,4 +153,52 @@ export default Body
 
 Body.prototype.addEvent = function(message){
   eventsLiberary.addEvent(message,"body",this.month)
+}
+
+
+Body.prototype.init = function( config ){
+  let age = config.age || 0
+  this.sex = randCheck(0.5) ? "男":"女"
+  this.month = age*12
+  initRandom( this , config.consititutionScore, config.apperanceScore , config.intelligenceScore )
+  initIllness( this , this.consititution )
+  initAlreadyGrowth( this , age )
+
+  function initRandom(context,consititutionScore,apperanceScore,intelligenceScore){
+    context.consititution = randCheck(0.5) ? consititutionScore : ( randCheck(0.5) ? consititutionScore+1 : consititutionScore-1 )
+    context.appearance =  randCheck(0.5) ? apperanceScore : ( randCheck(0.5) ? apperanceScore+1 : apperanceScore-1 )
+    context.intelligence =  randCheck(0.5) ? intelligenceScore : ( randCheck(0.5) ? intelligenceScore+1 : intelligenceScore-1 )
+  }
+  function initIllness(context,consititution){
+    if( consititution<3 ){
+      for( let e of illnessLiberary.congenital  ){
+        if( randCheck( e.probability*10 ) ){
+          let disease = {
+            title: e.name,
+            curable: e.curable,
+            type: "congential"
+          }
+          context.illness.disease.push(disease)
+        }
+      }
+    }
+    else if(consititution<4){
+      context.addEvent("你的体质先天不足，需要长期调养")
+      let disease = {
+        "title": "先天不足",
+        "cost": (4-consititution)*2000,
+        "recurrence": 2,
+        "latent": 0,
+        "occured": true,
+        "hurt": (4-consititution),
+      }
+      context.illness.disease.push(disease)
+    }
+  }
+  function initAlreadyGrowth(context,age){
+    switch( age ){
+      case 3 : context.walkAble = true
+      case 0 : context.addEvent("你出生了")
+    }
+  }
 }

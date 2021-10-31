@@ -2,39 +2,17 @@ import eventsLiberary from '../EventsLiberary.js'
 import { randCheck } from '../utils.js'
 
 function Study(){
-  this.yourLife = null
   this.knowledge = 0
   this.school = null
   this.ranking = 0 //百分制 1代表前1%
   this.school = []
-  this.intoSchool = (level)=>{
-    if(level=="primary"){
-      this.school.push({
-        type: "primary",
-        name: "一小"
-      })
-      this.addEvent("你开始上小学")
-    }
-    else if(level=="junior"){
-      this.school.push({
-        type: "junior",
-        name: "二中"
-      })
-      this.addEvent("你进入了初中")
-    }
-    else if(level=="senior"){
-      this.school.push({
-        type: "senior",
-        name: "三中"
-      })
-      this.addEvent("你进入了高中")
-    }
-    else if(level=="high"){
-      this.school.push({
-        type: "high",
-        name: "xx大学"
-      })
-    }
+  this.intoSchool = ( school )=>{
+    this.school.push({
+      type: school.type,
+      schoolName: school.schoolName
+    })
+    console.log(school)
+    this.addEvent("你进入了"+school.schoolName)
   }
   this.stepMonth = ()=>{
     this.mayDownKnowledge()

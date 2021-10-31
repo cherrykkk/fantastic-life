@@ -1,67 +1,9 @@
 <template>
 	<div class="page" :class="[{mobile:mobile},yourLife.body.sex=='男' ? 'boy':'girl']">
-    <div class="body window">
-      <div class="title">身体</div>
-      <div class="basic-info">
-        <span>体质{{yourLife.body.consititution}}</span>
-        <span>智力{{yourLife.body.intelligence}}</span>
-        <span>外貌{{yourLife.body.appearance}}</span><br>
-        <span>健康{{yourLife.body.healthy}}</span>
-        <span>{{yourLife.body.sex}}</span>
-        <span>年龄:{{age}}</span>
-      </div>
-      <ul class="list-info">
-        <li v-for="(e) in yourLife.body.illness.disease" :key="e">
-          <span>{{e.title}}</span><br>
-          <span class="extra">{{e.hurt}}<span v-if="e.occured">!</span></span>
-        </li>
-      </ul>
-      <div class="events">
-        <div v-for="(e,i) in eventsLiberary.classification.body" :key="i">
-          {{e.message}}({{Math.floor(e.occurMonth/12)}})
-        </div>
-      </div>
-    </div>
-    <div class="family window">
-      <div class="title">家庭</div>
-      <div class="basic-info">
-        <span>父亲<span v-if="!yourLife.family.state.father">(亡故)</span></span>
-        <span>母亲<span v-if="!yourLife.family.state.mother">(亡故)</span></span><br>
-        <span>流动资产{{yourLife.family.state.wealthy}}</span><br>
-      </div>
-      <ul class="list-info">
-        <li v-for="(e) in yourLife.family.property.car" :key="e">
-          <span>{{e}}</span>
-        </li>
-        <li v-for="(e) in yourLife.family.property.house" :key="e">
-          <span>{{e}}</span>
-        </li>
-      </ul>
-      <div class="events">
-        <div v-for="(e,i) in eventsLiberary.classification.family" :key="i">
-          {{e.message}}
-        </div>
-      </div>
-    </div>
-    <div class="intercourse window">
-      <div class="title">社交</div>
-      <div class="basic-info">
-        名字:
-        <span>{{yourLife.surname}}{{yourLife.givenName}}</span>
-        <span v-if='(yourLife.surname||yourLife.givenName)==null'>无名</span>
-      </div>
-      <ul class="list-info">
-        <li v-for="(e) in yourLife.intercourse.relationships" :key="e">
-          <span :class="[e.targetSex=='男'?'boy':'girl']">{{e.target}}</span><br>
-          <span class="extra">{{e.type}}~{{e.level}}</span>
-        </li>
-      </ul>
-      <div class="events">
-        <div v-for="(e,i) in eventsLiberary.classification.intercourse" :key="i">
-          {{e.message}}
-        </div>
-      </div>
-    </div>
+    <panel :info="bodyInfo"></panel>
+    <panel :info="familyInfo"></panel>
+    <panel :info="intercourseInfo"></panel>
+    <panel :info="studyInfo"></panel>
     <div class="study window">
       <div class="title">学业</div>
       <div class="basic-info">
@@ -77,7 +19,7 @@
     <div class="buttons">
       <template  v-if="living">
         <button @click="stepMonth()">进入次月</button>
-        <button @click="actionEdit=true">行为点{{yourLife.actionPoint}}</button>
+        <button @click="actionEdit=true">月行为点{{yourLife.actionPoint}}</button>
         <button @click="autoStep(50)" v-if="!autoNext">火箭人生</button>
         <button @click="autoStep(500)" v-if="!autoNext">自动运行</button>
         <button @click="autoStep()" v-if="autoNext">暂停自动</button>
@@ -97,28 +39,115 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref,reactive,onMounted} from 'vue'
 import { useRoute,useRouter } from 'vue-router'
+import Panel from './Panel'
 import initYourLife from '@/core/initYourLife.js'
 import eventsLiberary from '@/core/EventsLiberary.js'
 
 export default ({
+  components:{Panel},
 	setup() {
     eventsLiberary.init()
     const living = ref(true)
 		const age = ref(0)
     const autoNext = ref(false)
     const actionEdit = ref(false)
-    const actionStrategy = ref(null)
     const timeHandler = ref()
     const familyWealthy = ref(0)
     const yourLife = ref(null)
     const mobile = document.body.clientWidth < 800
+    const bodyInfo = reactive({
+      title: "身体",
+      basicInfo: [],
+      listInfo: [],
+      events: null
+    })
+    const familyInfo = reactive({
+      title: "家庭",
+      basicInfo: [],
+      listInfo: [],
+      events: null
+    })
+    const intercourseInfo = reactive({
+      title: "社交",
+      basicInfo: [],
+      listInfo: [],
+      events: null
+    })
+    const studyInfo = reactive({
+      title: "学业",
+      basicInfo: [],
+      listInfo: [],
+      events: null
+    })
 
-    const route = useRoute()
     const router = useRouter()
+
     let initScore = JSON.parse(localStorage.getItem("initScore"));
     yourLife.value = initYourLife(initScore)
+
+    onMounted(()=>{
+      yourLife.value.yourBorn()
+      refreshBasicInfo()
+    })
+
+    const refreshBasicInfo = ()=>{
+      refreshBody()
+      refreshFamily()
+      refreshIntercourse()
+      refreshStudy()
+    }
+    const refreshBody = ()=>{
+      let body = yourLife.value.body
+      bodyInfo.basicInfo = [
+        `体质${body.consititution}`,
+        `智力${body.intelligence}`,
+        `外貌${body.appearance}`,
+        `健康${body.healthy}`,
+        body.sex,
+        `年龄${Math.floor(body.month/12)}.${body.month%12}`
+      ]
+      let listInfo = []
+      for( let e of body.illness.disease ){
+        listInfo.push([e.title])
+      }
+      bodyInfo.listInfo = listInfo
+      bodyInfo.events = eventsLiberary.classification.body
+    }
+    const refreshFamily = ()=>{
+      let family = yourLife.value.family
+      familyInfo.basicInfo = [
+        `流动资产${family.state.wealthy}`
+      ]
+      let listInfo = []
+      for( let e of family.families ){
+        listInfo.push([e.surname+e.givenName, e.character])
+      }
+      familyInfo.listInfo = listInfo
+      familyInfo.events = eventsLiberary.classification.family
+    }
+    const refreshIntercourse = ()=>{
+      let intercourse = yourLife.value.intercourse
+      let name = yourLife.value.surname+yourLife.value.givenName
+      intercourseInfo.basicInfo = [
+        name ? `姓名：${name}`:"未命名"
+      ]
+      let listInfo = []
+      for( let e of intercourse.relationships ){
+        listInfo.push([e.target,e.type,e.targetSex])
+      }
+      intercourseInfo.listInfo = listInfo
+      intercourseInfo.events = eventsLiberary.classification.intercourse
+    }
+    const refreshStudy = ()=>{
+      let study = yourLife.value.study
+      studyInfo.basicInfo = [
+        `知识水平${study.knowledge}`,
+        `成绩排名(省):前${study.ranking}%`
+      ]
+      studyInfo.events = eventsLiberary.classification.study
+    }
 
     const restart = ()=>{
       eventsLiberary.init()
@@ -135,6 +164,7 @@ export default ({
         living.value = false
         autoStep()
       }
+      refreshBasicInfo()
 		}
     const setActionStrategy = ( actionStrategy )=>{
       yourLife.value.actionStrategy = actionStrategy
@@ -164,7 +194,11 @@ export default ({
       router,
       restart,
       actionEdit,
-      setActionStrategy
+      setActionStrategy,
+      bodyInfo,
+      familyInfo,
+      intercourseInfo,
+      studyInfo
 		}
 	},
 })

@@ -1,4 +1,5 @@
 import eventsLiberary from "../EventsLiberary.js"
+import Npc from "./Npc.js"
 import { getName,getArrayRandom, randCheck } from '../utils.js'
 
 export default Intercourse

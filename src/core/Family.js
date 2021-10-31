@@ -1,9 +1,11 @@
 import eventsLiberary from "./EventsLiberary.js"
-import {randCheck} from './utils.js'
+import Npc from "./system/Npc.js"
+import {randCheck,getName} from './utils.js'
 export default Family
 
-function Family(){
-  this.siblings = []
+function Family( score ){
+  this.surname = null
+  this.families = []
   this.children = []
   this.yourLife = null
   this.property = {
@@ -33,7 +35,7 @@ function Family(){
       if( e.occured ){
         if( this.state.wealthy > e.cost ){
           this.state.wealthy -= e.cost
-          this.addEvent(`家庭花费了${e.cost}调养你的${e.title}`)
+          this.addEvent(`家里花费了${e.cost}调养你的${e.title}`)
           e.occured = false
           e.latent = e.recurrence
         }
@@ -43,6 +45,10 @@ function Family(){
       }
     }
   }
+  this.reference = ( yourLife )=>{
+    this.yourLife = yourLife
+  }
+  this.init( score )
 }
 
 Family.prototype.checkDemands = function(){
@@ -141,12 +147,11 @@ let houses = [
   ["周边60平二手商品房",1000000]
 ]
 
-Family.prototype.init = function(yourLife,score){
-  this.yourLife = yourLife
-  initRandom(this.state)
+Family.prototype.init = function(score){
+  initRandom(this,this.state)
   familyDescription(this)
 
-  function initRandom(state){
+  function initRandom(context,state){
     state.wealthy = Math.floor(score*10000)
     state.mother = randCheck(1-0.1*score) ? true : false
     state.father = randCheck(1-0.1*score) ? true : false
@@ -154,10 +159,43 @@ Family.prototype.init = function(yourLife,score){
     state.monthExpense = Math.floor(score*900*Math.random()*1.2)
     state.parentsRelathionship = score
     state.harmony = score
+    getName().then( data =>{
+      context.surname = data.surname
+      initParents(context)
+      initSiblings(context)
+    })
+  }
+  
+  function initParents(context){
+    if(context.state.father){
+      let father = new Npc()
+      father.initAsParent("男",context.surname)
+      father.character = "父亲"
+      context.families.push(father)
+    }
+    if(context.state.mother){
+      let mother = new Npc()
+      mother.initAsParent("女")
+      mother.character = "母亲"
+      context.families.push(mother)
+    }
+  }
+
+  function initSiblings(context){
+    let max = 3
+    while( max>0 ){
+      if( randCheck(0.2) ){
+        let sibling = new Npc()
+        sibling.initAsOlderSibling( 0 , context.surname )
+        sibling.character = sibling.sex=="男"? "哥哥": "姐姐"
+        context.families.push(sibling)
+      }
+      max--;
+    }
   }
 
   function familyDescription(content){
-    if( !(content.state.mother||content.state.father)){
+    if( !(content.state.mother||content.state.father) ){
       content.addEvent("你自幼父母双亡")
       content.state.monthExpense = 0
     }

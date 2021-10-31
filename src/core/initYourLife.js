@@ -1,34 +1,28 @@
 import Family from './Family'
 import Life from './Life'
+import Body from './system/Body.js'
 import Study from './system/Study'
+import Society from './Society.js'
 import {getName} from './utils.js'
 export default initYourLife
 
 function initYourLife(initScore){
-
-  let yourFamily = new Family()
-  let yourLife = new Life(yourFamily)
-
-  let sex = Math.random()<0.5 ? "男":"女"
-
-  getName().then( data =>{
-    yourLife.setName(data.surname, data.givenName) 
-  })
-
-  yourLife.setSex(sex)
-
-  let initBody = {
+  let initBodyConfig = {
     consititutionScore: initScore.body,
     apperanceScore: initScore.apperance,
     intelligenceScore: initScore.intelligence,
     age: 0
   }
-  yourLife.body.init( initBody )
 
-  yourFamily.init( yourLife,initScore.family )
-
-  yourLife.init()
-  yourLife.study.yourLife = yourLife
+  let theSociety = new Society()
+  let yourFamily = new Family( initScore.family )
+  let yourLife = new Life()
+  let yourBody = new Body(initBodyConfig)
   
+  yourFamily.reference( yourLife )
+  yourLife.reference( theSociety , yourFamily , yourBody )
+
+  theSociety.init( yourLife )
+    
   return yourLife
 }

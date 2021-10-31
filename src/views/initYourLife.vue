@@ -1,11 +1,6 @@
 <template>
-  <!-- <div class="scores">
-    <div :style="{height: (initScore.body+minSize)*10+'px',width: (initScore.body+minSize)*10+'px' }">体质</div>
-    <div :style="{height: (initScore.family+minSize)*10+'px',width: (initScore.family+minSize)*10+'px' }">家境</div>
-    <div :style="{height: (initScore.apperance+minSize)*10+'px',width: (initScore.apperance+minSize)*10+'px' }">外貌</div>
-    <div :style="{height: (initScore.intelligence+minSize)*10+'px',width: (initScore.intelligence+minSize)*10+'px' }">智力</div>
-  </div> -->
   <div class="rader-chart" ref="chart"></div>
+  <div>当前社会背景：现代中国</div>
   <div class="buttons">
     <button @click="lottery()">随机天赋点</button>
     <button @click="onLifeStart()">进入人生</button>
@@ -64,12 +59,10 @@ export default ({
         },
         series: [
           {
-            name: 'Budget vs spending',
             type: 'radar',
             data: [
               {
-                value: [initScore.family, initScore.body, initScore.intelligence, initScore.apperance],
-                name: 'Allocated Budget'
+                value: [initScore.family, initScore.body, initScore.intelligence, initScore.apperance]
               }
             ]
           }
