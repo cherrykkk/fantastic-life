@@ -6,7 +6,7 @@
     </div>
     <ul class="list-info" v-if="info.listInfo">
       <li v-for="(e) in info.listInfo" :key="e">
-        <span :class="{boy:e[2]=='男',girl:e[2]=='女'}">{{e[0]}}{{e[2]}}</span><br>
+        <span :class="{boy:e[2]=='男',girl:e[2]=='女'}">{{e[0]}}</span><br>
         <span class="extra" v-if="e[1]">{{e[1]}}</span>
       </li>
     </ul>

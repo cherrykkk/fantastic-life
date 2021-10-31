@@ -184,7 +184,7 @@ Family.prototype.init = function(score){
   function initSiblings(context){
     let max = 3
     while( max>0 ){
-      if( randCheck(0.2) ){
+      if( randCheck(0.8) ){
         let sibling = new Npc()
         sibling.initAsOlderSibling( 0 , context.surname )
         sibling.character = sibling.sex=="男"? "哥哥": "姐姐"

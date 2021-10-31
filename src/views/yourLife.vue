@@ -4,20 +4,11 @@
     <panel :info="familyInfo"></panel>
     <panel :info="intercourseInfo"></panel>
     <panel :info="studyInfo"></panel>
-    <div class="study window">
-      <div class="title">学业</div>
-      <div class="basic-info">
-        <span>知识{{yourLife.study.knowledge}}</span>
-        <span>成绩排名(省):前{{yourLife.study.ranking}}%</span>
-      </div>
-      <div class="events">
-        <div v-for="(e,i) in eventsLiberary.classification.study" :key="i">
-          {{e.message}}
-        </div>
-      </div>
-    </div>
     <div class="buttons">
-      <template  v-if="living">
+      <template v-if="!born">
+        <button @click="getBorn()">降生吧！</button>
+      </template>
+      <template v-if="born&&living">
         <button @click="stepMonth()">进入次月</button>
         <button @click="actionEdit=true">月行为点{{yourLife.actionPoint}}</button>
         <button @click="autoStep(50)" v-if="!autoNext">火箭人生</button>
@@ -49,12 +40,11 @@ export default ({
   components:{Panel},
 	setup() {
     eventsLiberary.init()
+    const born = ref(false)
     const living = ref(true)
-		const age = ref(0)
     const autoNext = ref(false)
     const actionEdit = ref(false)
     const timeHandler = ref()
-    const familyWealthy = ref(0)
     const yourLife = ref(null)
     const mobile = document.body.clientWidth < 800
     const bodyInfo = reactive({
@@ -88,7 +78,6 @@ export default ({
     yourLife.value = initYourLife(initScore)
 
     onMounted(()=>{
-      yourLife.value.yourBorn()
       refreshBasicInfo()
     })
 
@@ -153,12 +142,15 @@ export default ({
       eventsLiberary.init()
       router.push("/")
     }
+    const getBorn = ()=>{
+      born.value = true
+      yourLife.value.yourBorn()
+      refreshBasicInfo()
+    }
 		const stepMonth = ()=>{
       let yl = yourLife.value
       yl.stepMonth()
 			if(yl.living()){
-        age.value = yl.getAge()[0]+"."+ yl.getAge()[1]
-        familyWealthy.value = (yl.family.state.wealthy).toFixed(0)
       }
       else{ //you died
         living.value = false
@@ -183,12 +175,11 @@ export default ({
     }
 		return {
 			yourLife,
-			eventsLiberary,
+      getBorn,
 			stepMonth,
-			age,
       autoStep,
       autoNext,
-      familyWealthy,
+      born,
       living,
       mobile,
       router,
