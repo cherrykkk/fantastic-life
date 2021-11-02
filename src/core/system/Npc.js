@@ -7,6 +7,8 @@ function Npc(){
   this.sex = null
   this.month = null
 
+  this.name = () => this.surname+this.givenName
+
   this.initTotalyRandom = ()=>{    
     this.sex = Math.random()<0.5 ? "男":"女"
     this.month = Math.floor(Math.random()*60)
@@ -37,8 +39,10 @@ function Npc(){
       this.getName()
   }
 
-  this.getName = ( surname )=>{
-    getName(this.sex).then( data =>{
+  this.getName =  ( surname )=>{
+    fetch(`../api/getRandom_name.php?sex=${this.sex}`)
+    .then( res=> res.json() )
+    .then( data =>{
       this.surname = surname || data.surname
       this.givenName = data.givenName
     })

@@ -24,7 +24,6 @@ export default ({
   props:["info"],
   setup ( props ) {
     const info = ref(props.info)
-    console.log(props.info)
     return {
       info
     }

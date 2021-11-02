@@ -5,19 +5,34 @@ import {randCheck,getName} from './utils.js'
 
 export default Life
 
-function Life( family ){
+function Life(){
   this.surname = null
   this.givenName = null
-  this.body =  null
-  this.intercourse = new Intercourse()
-  this.study =  new Study()
 
-  this.society
-  this.family = family
+  this.body =  null
+  this.intercourse = null
+  this.study = null
+  this.society = null
+  this.family = null
   
-  this.needs = []
   this.actionPoint = 0
   this.actionStrategy = ""
+
+  this.reference = ( society,family,body,intercourse,study )=>{
+    this.society = society
+    this.family = family
+    this.body = body
+    this.intercourse = intercourse
+    this.study = study
+  }
+
+  this.yourBorn = ()=>{
+    this.intercourse.familyInit()
+    getName(this.body.sex).then( data =>{
+      this.surname = this.family.surname
+      this.givenName = data.givenName
+    })
+  }
 
   this.stepMonth = ()=>{
     this.body.stepMonth()
@@ -58,21 +73,7 @@ function Life( family ){
       }
     }
   }
-
-  this.reference = ( society,family,body )=>{
-    this.society = society
-    this.family = family
-    this.body = body
-  }
   
-  this.yourBorn = ()=>{
-    this.intercourse.familyInit(this.family)
-    getName(this.body.sex).then( data =>{
-      this.surname = this.family.surname
-      this.givenName = data.givenName
-    })
-  }
-
   this.getAge = ()=> {
     return [Math.floor(this.body.month/12),this.body.month%12]
   }

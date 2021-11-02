@@ -124,7 +124,7 @@ export default ({
       ]
       let listInfo = []
       for( let e of intercourse.relationships ){
-        listInfo.push([e.target,e.type,e.targetSex])
+        listInfo.push([e.target.name(),e.type,e.target.sex])
       }
       intercourseInfo.listInfo = listInfo
       intercourseInfo.events = eventsLiberary.classification.intercourse

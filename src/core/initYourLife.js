@@ -4,6 +4,7 @@ import Body from './system/Body.js'
 import Study from './system/Study'
 import Society from './Society.js'
 import {getName} from './utils.js'
+import Intercourse from './system/Intercourse'
 export default initYourLife
 
 function initYourLife(initScore){
@@ -18,11 +19,13 @@ function initYourLife(initScore){
   let yourFamily = new Family( initScore.family )
   let yourLife = new Life()
   let yourBody = new Body(initBodyConfig)
+  let yourIntercourse = new Intercourse()
+  let yourStudy =  new Study()
   
-  yourFamily.reference( yourLife )
-  yourLife.reference( theSociety , yourFamily , yourBody )
+  yourLife.reference( theSociety , yourFamily , yourBody , yourIntercourse , yourStudy )
+  yourFamily.yourLife = yourLife
+  yourIntercourse.yourLife = yourLife
+  theSociety.yourLife = yourLife
 
-  theSociety.init( yourLife )
-    
   return yourLife
 }

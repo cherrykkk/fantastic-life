@@ -1,10 +1,12 @@
 import eventsLiberary from "../EventsLiberary.js"
 import Npc from "./Npc.js"
+import Relationship from "./Relationship.ts"
 import { getName,getArrayRandom, randCheck } from '../utils.js'
 
 export default Intercourse
 
 function Intercourse(){
+  this.yourLife = null
   this.relationships = []
 
   this.tryIntercourse = ()=>{
@@ -13,13 +15,9 @@ function Intercourse(){
   }
 
   this.meetNew = ()=>{
-    let sex = Math.random()<0.5? "男":"女"
-    getName(sex).then( data =>{
-      let name = data.surname+data.givenName
-      let relationship = new Relationship(name,sex,"朋友")
-      this.relationships.push(relationship)
-      this.addEvent(`认识了新朋友，叫做${name}`)
-    })
+    let npc = this.yourLife.society.npcs.shift()
+    this.relationships.push(new Relationship(npc,"朋友"))
+    this.addEvent(`认识了新朋友，叫做${npc.name()}`)
   }
 
   this.stepMonth = ()=>{
@@ -27,40 +25,46 @@ function Intercourse(){
     if(rela){
       let upgrade =  randCheck(0.4)
       let events = upgrade ? upgradeEvents : degradeEvents
-      let event = getArrayRandom(events[rela.type]).replace("xxx",rela.target)
+      let event = getArrayRandom(events[rela.type]).replace("xxx",rela.target.name())
 
       this.addEvent(event)
       rela.level += upgrade ? 1 : -1
     }
   }
 
-  this.familyInit = (family)=>{
-    if(family.state.mother){
-      this.addEvent("记住了母亲")
-      let relationship = new Relationship("母亲","女","直系",5)
-      this.relationships.push(relationship)
+  this.familyInit = ()=>{
+    let family = this.yourLife.family
+    let families = this.yourLife.family.families
+    broadcast(this)
+
+    function broadcast(context){
+      let mother = families.find( function(e){
+        return e.character == "母亲"
+      })
+      if( mother ){
+        context.addEvent(`与母亲${mother.name()}建立了联系`)
+        let relationship = new Relationship(mother,"直系",5)
+        context.relationships.push(relationship)
+      }
+      else 
+        context.addEvent("你自小失去了母亲")
+
+      let father = families.find( function(e){
+        return e.character == "父亲"
+      })
+      if( father ){
+        context.addEvent("记住了父亲")
+        let relationship = new Relationship(father,"直系",5)
+        context.relationships.push(relationship)
+      }
+      else 
+        context.addEvent("你自小失去了父亲")
     }
-    else 
-      this.addEvent("你自小失去了母亲")
-    if(family.state.father){
-      this.addEvent("记住了父亲")
-      let relationship = new Relationship("父亲","男","直系",5)
-      this.relationships.push(relationship)
-    }
-    else       
-      this.addEvent("你自小失去了父亲")
   }
 
   this.addEvent = (message)=>{
     eventsLiberary.addEvent(message,"intercourse")
   }
-}
-
-function Relationship(_target,_targetSex,_type,_level = 1){
-  this.target = _target
-  this.targetSex = _targetSex
-  this.type = _type
-  this.level = _level
 }
 
 let relationshipType = [

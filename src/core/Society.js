@@ -1,16 +1,31 @@
+import Npc from './system/Npc.js'
 import Study from './system/Study.js'
 
 export default Society
 
 function Society(){
   this.yourLife = null
-
-  this.init = ( yourLife )=>{
-    this.yourLife = yourLife
-  }
+  this.npcs = [] //提前准备的NPC们，尚未与主角相识，为解决异步的问题而存在。考虑到网络延迟，请尽量保持该队列的个数在10以上
 
   this.stepMonth = ()=>{
     this.checkYourAge()
+    this.npcsPreparing()
+  }
+
+  this.npcsPreparing = ()=>{
+    if( this.npcs.length<10 )
+    fetch(`../api/getRandom_npc.php?times=10`)
+    .then( res=> res.json())
+    .then( data=>{
+      for(let e of data){
+        let npc = new Npc()
+        npc.surname = e.surname
+        npc.givenName = e.givenName
+        npc.sex = e.sex
+        npc.month = Math.floor((Math.random()*70*12))
+        this.npcs.push(npc)
+      }
+    })
   }
 
   this.checkYourAge = ()=>{
@@ -28,10 +43,12 @@ function Society(){
       this.yourLife.study.intoSchool( school )
     }
   }
-
-
+  this.init()
 }
 
+Society.prototype.init = function(){
+  this.npcsPreparing()
+}
 
 function selector( arr , key ){
   for( let e of arr ){
