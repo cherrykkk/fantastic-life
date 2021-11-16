@@ -1,4 +1,4 @@
-import { getName } from '../utils.js'
+import { getName } from '@/core/utils.js'
 export default Npc
 
 function Npc(){

@@ -1,10 +1,10 @@
 import Family from './Family'
 import Life from './Life'
-import Body from './system/Body.js'
+import Body from './system/body/Body.js'
 import Study from './system/Study'
 import Society from './Society.js'
 import {getName} from './utils.js'
-import Intercourse from './system/Intercourse'
+import Intercourse from './system/intercourse/Intercourse'
 export default initYourLife
 
 function initYourLife(initScore){

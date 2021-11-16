@@ -98,8 +98,8 @@ export default ({
         `年龄${Math.floor(body.month/12)}.${body.month%12}`
       ]
       let listInfo = []
-      for( let e of body.illness.disease ){
-        listInfo.push([e.title])
+      for( let e of body.diseaseOnset ){
+        listInfo.push([e.name])
       }
       bodyInfo.listInfo = listInfo
       bodyInfo.events = eventsLiberary.classification.body
@@ -317,12 +317,6 @@ export default ({
   position: fixed;
   overflow-y: auto;
   height: 80%;
-  .window{
-    width: 90%;
-    height: 40%;
-    margin: 5px;
-    padding: 5px;
-  }
   .buttons{
     position: fixed;
     height: 70px;

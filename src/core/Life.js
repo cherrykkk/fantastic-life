@@ -1,6 +1,8 @@
-import Body from './system/Body.js'
-import Intercourse from './system/Intercourse.js'
+import Body from './system/body/Body.js'
+import Intercourse from './system/intercourse/Intercourse.js'
 import Study from './system/Study.js'
+import { tryExercise } from '@/core/system/body/proactive.js'
+import { tryIntercourse } from './system/intercourse/proactive.js'
 import {randCheck,getName} from './utils.js'
 
 export default Life
@@ -28,6 +30,7 @@ function Life(){
 
   this.yourBorn = ()=>{
     this.intercourse.familyInit()
+    this.body.born()
     getName(this.body.sex).then( data =>{
       this.surname = this.family.surname
       this.givenName = data.givenName
@@ -63,10 +66,10 @@ function Life(){
     while(this.actionPoint>0){
       this.actionPoint--;
       if(this.actionStrategy=="运动"){
-        this.body.tryExercise()
+        tryExercise(this.body)
       }
       if(this.actionStrategy=="社交"){
-        this.intercourse.tryIntercourse()
+        tryIntercourse(this.intercourse)
       }
       if(this.actionStrategy=="学习"){
         this.study.tryStudy()
@@ -83,10 +86,10 @@ function Life(){
   }
 
   this.lookAfterYourself = ()=>{
-    for(let e of this.body.illness.disease){
-      if(e.occured == true){
-      }
-    }
+    // for(let e of this.body.illness.disease){
+    //   if(e.occured == true){
+    //   }
+    // }
   }
   this.init()
 }

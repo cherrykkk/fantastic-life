@@ -1,7 +1,7 @@
-import eventsLiberary from "../EventsLiberary.js"
+import eventsLiberary from "../../EventsLiberary.js"
 import Npc from "./Npc.js"
 import Relationship from "./Relationship.ts"
-import { getName,getArrayRandom, randCheck } from '../utils.js'
+import { getName,getArrayRandom, randCheck } from '../../utils.js'
 
 export default Intercourse
 
@@ -9,15 +9,24 @@ function Intercourse(){
   this.yourLife = null
   this.relationships = []
 
-  this.tryIntercourse = ()=>{
-    if( randCheck(0.95) )
-      this.meetNew()
-  }
-
   this.meetNew = ()=>{
     let npc = this.yourLife.society.npcs.shift()
-    this.relationships.push(new Relationship(npc,"朋友"))
-    this.addEvent(`认识了新朋友，叫做${npc.name()}`)
+
+    let ageDifference = Math.abs(npc.month-this.yourLife.body.month)
+    console.log("年龄差",ageDifference)
+
+    if( ageDifference < 12*10 ){
+      this.relationships.push(new Relationship(npc,"朋友"))
+      this.addEvent(`认识了新朋友，叫做${npc.name()}`)
+    }
+    else if( ageDifference < 12*20 ){
+      this.relationships.push(new Relationship(npc,"朋友"))
+      this.addEvent(`认识了新网友，叫做${npc.name()}`)
+    }
+    else {
+      this.relationships.push(new Relationship(npc,"路人"))
+      this.addEvent(`人来人往，均为路人`)
+    }
   }
 
   this.stepMonth = ()=>{
@@ -53,7 +62,7 @@ function Intercourse(){
         return e.character == "父亲"
       })
       if( father ){
-        context.addEvent("记住了父亲")
+        context.addEvent(`与父亲${father.name()}建立了联系`)
         let relationship = new Relationship(father,"直系",5)
         context.relationships.push(relationship)
       }
@@ -90,6 +99,9 @@ let upgradeEvents = {
     "向xxx请教了一个问题。",
     "向xxx借作业参考，对方虽然给了，但是看起来好像不是很乐意。",
     "把作业借给了xxx。"
+  ],
+  "路人":[
+    ""
   ]
 }
 
@@ -105,5 +117,8 @@ let degradeEvents = {
   ],
   "同学":[
     "向xxx借作业参考，但对方说也没有写完。"
+  ],
+  "路人":[
+    ""
   ]
 }

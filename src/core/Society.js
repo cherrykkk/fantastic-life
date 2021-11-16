@@ -1,5 +1,6 @@
-import Npc from './system/Npc.js'
+import Npc from './system/intercourse/Npc.js'
 import Study from './system/Study.js'
+import {schoolList} from './society/modern.js'
 
 export default Society
 
@@ -59,22 +60,3 @@ function selector( arr , key ){
   }
   return false
 }
-
-let schoolList = [
-  {
-    selector: "primary school",
-    schoolName: "第一小学"
-  },{
-    selector: "junior school",
-    schoolName: "第二中学(初中)"
-  },{
-    selector: "senior school",
-    schoolName: "第三中学(高中)"
-  },{
-    selector: "senior school",
-    schoolName: "衡水中学(高中)"
-  },{
-    selector: "senior school",
-    schoolName: "师大附中(高中)"
-  }
-]
