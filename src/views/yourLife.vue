@@ -1,9 +1,9 @@
 <template>
 	<div class="page" :class="[{mobile:mobile},yourLife.body.sex=='男' ? 'boy':'girl']">
-    <panel :info="bodyInfo"></panel>
-    <panel :info="familyInfo"></panel>
-    <panel :info="intercourseInfo"></panel>
-    <panel :info="studyInfo"></panel>
+    <panel class="panel" :info="bodyInfo"></panel>
+    <panel class="panel" :info="familyInfo"></panel>
+    <panel class="panel" :info="intercourseInfo"></panel>
+    <panel class="panel" :info="studyInfo"></panel>
     <div class="buttons">
       <template v-if="!born">
         <button @click="getBorn()">降生吧！</button>
@@ -236,7 +236,7 @@ export default ({
   .body{
     width: 200px;
   }
-  .window{
+  .panel{
     float: left;
     display: flex;
     flex-direction: column;
@@ -246,52 +246,11 @@ export default ({
     padding: 10px;
     width: 45%;
     height: 40%;
-    .title{
-      font-weight: 600;
-      flex-shrink: 0;
-    }
-    .basic-info{
-      span{
-        margin-right: 5px;
-      }
-      flex-shrink: 0;
-    }
-    .events{
-      width: 100%;
-      max-height: 60%;
-      overflow: auto;
-      font-size: 12px;
-      border-top: 1px solid #333333;
-      margin-top: 5px;
-      padding-top: 5px;
-    }
-    .list-info{
-      flex-shrink: 0;
-      display: flex;
-      flex-wrap: wrap;
-      overflow: auto;
-      max-height: 60px;
-      margin: 0;
-      li{
-        padding-right: 20px;
-        .extra{
-          font-size: 12px;
-        }
-      }
-      .boy{
-        border: solid 1px blue;
-        border-radius: 10%;
-      }
-      .girl{
-        border: solid 1px red;
-        border-radius: 10%;
-      }
-    }
   }
 }
 
 .boy{
-  .window{
+  .panel{
     box-shadow: 0 0 3px 0 blue;
   }
   button{
@@ -302,7 +261,7 @@ export default ({
   }
 }
 .girl{
-  .window{
+  .panel{
     box-shadow: 0 0 3px 0 red;
   }
   button{
@@ -317,6 +276,9 @@ export default ({
   position: fixed;
   overflow-y: auto;
   height: 80%;
+  .panel {
+    width: 80%;
+  }
   .buttons{
     position: fixed;
     height: 70px;
