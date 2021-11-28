@@ -1,6 +1,6 @@
 import Npc from './system/intercourse/Npc.js'
 import Study from './system/Study.js'
-import {schoolList} from './society/modern.js'
+import {schoolList} from './society/index.js'
 
 export default Society
 

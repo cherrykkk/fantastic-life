@@ -1,12 +1,11 @@
-import Body from './system/body/Body.js'
-import Intercourse from './system/intercourse/Intercourse.js'
-import Study from './system/Study.js'
-import { tryExercise } from '@/core/system/body/proactive.js'
-import { tryIntercourse } from './system/intercourse/proactive.js'
-import {randCheck,getName} from './utils.js'
+import { randCheck,getName } from './utils.js'
+import { tryExercise,tryIntercourse,tryStudy } from './system/useActionPoint/index.js'
 
 export default Life
-
+export { lifeCycle }
+/*
+人生状态，一切子系统的入口
+*/
 function Life(){
   this.surname = null
   this.givenName = null
@@ -20,69 +19,29 @@ function Life(){
   this.actionPoint = 0
   this.actionStrategy = ""
 
-  this.reference = ( society,family,body,intercourse,study )=>{
-    this.society = society
-    this.family = family
-    this.body = body
-    this.intercourse = intercourse
-    this.study = study
-  }
-
-  this.yourBorn = ()=>{
-    this.intercourse.familyInit()
-    this.body.born()
-    getName(this.body.sex).then( data =>{
-      this.surname = this.family.surname
-      this.givenName = data.givenName
-    })
-  }
-
-  this.stepMonth = ()=>{
-    this.body.stepMonth()
-    this.family.stepMonth()
-    this.intercourse.stepMonth()
-    this.study.stepMonth()
-    this.society.stepMonth()
-    this.doAction()
-    this.getMonthAction()
-    this.study.test(this.body.intelligence)
-    this.checkAge()
-    
-    this.lookAfterYourself()
-
-    if( randCheck(0.90) && randCheck((10-this.body.appearance)/10))
-      this.intercourse.meetNew()
-    
-    return this.body.healthy > 0
-  }
-  this.checkAge = ()=>{
-  }
-
-  this.getMonthAction = ()=>{
-    this.actionPoint = Math.floor((this.body.consititution-2)/5)+1
+  this.state = {
+    born: false,
+    living: false,
+    died: false
   }
 
   this.doAction = ()=>{
     while(this.actionPoint>0){
       this.actionPoint--;
       if(this.actionStrategy=="运动"){
-        tryExercise(this.body)
+        tryExercise(this)
       }
       if(this.actionStrategy=="社交"){
-        tryIntercourse(this.intercourse)
+        tryIntercourse(this)
       }
       if(this.actionStrategy=="学习"){
-        this.study.tryStudy()
+        tryStudy(this)
       }
     }
   }
   
   this.getAge = ()=> {
     return [Math.floor(this.body.month/12),this.body.month%12]
-  }
-  this.living = ()=>{
-    let died = this.body.consititution<=0 || this.body.healthy <=0
-    return !died
   }
 
   this.lookAfterYourself = ()=>{
@@ -95,5 +54,49 @@ function Life(){
 }
 
 Life.prototype.init = function(){
+
+}
+
+const lifeCycle = {
+  born: lifeCycleBorn,
+  grow: lifeCycleGrow,
+  died: lifeCycleDied
+}
+
+function lifeCycleBorn(life) {
+  const { intercourse,body,family,state } = life
+  intercourse.familyInit()
+  body.born()
+  getName( body.sex ).then( data =>{
+    life.surname = family.surname
+    life.givenName = data.givenName
+  })
+  state.born = true
+  state.living = true
+}
+
+function lifeCycleGrow(life) {
+  const { body,family,intercourse,study,society } = life
+  body.stepMonth()
+  family.stepMonth()
+  intercourse.stepMonth()
+  study.stepMonth()
+  society.stepMonth()
+  life.doAction()
+
+  //行动力，取决于体质
+  life.actionPoint = Math.floor((body.state.consititution-2)/5)+1
+
+  study.test(body.intelligence)
+  
+  life.lookAfterYourself()
+
+  if( randCheck(0.90) && randCheck((10-body.appearance)/10))
+    intercourse.meetNew()
+
+  return body.healthy > 0
+}
+
+function lifeCycleDied() {
 
 }

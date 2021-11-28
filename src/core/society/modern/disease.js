@@ -1,20 +1,7 @@
 
-export {schoolList}
-export {npcDeathReason}
-export {DiseaseLiberary}
 
-
-let events = [
-  "你出生了",
-  "你学会了走路"
-]
-
-let description = [
-  "心闷气短，非常难受",
-  "你感觉有些不舒服，不过很快就恢复了。",
-  "你感觉有些不舒服，难受了很久才感觉好了一些",
-  "你感觉有些不舒服，不过很快就忘了这回事"
-]
+export { DiseaseLiberary }
+export { npcDeathReason }
 
 let DiseaseLiberary_old = {
   disease: ["哮喘","心脏病","鼻炎","感冒","发烧","冠心病","心绞痛","心肌梗塞","中暑","急性肠道疾病"],
@@ -158,35 +145,4 @@ let DiseaseLiberary = [
 
 let npcDeathReason = [
   "死于车祸","死于疾病","死于终老","死于命案"
-]
-
-let schoolList = [
-  {
-    selectror: "kindergarten",
-    schoolName: "公立幼儿园"
-  },{
-    selectror: "kindergarten",
-    schoolName: "私立幼儿园"
-  },{
-    selector: "primary school",
-    schoolName: "第一小学"
-  },{
-    selector: "junior school",
-    schoolName: "第二中学(初中)"
-  },{
-    selector: "senior school",
-    schoolName: "第三中学(高中)"
-  },{
-    selector: "senior school",
-    schoolName: "衡水中学(高中)"
-  },{
-    selector: "senior school",
-    schoolName: "师大附中(高中)"
-  },{
-    selector: "hight school",
-    schoolName: "本科大学"
-  },{
-    selector: "hight school",
-    schoolName: "专科大学"
-  }
 ]

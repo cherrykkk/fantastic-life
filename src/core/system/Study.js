@@ -17,9 +17,6 @@ function Study(){
   this.stepMonth = ()=>{
     this.mayDownKnowledge()
   }
-  this.tryStudy = ()=>{
-    this.mayUpKnowledge()
-  }
   this.test = (intelligence)=>{
     this.ranking = (100-this.knowledge)
   }
@@ -30,13 +27,6 @@ function Study(){
     if( randCheck(0.5) ){
       if( this.knowledge>0 )
         this.knowledge--
-    }
-  }
-  this.mayUpKnowledge = ()=>{
-    if( randCheck(0.5)){
-      if( this.knowledge < 100 ){
-        this.knowledge++
-      }
     }
   }
 }

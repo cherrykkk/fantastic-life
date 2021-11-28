@@ -1,4 +1,4 @@
-import {DiseaseLiberary} from '@/core/society/modern.js'
+import {DiseaseLiberary} from '@/core/society/index.js'
 export { congentialDisease,geriatricDisease,normalDisease }
 
 function Liberary(){
