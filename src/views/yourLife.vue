@@ -27,7 +27,7 @@
 import { ref,reactive,onMounted} from 'vue'
 import { useRouter } from 'vue-router'
 import Panel from './Panel'
-import initYourLife from '@/core/initYourLife.js'
+import initYourLife from '@/core/apiForView/index.js'
 import { lifeCycle } from '@/core/Life.js'
 
 export default ({

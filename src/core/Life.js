@@ -1,8 +1,8 @@
 import { randCheck,getName } from './utils.js'
 import { tryExercise,tryIntercourse,tryStudy } from './system/useActionPoint/index.js'
-
+import { newIntercourse } from './system/intercourse/newIntercourse.js'
+import { addMember } from './system/family/addMember.js'
 export default Life
-export { lifeCycle }
 /*
 人生状态，一切子系统的入口
 */
@@ -39,47 +39,34 @@ function Life(){
       }
     }
   }
-  
-  this.getAge = ()=> {
-    return [Math.floor(this.body.month/12),this.body.month%12]
+
+  this.lifeCycle = {
+    born: lifeCycleBorn.bind(this),
+    grow: lifeCycleGrow.bind(this),
+    died: lifeCycleDied.bind(this)
   }
 
-  this.lookAfterYourself = ()=>{
-    // for(let e of this.body.illness.disease){
-    //   if(e.occured == true){
-    //   }
-    // }
-  }
-  this.init()
 }
 
-Life.prototype.init = function(){
-
-}
-
-const lifeCycle = {
-  born: lifeCycleBorn,
-  grow: lifeCycleGrow,
-  died: lifeCycleDied
-}
-
-function lifeCycleBorn(life) {
-  const { intercourse,body,family,state } = life
-  intercourse.familyInit()
+function lifeCycleBorn() {
+  const life = this
+  const { body,family,state } = life
   body.born()
+  life.intercourse =  newIntercourse(family)
+  addMember(family,"child",life)
   getName( body.sex ).then( data =>{
-    life.surname = family.surname
+    life.surname = family.familyMembers.host.surname
     life.givenName = data.givenName
+    console.log(life)
   })
   state.born = true
   state.living = true
 }
 
-function lifeCycleGrow(life) {
+function lifeCycleGrow() {
+  const life = this
   const { body,family,intercourse,study,society } = life
   body.stepMonth()
-  family.stepMonth()
-  intercourse.stepMonth()
   study.stepMonth()
   society.stepMonth()
   life.doAction()
@@ -88,8 +75,6 @@ function lifeCycleGrow(life) {
   life.actionPoint = Math.floor((body.state.consititution-2)/5)+1
 
   study.test(body.intelligence)
-  
-  life.lookAfterYourself()
 
   if( randCheck(0.90) && randCheck((10-body.appearance)/10))
     intercourse.meetNew()

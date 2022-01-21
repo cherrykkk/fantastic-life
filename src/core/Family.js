@@ -1,5 +1,6 @@
 import eventsLiberary from "./EventsLiberary.js"
-import Npc from "./system/intercourse/Npc.js"
+//import Npc from "./system/intercourse/Npc.js"
+import Npc from "./system/npc/Npc.js"
 import {randCheck,getName} from './utils.js'
 export default Family
 
@@ -25,26 +26,6 @@ function Family( score ){
     this.state.wealthy += this.state.monthIncome - this.state.monthExpense
     this.checkDemands()
     this.state.wealthy = this.state.wealthy
-    this.familySupport(this.yourLife.body)
-  }
-
-  this.familySupport = function(body){
-
-    // for(let i in body.illness.disease){
-    //   let e  = body.illness.disease[i]
-    //   if( e.occured ){
-    //     if( this.state.wealthy > e.cost ){
-    //       this.state.wealthy -= e.cost
-    //       this.addEvent(`家里花费了${e.cost}调养你的${e.title}`)
-    //       e.occured = false
-    //       e.latent = e.recurrence
-    //     }
-    //     else{
-    //       this.addEvent(`你的家庭无力支持你的${e.title}的治疗`)
-    //     }
-    //   }
-    // }
-    
   }
   this.reference = ( yourLife )=>{
     this.yourLife = yourLife

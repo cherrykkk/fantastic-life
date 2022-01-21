@@ -6,20 +6,12 @@ import { growthTalent } from "./growthTalent.js"
 export default Body
 
 function Body( config ){
-  this.month = 0
-  this.sex = null
-
-  this.healthy = 100
-  this.healthyChange = 0.00
-  this.uncomfort = {}
   
+  this.uncomfort = {}
   this.identified = []
   this.diseaseOnset = []
   this.diseaseHidden = []
   this.symptom = []
-
-  this.intelligence = 10
-  this.appearance = 10
 
   this.state = {
     month: 0,

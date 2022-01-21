@@ -1,19 +1,31 @@
 <template>
-  <div class="rader-chart" ref="chart"></div>
-  <div>当前社会背景：现代中国</div>
-  <div class="buttons">
-    <button @click="lottery()">随机天赋点</button>
-    <button @click="onLifeStart()">进入人生</button>
+  <div class="page">
+    <div class="info-card">
+      <div>社会环境</div>
+      <div>当前社会背景：现代中国</div>
+    </div>
+    <div class="info-card">
+      <div>人物初始属性</div>
+      <div class="rader-chart" ref="chart"></div>
+      <div>
+        性别: 随机
+      </div>
+    </div>
+    <div class="buttons">
+      <button @click="lottery()">随机天赋点</button>
+      <button @click="onLifeStart()">进入人生</button>
+    </div>
   </div>
 </template>
 
 <script>
-import { ref,reactive,onMounted } from 'vue'
+import { ref,reactive,onMounted,inject } from 'vue'
 import { useRouter } from 'vue-router'
 import * as echarts from 'echarts/core';
 import { TitleComponent, LegendComponent } from 'echarts/components';
 import { RadarChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
+import { newLife } from '@/core/apiForView/index.js'
 export default ({
 	setup() {
     const initScore = reactive({
@@ -26,8 +38,11 @@ export default ({
     const myChart = ref(null)
     const minSize = 3
     const router = useRouter()
+    const setCurrentLife = inject("setCurrentLife")
     const onLifeStart = ()=>{
       localStorage.setItem("initScore",JSON.stringify(initScore));
+      const yourLife = newLife(initScore)
+      setCurrentLife(yourLife)
       router.push({path: "/yourLife"})
     }
     const lottery = ()=>{
@@ -45,9 +60,6 @@ export default ({
     }
     const setChart = ()=>{
       let option = {
-        title: {
-          text: '人生初始属性'
-        },
         radar: {
           // shape: 'circle',
           indicator: [
@@ -87,6 +99,19 @@ export default ({
 </script>
 
 <style lang="less" scoped>
+.page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: space-around;
+  .info-card {
+    padding: 20px;
+    width: 80%;
+    height: 40%;
+    border: 1px solid;
+    border-radius: 20px;
+  }
+}
 .scores{
   position: fixed;
   width: 100%;

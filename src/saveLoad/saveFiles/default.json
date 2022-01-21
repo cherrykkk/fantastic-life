@@ -1,0 +1,14 @@
+{
+	"theMainCharacter": {
+		"surname": null,
+		"givenName": null,
+		"body": null,
+		"intercourse": null,
+		"familyId": null
+	},
+	"society": {
+		"yourLife": null,
+		"npcs": []
+	},
+	"characters": []
+}

@@ -1,0 +1,23 @@
+{
+  "survived_month": 0,
+  "sex": {
+    "random_type": "disperse",
+    "range": ["男","女"]
+  },
+  "healthy": {
+    "random_type": "integer",
+    "range": [30,100]
+  },
+  "consititution": {
+    "random_type": "integer",
+    "range": [3,9]
+  },
+  "intelligence": {
+    "random_type": "integer",
+    "range": [3,9]
+  },
+  "appearance": {
+    "random_type": "integer",
+    "range": [3,9]
+  }
+}

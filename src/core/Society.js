@@ -12,6 +12,18 @@ function Society(){
     this.checkYourAge()
     this.npcsPreparing()
   }
+  
+  this.fetchName = (sex)=>{
+    for(const npc of this.npcs) {
+      if( npc.sex==sex) {
+        return npc
+      }
+      else{
+        this.npcsPreparing()
+        return this.fetchName(sex)
+      }
+    }
+  }
 
   this.npcsPreparing = ()=>{
     if( this.npcs.length<10 )
