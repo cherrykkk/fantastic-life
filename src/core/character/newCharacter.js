@@ -11,5 +11,9 @@ export function newCharacter( society ) {
   const name = namesArr.pop()
   character.surname = name.surname
   character.givenName = name.givenName
+  //随机ID
+  
+  character.characterId = Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0')
+  console.log("当前角色ID",character.characterId)
   return character
 }

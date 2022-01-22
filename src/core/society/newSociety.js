@@ -34,7 +34,7 @@ function fetching( society ) {
 
 function local( society ) {
   //生成初始100个npc
-  for(let i = 0;i<100;i++) {
+  for(let i = 0;i<10;i++) {
     const character = newCharacter( society )
     society.characters.push(character)
   }

@@ -2,7 +2,7 @@ import { Body } from './Body.js'
 import bodyRandom from '@/DLC/generalWorld/bodyRandom.json'
 export function newBody() {
   const body = new Body() 
-  loadRandomSetting( bodyRandom, body.state )
+  loadRandomSetting( bodyRandom, body )
   return body
 }
 

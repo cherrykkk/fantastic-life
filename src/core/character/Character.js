@@ -4,9 +4,9 @@
 export function Character(){
   this.surname = null
   this.givenName = null
+  this.characterId = null
 
   this.body =  null
-  this.intercourse = null
+  this.relationships = []
   this.familyId = null
 }
-
