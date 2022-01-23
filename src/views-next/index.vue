@@ -6,21 +6,14 @@
 </template>
 
 <script>
-import { GAME } from '@/core/apiForView/theGame.js'
 import { save } from '@/saveLoad/lib/save.js'
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 export default {
   setup() {
-    const json = ref(null)
-    function onGameLoadDown(game) {
-      //主角降生前，社会运行10年(120月)
-      for( let i = 0;i<12;i++) {
-        GAME.monthGame(game)
-      }
-      json.value = save(game)
-    }
-    GAME.newGame()
-    .then((game)=>onGameLoadDown(game))
+    const game = inject("game")
+    const json = JSON.stringify(game.value)
+    //json.value = save(game)
+    console.log(game.value)
     return {
       json
     }
