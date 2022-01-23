@@ -19,28 +19,17 @@ export default{
     })
     game.value.then((_game)=>{
       game.value = _game
-      console.log(game.value,_game)
       globalState.gameLoaded = true
-      onGameLoadDown(_game)
     })
 
     provide("globalState",globalState)
     provide("game",game)
 
     return {
-      game,
       globalState
     }
   }
 }
-
-function onGameLoadDown(game) {
-  //主角降生前，社会运行10年(120月)
-  for( let i = 0;i<12;i++) {
-    GAME.monthGame(game)
-  }
-}
-    
 
 </script>
 

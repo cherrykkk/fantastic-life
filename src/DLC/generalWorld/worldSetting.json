@@ -1,0 +1,16 @@
+{
+  "things": [
+    {
+      "name": "面包",
+      "eatable": true,
+      "type": "food"
+    },{
+      "name": "棉衣",
+      "type": "clothes"
+    },{
+      "name": "米饭",
+      "eatable": true,
+      "type": "food"
+    }
+  ]
+}

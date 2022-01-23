@@ -19,6 +19,15 @@ export default {
     }
   },
 }
+
+function onGameLoadDown(game) {
+  //主角降生前，社会运行10年(120月)
+  for( let i = 0;i<12;i++) {
+    GAME.monthGame(game)
+  }
+}
+    
+
 </script>
 <style lang="less" scoped>
 .view {

@@ -48,6 +48,7 @@ export default {
   position: fixed;
   height: 100%;
   width: 100%;
+  overflow: scroll;
   .buttons-desk {
     position: fixed;
     bottom: 0;

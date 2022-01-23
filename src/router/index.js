@@ -1,12 +1,19 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
+const currentView = "god-view"
+
 const routes = [
   {
     path: '/',
-    component: ()=> import("@/views-next/index.vue")
+    component: ()=> currentView=='god-view'? import('@/views-next/god-view/index.vue') : import("@/views-next/player-view/index.vue")
   },{
-    path: '/characters',
-    component: ()=> import('@/views-next/god-view/SeeCharacters.vue')
+    path: '/god-view',
+    component: ()=> import('@/views-next/god-view/index.vue'),
+    children:[{
+      path:'characters',
+      name: 'characters',
+      component: ()=> import('@/views-next/god-view/SeeCharacters.vue')
+    }]
   }
 ]
 
