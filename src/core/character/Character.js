@@ -16,5 +16,6 @@ const characterArgs = {
   relationships: [],
   familyId: null,
   events: [],
-  childrenId: []
+  childrenId: [],
+  memory: []
 }

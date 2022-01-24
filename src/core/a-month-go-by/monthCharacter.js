@@ -67,8 +67,9 @@ function intercourse(game,character,objectCharacter) {
   }
 }
 
+const marriageAge = 14   
+
 function marriage(game,character) {
-  const marriageAge = 18   
   if(character.body.survived_month < 12*marriageAge || character.marriaged)  //不满足结婚年龄或者已婚则跳出
     return
   //寻找目标：好感等级高的异性，effect:对好感度的要求随年龄变大而降低
@@ -76,26 +77,37 @@ function marriage(game,character) {
   for( const relationship of character.relationships) {
     if(relationship.level > 10-effect) {
       const objectCharacter = getCharacterById(game,relationship.characterId)
-      //异性则求婚
-      if(objectCharacter.body.sex != character.body.sex) {
+      if(objectCharacter.body.sex != character.body.sex) {       //异性则求婚
+        character.memory.unshift(`${character.surname+character.givenName+(character.body.survived_month/12).toFixed(0)}岁时向${objectCharacter.surname+objectCharacter.givenName}求婚`)
         objectCharacter.events.push({
           type: "marriage",
           objectId: character.characterId
         })
+        break; 
       }
     }
   }
 }
 
 function eventResolve(game,character) {
-  for(const event of character.events) {
+  for(const index in character.events) {
+    const event = character.events[index]
+    character.events.splice(index,1)
     if(event.type == 'marriage') {
+      const objectCharacter = game.getCharacterById(event.objectId)
+      character.memory.unshift(`${character.surname+character.givenName+(character.body.survived_month/12).toFixed(0)}岁时被${objectCharacter.surname+objectCharacter.givenName}求婚`)
       if(character.body.survived_month < 12*marriageAge || character.marriaged)
         return //不满足结婚年龄或者已婚则跳出
       //检定好感度，成功则结婚，不成功则加好感
       const relationship = character.relationships.find(item=>item.characterId==event.objectId)
       if(relationship && relationship.level > 5 ) {
-        //getMarried
+        getMarried(game,character,objectCharacter)
+      }
+      else if( !relationship) { //被求婚者不认识求婚者
+        character.relationships.push({
+          characterId: event.objectId,
+          level: 1
+        })
       }
       else {
         relationship.level ++ 
@@ -122,6 +134,13 @@ function giveBirth(game,character) {
   else { //没怀上
     //temporary do nothing 
   }
+}
+
+function getMarried(game,characterA,characterB) {
+  characterA.marriaged = true
+  characterB.marriaged = true
+  characterA.spouse = characterB.characterId
+  characterB.spouse = characterA.characterId
 }
 
 

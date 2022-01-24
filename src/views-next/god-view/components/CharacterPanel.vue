@@ -1,8 +1,13 @@
 <template>
   <div> 
-    <div>{{character.surname+character.givenName}} {{(character.body.survived_month/12).toFixed(1)}}</div>
+    <div class="info">{{character.surname+character.givenName}}({{(character.body.survived_month/12).toFixed(0)}})
+      <div v-if="character.marriaged">⇋{{showSpouse(GameWorld,character.spouse)}}</div>
+    </div>
     <div class="relationships">
-      <div  v-for="(e2,i2) in relationshipShow" :key="i2" >{{showRelationship(GameWorld,e2)}}</div>
+      <div v-for="(e2,i2) in relationshipShow" :key="i2" class="relationship">{{showRelationship(GameWorld,e2)}}</div>
+    </div>
+    <div class="memory">
+      <div v-for="(e,i) in character.memory" :key="i">{{e}}</div>
     </div>
   </div>
 </template>
@@ -21,7 +26,8 @@ export default {
       GameWorld,
       character,
       relationshipShow,
-      showRelationship
+      showRelationship,
+      showSpouse
     }
   },
 }
@@ -31,13 +37,30 @@ function showRelationship(GameWorld,relathionship) {
   return ObjectCharacter.surname+ObjectCharacter.givenName+":"+relathionship.level
 }
 
+function showSpouse(GameWorld,characterId) {
+  const character = GameWorld.getCharacterById(characterId)
+  return character.surname+character.givenName+`(${(character.body.survived_month/12).toFixed(0)})`
+}
+
 </script>
 
 <style lang="less" scoped>
+.info {
+  display: flex;
+}
 .relationships {
   display: flex;
-  justify-content: space-around;
+  text-align: left;
   flex-wrap: wrap;
-  color: #999
+  color: #999;
+  .relationship {
+    margin: 0 2px;
+  }
+}
+.memory {
+  div {
+    font-size: 12px;
+    color: #999;
+  }
 }
 </style>

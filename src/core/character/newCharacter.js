@@ -11,6 +11,8 @@ export function newCharacter( society ) {
   const name = namesArr.pop()
   character.surname = name.surname
   character.givenName = name.givenName
+  //性别跟着名字走（就离谱）
+  character.body.sex = name.sex
   //随机ID
   
   character.characterId = Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0')

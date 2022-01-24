@@ -25,6 +25,7 @@ World.prototype.newGame = function() {
   })
 }
 World.prototype.aMonthGoBy = function() {
+  this.world_month ++ 
   monthSociety(this)
 }
 
