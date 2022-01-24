@@ -10,5 +10,7 @@ const bodyArgs = {
   consititution: 0,
   intelligence: 0,
   appearance: 0,
-  walkAble: false
+  walkAble: false,
+  pregnent: false,
+  pregnent_month: 0
 }

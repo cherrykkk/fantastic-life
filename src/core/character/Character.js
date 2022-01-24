@@ -2,13 +2,19 @@
 角色信息，pc与npc通用
 */
 export function Character(){
-  this.surname = null
-  this.givenName = null
-  this.characterId = null
-  this.marriaged = false
+  Object.assign(this,JSON.parse(JSON.stringify(characterArgs)))
+}
 
-  this.body =  null
-  this.relationships = []
-  this.familyId = null
-  this.events = []
+const characterArgs = {
+  surname: null,
+  givenName: null,
+  characterId: null,
+  marriaged: false,
+  spouse: null,
+  
+  body: null,
+  relationships: [],
+  familyId: null,
+  events: [],
+  childrenId: []
 }

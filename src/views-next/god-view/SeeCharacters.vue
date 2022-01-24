@@ -1,12 +1,13 @@
 <template>
-  <div class="see-characters">
-    <character-panel v-for="(e,i) in characters" :key="i" :data='e'></character-panel>
+  <div>
+    <div> 角色数量{{GameWorld.society.characters.length}}</div>
+    <div> 关系数量{{relationshipNum}}</div>
+    <character-panel v-for="(e,i) in charactersRender" :key="i" :data='e'></character-panel>
   </div>
 </template>
 
 <script>
-import { GAME } from '@/core/apiForView/theGame.js'
-import { inject } from 'vue'
+import { inject, ref, computed } from 'vue'
 import CharacterPanel from './components/CharacterPanel.vue'
 
 export default {
@@ -14,18 +15,25 @@ export default {
     CharacterPanel
   },
   setup() {
-    const game = inject('game').value
-    const characters = game.society.characters
+    const GameWorld = inject('GameWorld').value
+    const charactersRender = computed(()=>{
+      return GameWorld.society.characters.filter(item=>item.body.survived_month >= 12*0)
+    })
+    const relationshipNum = computed(()=>{
+      let num = 0
+      for( const character of GameWorld.society.characters) {
+        num += character.relationships.length
+      }
+      return num
+    })
+    
     return {
-      game,
-      characters,
-      GAME
+      GameWorld,
+      charactersRender,
+      relationshipNum
     }
   }, 
 }
 </script>
 <style lang="less" scoped>
-.see-characters {
-
-}
 </style>

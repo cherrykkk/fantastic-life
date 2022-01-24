@@ -9,6 +9,9 @@ export function monthCharacter(game,character) {
   //婚姻需求
   marriage(game,character)
 
+  //生子
+  giveBirth(game,character)
+
   //事件处理
   eventResolve(game,character)
 }
@@ -44,7 +47,20 @@ function intercourse(game,character,objectCharacter) {
     character.relationships.push(relationship)
   }
 
-  //每月概率性与某一个人疏远
+  //每月概率性与人关系产生变动, 并概率遗忘关系为 0 的人
+  for( const index in character.relationships ) {
+    const relationship = character.relationships[index]
+    // 关系为 0 的可能被遗忘
+    if( relationship.level == 0 && Math.random() > 0.5 ) {
+      character.relationships.splice(index,1)
+      break;
+    } 
+    // 
+    if( Math.random() > 0.5 ) { //关系变动
+      relationship.level += Math.random()>0.5 ? 1 : -1
+    }
+    // 为了避免关系刚发生变动就被遗忘的情况，所以 遗忘 在 变动 之前
+  }
   if( character.relationships.length>0 && Math.random() > 0.5 ) {
     const forgetRelationship = _.sample(character.relationships)
     forgetRelationship.level --
@@ -90,6 +106,24 @@ function eventResolve(game,character) {
     }
   }
 }
+
+function giveBirth(game,character) {
+  if(character.body.sex != '女' || !character.marriaged )  //不满足怀孕条件
+    return 
+  else if ( character.body.pregnent && character.body.pregnent_month < 10 ) { //妊娠中
+    character.body.pregnent_month ++
+  }
+  else if ( character.body.pregnent && character.body.pregnent_month >= 10 ) {  //give birth
+    //give birth
+  }
+  else if( Math.random() > 0.7 ) {  //want to be pregnent
+    character.body.pregnent = true
+  }
+  else { //没怀上
+    //temporary do nothing 
+  }
+}
+
 
 export function getCharacterById(game,characterId) {
   const character = game.society.characters.find( item => {

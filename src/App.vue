@@ -6,24 +6,23 @@
 <script>
 import { ref, reactive, provide } from 'vue'
 import Layout from '@/layout/Index'
-import { GAME } from '@/core/apiForView/theGame.js'
+import World from '@/core/index.js'
 
 export default{
   components:{
     Layout
   },
   setup() {
-    const game = ref(GAME.newGame())
+    const GameWorld = ref(new World()) //这里不用 ref， 则子组件不能监听内部变化 （为什么）
     const globalState = reactive({
       gameLoaded: false
     })
-    game.value.then((_game)=>{
-      game.value = _game
+    GameWorld.value.newGame().then(()=>{
       globalState.gameLoaded = true
     })
 
     provide("globalState",globalState)
-    provide("game",game)
+    provide("GameWorld",GameWorld)
 
     return {
       globalState
