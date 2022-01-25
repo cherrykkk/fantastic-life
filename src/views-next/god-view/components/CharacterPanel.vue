@@ -1,6 +1,6 @@
 <template>
   <div> 
-    <div class="info">{{character.surname+character.givenName}}({{(character.body.survived_month/12).toFixed(0)}})
+    <div class="info">{{character.surname+character.givenName}}({{(character.body.month/12).toFixed(0)}})
       <div v-if="character.marriaged">⇋{{showSpouse(GameWorld,character.spouse)}}</div>
     </div>
     <div class="relationships">
@@ -39,7 +39,7 @@ function showRelationship(GameWorld,relathionship) {
 
 function showSpouse(GameWorld,cId) {
   const character = GameWorld.getCharacterById(cId)
-  return character.surname+character.givenName+`(${(character.body.survived_month/12).toFixed(0)})`
+  return character.surname+character.givenName+`(${(character.body.month/12).toFixed(0)})`
 }
 
 </script>

@@ -7,6 +7,7 @@
     <div class="router-nav">
       <router-link :to="{name:'characters'}">角色信息</router-link>
       <router-link :to="{name:'families'}">成家信息</router-link>
+      <router-link :to="{name:'archives'}">存档信息</router-link>
     </div>
   </div>
   <div class="router-view">

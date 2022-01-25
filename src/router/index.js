@@ -9,7 +9,8 @@ const routes = [
   },{
     path: '/god-view',
     component: ()=> import('@/views-next/god-view/index.vue'),
-    children:[{
+    children:[
+      {
         path: 'characters',
         name: 'characters',
         component: ()=> import('@/views-next/god-view/SeeCharacters.vue')
@@ -17,6 +18,10 @@ const routes = [
         path: 'families',
         name: 'families',
         component: ()=> import('@/views-next/god-view/seeFamily.vue')
+      },{
+        path: 'archives',
+        name: 'archives',
+        component: ()=> import('@/views-next/god-view/seeArchive.vue')
       }
     ]
   }

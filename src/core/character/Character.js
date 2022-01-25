@@ -17,5 +17,12 @@ const characterArgs = {
   familyId: null,
   events: [],
   children: [],
-  memory: []
+  memory: [],
+
+  //大五和能力参数共同影响npc决策
+  BIG_FIVE_Openness: 5, //开放性
+  BIG_FIVE_Conscientiousness: 5, //尽责性
+  BIG_FIVE_Extraversion: 5, //外倾性
+  BIG_FIVE_Agreeableness: 5, //宜人性
+  BIG_FIVE_Neuroticism: 5 //神经质
 }

@@ -46,7 +46,7 @@ export default {
 }
 function showName(GameWorld,cId) {
   const character = GameWorld.getCharacterById(cId)
-  return character.surname+character.givenName+`(${(character.body.survived_month/12).toFixed(0)})`
+  return character.surname+character.givenName+`(${(character.body.month/12).toFixed(0)})`
 }
 
 </script>
@@ -56,6 +56,7 @@ function showName(GameWorld,cId) {
 }
 .children {
   display: flex;
+  flex-wrap: wrap;
   color: #999;
   div {
     margin: 0 2px;

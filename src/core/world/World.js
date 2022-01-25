@@ -1,9 +1,7 @@
 
 import { newSociety } from '../society/newSociety.js'
 import { monthSociety } from '../a-month-go-by/monthSociety.js'
-import defaultCharacter from '@/saveLoad/saveFiles/defaultCharacter.json'
-import { Character } from '@/core/character/Character.js'
-import { newBody } from '@/core/character/body/newBody.js'
+import { createCharacter } from './createObject.js'
 
 function World() {
   this.society = null
@@ -21,8 +19,16 @@ World.prototype.newGame = function() {
     .then((society)=>{
       console.log("society done")
       this.society = society
+
+      //生成初始 npc
+      for(let i = 0;i<10;i++) {
+        const character = this.createCharacter()
+        this.society.characters.push(character)
+      }
+
       resolve()
     })
+
     //初始化主角
     //game.theMainCharacter = new Character()
   })
@@ -59,27 +65,18 @@ World.prototype.getName = function (c) {
   else {
     character = c
   }
-  return character.surname+character.givenName+"("+(character.body.survived_month/12).toFixed(0)+")"
+  return character.surname+character.givenName+"("+(character.body.month/12).toFixed(0)+")"
 }
 
-World.prototype.createCharacter = function () {
-  const { namesArr } = this.society
+World.prototype.makeArchive = function() {
+  //存档 characters 信息
+  const characters = []
 
-  const character = new Character()
-  Object.assign(character,defaultCharacter)
-  character.body = newBody()
-  //起名
-  const name = namesArr.pop()
-  character.surname = name.surname
-  character.givenName = name.givenName
-  //性别跟着名字走（就离谱）
-  character.body.sex = name.sex
-  //随机ID
-  character.cId = Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0')
-  console.log("当前角色ID",character.cId)
-  return character
 
+
+  return JSON.stringify(this)
 }
 
+World.prototype.createCharacter = createCharacter
 
 export { World }

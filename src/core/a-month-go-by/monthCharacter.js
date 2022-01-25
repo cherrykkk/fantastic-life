@@ -70,15 +70,15 @@ function intercourse(game,character,objectCharacter) {
 const marriageAge = 14   
 
 function marriage(GameWorld,character) {
-  if(character.body.survived_month < 12*marriageAge || character.marriaged)  //不满足结婚年龄或者已婚则跳出
+  if(character.body.month < 12*marriageAge || character.marriaged)  //不满足结婚年龄或者已婚则跳出
     return
   //寻找目标：好感等级高的异性，effect:对好感度的要求随年龄变大而降低
-  const effect = (character.body.survived_month - 12*marriageAge)/4
+  const effect = (character.body.month - 12*marriageAge)/4
   for( const relationship of character.relationships) {
     if(relationship.level > 10-effect) {
       const objectCharacter = GameWorld.getCharacterById(relationship.cId)
       if(objectCharacter.body.sex != character.body.sex) {       //异性则求婚
-        character.memory.unshift(`${character.surname+character.givenName+(character.body.survived_month/12).toFixed(0)}岁时向${objectCharacter.surname+objectCharacter.givenName}求婚`)
+        character.memory.unshift(`${character.surname+character.givenName+(character.body.month/12).toFixed(0)}岁时向${objectCharacter.surname+objectCharacter.givenName}求婚`)
         objectCharacter.events.push({
           type: "marriage",
           cId: character.cId
@@ -97,7 +97,7 @@ function resolveEvents(GameWorld,character) {
     if(event.type == 'marriage') {
       const objectCharacter = GameWorld.getCharacterById(event.cId)
       character.memory.unshift(`${GameWorld.getName(character)}被${GameWorld.getName(event.cId)}求婚`)
-      if(character.body.survived_month < 12*marriageAge || character.marriaged)
+      if(character.body.month < 12*marriageAge || character.marriaged)
         return //不满足结婚年龄或者已婚则跳出
       //检定好感度，成功则结婚，不成功则加好感
       const relationship = character.relationships.find(item=>item.cId==event.cId)
@@ -137,7 +137,7 @@ function giveBirth(GameWorld,character) {
     //孩子随父姓
     child.surname = father.surname
   }
-  else if( Math.random() > 0.7 ) {  //want to be pregnent
+  else if( Math.random() > 0.8 ) {  //want to be pregnent
     character.body.pregnent = true
   }
   else { //没怀上

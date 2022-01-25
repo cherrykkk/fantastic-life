@@ -17,7 +17,7 @@ export default {
   setup() {
     const GameWorld = inject('GameWorld').value
     const charactersRender = computed(()=>{
-      return GameWorld.society.characters.filter(item=>item.body.survived_month >= 12*0)
+      return GameWorld.society.characters.filter(item=>item.body.month >= 12*0)
     })
     const relationshipNum = computed(()=>{
       let num = 0
