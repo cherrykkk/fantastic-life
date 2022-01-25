@@ -3,9 +3,10 @@
   <div class="nav-bar">
     <button @click="nextMonth(1)">nextMonth</button>
     <button @click="nextMonth(12)">nextYear</button>
-    <div>上次操作花费时间(ms){{lastOperaterTime}}</div>
-    <div class="nav">
+    <div>上次操作花费时间(ms)<br>{{lastOperaterTime}}</div>
+    <div class="router-nav">
       <router-link :to="{name:'characters'}">角色信息</router-link>
+      <router-link :to="{name:'families'}">成家信息</router-link>
     </div>
   </div>
   <div class="router-view">
@@ -43,6 +44,10 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+}
+.router-nav {
+  display: flex;
+  flex-direction: column;
 }
 .router-view {
   padding-left: 120px;

@@ -10,10 +10,15 @@ const routes = [
     path: '/god-view',
     component: ()=> import('@/views-next/god-view/index.vue'),
     children:[{
-      path:'characters',
-      name: 'characters',
-      component: ()=> import('@/views-next/god-view/SeeCharacters.vue')
-    }]
+        path: 'characters',
+        name: 'characters',
+        component: ()=> import('@/views-next/god-view/SeeCharacters.vue')
+      },{
+        path: 'families',
+        name: 'families',
+        component: ()=> import('@/views-next/god-view/seeFamily.vue')
+      }
+    ]
   }
 ]
 

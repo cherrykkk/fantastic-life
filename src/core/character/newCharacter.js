@@ -14,8 +14,7 @@ export function newCharacter( society ) {
   //性别跟着名字走（就离谱）
   character.body.sex = name.sex
   //随机ID
-  
-  character.characterId = Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0')
-  console.log("当前角色ID",character.characterId)
+  character.cId = Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0')
+  console.log("当前角色ID",character.cId)
   return character
 }

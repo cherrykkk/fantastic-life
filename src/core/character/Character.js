@@ -8,7 +8,7 @@ export function Character(){
 const characterArgs = {
   surname: null,
   givenName: null,
-  characterId: null,
+  cId: null,
   marriaged: false,
   spouse: null,
   
@@ -16,6 +16,6 @@ const characterArgs = {
   relationships: [],
   familyId: null,
   events: [],
-  childrenId: [],
+  children: [],
   memory: []
 }
