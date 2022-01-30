@@ -4,7 +4,7 @@ export function monthCharacter(game,character) {
   monthBody(character)
 
   //交际需求
-  humanIntercourse(game,character)
+  intercourse(game,character)
 
   //婚姻需求
   marriage(game,character)
@@ -16,18 +16,14 @@ export function monthCharacter(game,character) {
   resolveEvents(game,character)
 }
 
-function humanIntercourse(game,character) {
-  //熟人联系感情
-  for( const relationship of character.relationships ) {
-    relationship
+function intercourse(game,character) {
+  //克服内向性
+  if( character.BIG_FIVE_Openness > Math.random()*10 ) {
+    return 
   }
-
   //认识新朋友（不排除偶遇熟人的可能）
   const objectCharacter = _.sample(game.society.characters)
-  intercourse(game,character,objectCharacter)
-}
 
-function intercourse(game,character,objectCharacter) {
   //辨认是否是熟人（以及是否是自己，理解为独处）
   const result = character.relationships.find( item => {
     return item.cId == objectCharacter.cId
