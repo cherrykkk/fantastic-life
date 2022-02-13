@@ -1,29 +1,35 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
-const currentView = "god-view"
+const currentView = "player-view"
 
 const routes = [
   {
     path: '/',
-    component: ()=> currentView=='god-view'? import('@/views-next/god-view/index.vue') : import("@/views-next/player-view/index.vue")
+    component: ()=> currentView=='god-view'? import('@/views/god-view/index.vue') : import("@/views/player-view/index.vue")
   },{
     path: '/god-view',
-    component: ()=> import('@/views-next/god-view/index.vue'),
+    component: ()=> import('@/views/god-view/index.vue'),
     children:[
       {
         path: 'characters',
         name: 'characters',
-        component: ()=> import('@/views-next/god-view/SeeCharacters.vue')
+        component: ()=> import('@/views/god-view/SeeCharacters.vue')
       },{
         path: 'families',
         name: 'families',
-        component: ()=> import('@/views-next/god-view/seeFamily.vue')
+        component: ()=> import('@/views/god-view/seeFamily.vue')
       },{
         path: 'archives',
         name: 'archives',
-        component: ()=> import('@/views-next/god-view/seeArchive.vue')
+        component: ()=> import('@/views/god-view/seeArchive.vue')
       }
     ]
+  },{
+    path: '/game',
+    component: ()=> import('@/views/player-view/game/GatherHerbs.vue')
+  },{
+    path: '/livelihood',
+    component: ()=> import('@/views/player-view/Livelihood.vue')
   }
 ]
 

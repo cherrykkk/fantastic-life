@@ -1,54 +1,64 @@
+import { Character } from "../character/Character"
+import { createBody } from "../world/createObject"
 import { monthBody } from "./monthBody"
+const marriageAge = 14   
 export function monthCharacter(game,character) {
   //身体成长
   monthBody(character)
 
+  //照护自己
+  careBody(game,character)
+
   //交际需求
   intercourse(game,character)
-
-  //婚姻需求
-  marriage(game,character)
 
   //生子
   giveBirth(game,character)
 
   //事件处理
   resolveEvents(game,character)
+  
 }
 
-function intercourse(game,character) {
-  //克服内向性
-  if( character.BIG_FIVE_Openness > Math.random()*10 ) {
+function intercourse(GameWorld,A) {
+  //外向性高的社交频率更高
+  if( A.BIG_FIVE_Openness > Math.random()*10 ) {
     return 
   }
   //认识新朋友（不排除偶遇熟人的可能）
-  const objectCharacter = _.sample(game.society.characters)
+  const B = _.sample(GameWorld.society.characters)
 
   //辨认是否是熟人（以及是否是自己，理解为独处）
-  const result = character.relationships.find( item => {
-    return item.cId == objectCharacter.cId
+  const result = A.relationships.find( item => {
+    return item.cId == B.cId
   })
   if( result ) { // 如果是熟人
-    //const friend = getCharacterById(game,result.cId)
+    GameWorld.addMemory(A,B,"偶遇熟人")
     result.level ++ 
   }
-  else if( character.cId == objectCharacter.cId ) { //如果是自己
+  else if( A.cId == B.cId ) { //如果是自己
     // temporarily do nothing
   }
   else {   //如果不是熟人
-    const relationship = {
-      cId: objectCharacter.cId,
-      level: 1
-    }
-    character.relationships.push(relationship)
+    A.relationships.push({
+      cId: B.cId,
+      level: 5
+    })
+    GameWorld.addMemory(A,B,"一见如故")
+    
+    B.relationships.push({
+      cId: A.cId,
+      level: 5
+    })
+    GameWorld.addMemory(B,A,"一见如故")
   }
 
   //每月概率性与人关系产生变动, 并概率遗忘关系为 0 的人
-  for( const index in character.relationships ) {
-    const relationship = character.relationships[index]
+  for( const index in A.relationships ) {
+    const relationship = A.relationships[index]
     // 关系为 0 的可能被遗忘
     if( relationship.level == 0 && Math.random() > 0.5 ) {
-      character.relationships.splice(index,1)
+      A.relationships.splice(index,1)
       break;
     } 
     // 
@@ -57,65 +67,100 @@ function intercourse(game,character) {
     }
     // 为了避免关系刚发生变动就被遗忘的情况，所以 遗忘 在 变动 之前
   }
-  if( character.relationships.length>0 && Math.random() > 0.5 ) {
-    const forgetRelationship = _.sample(character.relationships)
+  if( A.relationships.length>0 && Math.random() > 0.5 ) {
+    const forgetRelationship = _.sample(A.relationships)
     forgetRelationship.level --
   }
-}
 
-const marriageAge = 14   
-
-function marriage(GameWorld,character) {
-  if(character.body.month < 12*marriageAge || character.marriaged)  //不满足结婚年龄或者已婚则跳出
-    return
-  //寻找目标：好感等级高的异性，effect:对好感度的要求随年龄变大而降低
-  const effect = (character.body.month - 12*marriageAge)/4
-  for( const relationship of character.relationships) {
-    if(relationship.level > 10-effect) {
-      const objectCharacter = GameWorld.getCharacterById(relationship.cId)
-      if(objectCharacter.body.sex != character.body.sex) {       //异性则求婚
-        character.memory.unshift(`${character.surname+character.givenName+(character.body.month/12).toFixed(0)}岁时向${objectCharacter.surname+objectCharacter.givenName}求婚`)
-        objectCharacter.events.push({
-          type: "marriage",
-          cId: character.cId
-        })
-        break; 
+  //婚姻需求
+  if( A.body.month > 12*marriageAge && !A.marriaged && A.buff.indexOf("不自信") < 0 ){
+    //寻找目标：好感等级高的异性，effect:对好感度的要求随年龄变大而降低
+    const effect = (A.body.month - 12*marriageAge)/4
+    for (const relationship of A.relationships) {
+      if (relationship.level > 10-effect) {
+        const B = GameWorld.getCharacterById(relationship.cId)
+        if(B.body.sex != A.body.sex) {       //异性则求婚
+          GameWorld.addMemory(A,B,'求婚')
+          const event = {
+            AType: "求婚",
+            BType: "被求婚",
+            A: A.cId,
+            B: B.cId,
+            status: 'pending',
+            startTime: GameWorld.world_month
+          }
+          A.events.push(event)
+          B.events.push(event)
+          break; 
+        }
       }
+    }
+  }
+
+  //概率性消除 buff
+  for (const i in A.buff) {
+    if (Math.random()>0.8) {
+      A.buff.splice(i,1)
     }
   }
 }
 
-function resolveEvents(GameWorld,character) {
-  for(const index in character.events) {
-    const event = character.events[index]
-    character.events.splice(index,1)
-    //求婚事件
-    if(event.type == 'marriage') {
-      const objectCharacter = GameWorld.getCharacterById(event.cId)
-      character.memory.unshift(`${GameWorld.getName(character)}被${GameWorld.getName(event.cId)}求婚`)
-      if(character.body.month < 12*marriageAge || character.marriaged)
-        return //不满足结婚年龄或者已婚则跳出
-      //检定好感度，成功则结婚，不成功则加好感
-      const relationship = character.relationships.find(item=>item.cId==event.cId)
-      if(relationship && relationship.level > 5 && !objectCharacter.marriaged ) {
-        getMarried(GameWorld,character,objectCharacter)
-        break;
-      }
-      else if( !relationship) { //被求婚者不认识求婚者
-        character.relationships.push({
-          cId: event.cId,
-          level: 1
-        })
+function careBody(GameWorld, character) {
+
+}
+
+function resolveEvents(GameWorld, A) {
+  for( const event of A.events ) {
+    if( event.status == 'pending' && A.cId == event.B ) {
+      const B = GameWorld.getCharacterById(event.A)
+      GameWorld.addMemory(A,B,event.BType)
+      const result = acceptMarriage(A,B)
+      event.status = result.status
+      if( result.status == "fulfilled" ) {
+        GameWorld.addMemory(A,B,"接受求婚")
+        getMarried(GameWorld,A,B)
       }
       else {
-        relationship.level ++ 
+        GameWorld.addMemory(A,B,"拒绝求婚")
       }
     }
-    //未知事件
-    else {
-      console.log("未知事件类型：",event)
+    else if ( event.status == 'resolve' && A.cId == event.A ) {
+      
+    }
+    else if ( event.status == 'reject' && A.cId == event.A ) {
+      const B = GameWorld.getCharacterById(event.B)
+      const re = A.relationships.find( e => e.cId == B.cId )
+      re.level -= 5
+      GameWorld.addMemory(A,B,"求婚被拒")
+      A.buff.push("不自信")
     }
   }
+  // 去除已解决事件
+  A.events = A.events.filter( e => {
+    return e.status == 'pending'
+  })
+}
+
+function acceptMarriage(A,B) { //A 被求婚者，B 求婚者
+  const result = {
+    status: 'pending',
+    reason: null
+  }
+  //检定好感度，成功则结婚，不成功则加好感
+  const relationship = A.relationships.find(item=>item.cId==B.cId)
+  if(A.body.month < 12*marriageAge || A.marriaged) {
+    result.status = 'reject' //不满足结婚年龄或者已婚则跳出 
+    result.reason = "未到婚龄"
+  }
+  else if(relationship && relationship.level > 5 && !B.marriaged ) {
+    result.status = 'fulfilled'
+    result.reason = "两情相悦"
+  }
+  else { //被求婚者不认识求婚者
+    result.status = 'reject'
+    result.reason = "不喜欢"
+  }
+  return result
 }
 
 function giveBirth(GameWorld,character) {

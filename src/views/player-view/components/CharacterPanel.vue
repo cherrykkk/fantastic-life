@@ -3,10 +3,16 @@
     <div class="info">{{character.surname+character.givenName}}({{(character.body.month/12).toFixed(0)}})
       <div v-if="character.marriaged">⇋{{showSpouse(GameWorld,character.spouse)}}</div>
     </div>
+    <div class="skill-board">
+      <div>技能</div>
+      <div v-for="(e,i) in Object.keys(character.skills)" :key="i">{{e}}:{{character.skills[e]}}</div>
+    </div>
     <div class="relationships">
+      <div>人际关系：</div>
       <div v-for="(e2,i2) in relationshipShow" :key="i2" class="relationship">{{showRelationship(GameWorld,e2)}}</div>
     </div>
     <div class="memory">
+      <div>记忆</div>
       <div v-for="(e,i) in character.memory" :key="i">{{e}}</div>
     </div>
   </div>
@@ -19,9 +25,10 @@ export default {
   setup(props) {
     const GameWorld = inject('GameWorld').value
     const character = props.data
-    const relationshipShow = computed(() => {
-      return character.relationships.filter(item=>item.level>=8)
-    })
+    // const relationshipShow = computed(() => {
+    //   return character.relationships.filter(item=>item.level>=8)
+    // })
+    const relationshipShow = character.relationships
     return {
       GameWorld,
       character,
@@ -58,6 +65,8 @@ function showSpouse(GameWorld,cId) {
   }
 }
 .memory {
+  height: 20px;
+  overflow: hidden;
   div {
     font-size: 12px;
     color: #999;

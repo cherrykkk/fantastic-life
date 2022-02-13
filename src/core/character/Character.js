@@ -19,6 +19,13 @@ const characterArgs = {
   children: [],
   memory: [],
 
+  buff: [],
+
+  skills: {
+    herbology: 0,
+    medicine: 0
+  }, //技能，第一个技能是中草药学
+
   //大五和能力参数共同影响npc决策
   BIG_FIVE_Openness: 5, //开放性
   BIG_FIVE_Conscientiousness: 5, //尽责性
