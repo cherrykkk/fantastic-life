@@ -11,6 +11,16 @@ function World() {
   this.world_month = 0
 }
 
+export function loadArchive ( archive ) {
+  const GameWorld = new World() 
+  console.log(archive)
+  GameWorld.society = archive.society
+  GameWorld.natural = archive.natural
+  GameWorld.theMainCharacterId = archive.theMainCharacterId
+  GameWorld.world_month = archive.world_month
+  return GameWorld
+}
+
 World.prototype.newGame = function() {
   return new Promise((resolve,reject)=>{
     //生成自然世界
@@ -122,6 +132,5 @@ World.prototype.parseMemory = function(A,memory) {
     return ev
   }
 }
-
 
 export { World }

@@ -2,41 +2,58 @@
   <div>采药</div>
   <div>当前月份： {{currentMonth}}</div>
   <div>
-    采集目标：{{targetHerb['名称']}}
+    <div>正确率：{{config.currentTries?(config.currentScore/config.currentTries).toFixed(2):0}}/{{config.targetAccuracy}}</div>
+    采集目标：{{config.targetObject['名称']}}
+    <div>目标数量：{{config.currentScore}}/{{config.level}}</div>
   </div>
   <div>
-    <div class="herb" v-for="(e,i) in allHerb" :key="i" @click="gatherHerb(e)">{{seeFeatures(e)}}</div>
+    <div class="herb" v-for="(e,i) in herbData" :key="i" @click="gatherHerb(e)">{{seeFeatures(e)}}</div>
   </div>
   <div>
-    <div @click="showHerbData=!showHerbData">{{showHerbData?'关闭':'查看'}}药典</div>
-    <div class="herbData" v-if="showHerbData">
-      <div v-for="(e,i) in allHerb" :key="i">{{e}}</div>
+    <div @click="config.herbBookIsShowing=!config.herbBookIsShowing">{{config.herbBookIsShowing?'关闭':'查看'}}药典</div>
+    <div class="herbData" v-if="config.herbBookIsShowing">
+      <button @click="config.herbDataPage-=2">上一页</button>
+      <div class="herb-cell" v-for="(e,i) in herbData.slice(config.herbDataPage,config.herbDataPage+2)" :key="i">
+        {{e.名称}} <br>
+        <div v-for="(e2,i2) in Object.keys(e.植物特征)" :key="i2">{{e2}}:{{e.植物特征[e2]}}</div>
+        花期: {{e.花期}} <br>
+        果期: {{e.果期}} <br>
+      </div>
+      <button @click="config.herbDataPage+=2">下一页</button>
     </div>
   </div>
-  <div class="result-board" v-if="gameOver">
+  <div class="result-board" v-if="config.gameIsOver">
     当前采药能力
-    <div>{{you.skills.herbology}}({{levelChange}})</div>
-    <router-link to='/'>确定</router-link>
+    <div>{{you.skills.herbology}}({{config.levelChange}})</div>
+    <router-link to='/player-view'>确定</router-link>
   </div>
 </template>
 
 <script>
-import { inject,ref } from 'vue'
+import { inject, ref, reactive } from 'vue'
 import herbData from './herbs.json'
 export default {
-  data() {
-    return {
-      showingHerb: null,
-      allHerb: herbData,
-      showHerbData: false,
-      levelChange: null,
-    }
-  },
   setup() {
+    const skillName = 'herbology'
     const GameWorld = inject("GameWorld").value
     const you = GameWorld.getCharacterById(GameWorld.theMainCharacterId)
     const currentMonth = GameWorld.world_month%12+1
-    const targetHerb = _.sample(herbData)
+    const config = reactive({
+      level: you.skills[skillName],
+      targetAccuracy: 0.9,
+      currentAccuracy: 0,
+      currentTries: 0,
+      currentScore: 0,
+      targetObject: _.sample(herbData),
+      currentChosenObject: null,
+      gameIsOver: false,
+      levelChange: 0,
+      herbBookIsShowing: false,
+      herbDataPage: 0
+    })
+    const newRound = function() {
+      config.targetObject = _.sample(herbData)
+    }
     const seeFeatures = function(herb) {
       const features = {
         '叶': herb['植物特征']['叶']
@@ -49,37 +66,32 @@ export default {
       }
       return features
     }
-    const gameOver = ref(false)
-    const levelChange = ref(0)
     const gatherHerb = function(herb) {
-      if (herb['名称']==targetHerb['名称']) {
+      config.currentTries += 1
+      if (herb['名称']==config.targetObject['名称']) {
         console.log("采集正确")
-        levelChange.value = 1
+        config.currentScore += 1
       }
       else {
         console.log("采集错误")
-        levelChange.value = -1
       }
-      gameOver.value = true
-      you.skills.herbology += levelChange.value
+      newRound()
+      // 结束游戏？
+      if (config.currentTries >= config.level) {
+        config.gameIsOver = true
+        config.levelChange = config.currentScore/config.currentTries >= config.targetAccuracy ? 1 : -1
+        you.skills.herbology += config.levelChange
+      }
     }
     return {
       GameWorld,
       you,
       currentMonth,
       seeFeatures,
-      targetHerb,
       gatherHerb,
-      levelChange,
-      gameOver
+      config,
+      herbData
     }
-  },
-  created() {
-    this.showingHerb = herbData.filter( e => {
-      return e['花期'].indexOf(this.currentMonth) >= 0
-    })                              
-  },
-  methods: {
   }
 }
 </script>
@@ -95,11 +107,20 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
   margin: 40px;
   padding: 20px;
   background-color: #c8cf9c;
   border: black 1px solid;
   border-radius: 20px;
+  display: flex;
+  .herb-cell {
+    width: 300px;
+  }
+  button {
+    background-color: #c8cf9c;
+    width: 30px;
+  }
 }
 .result-board {
   position: absolute;

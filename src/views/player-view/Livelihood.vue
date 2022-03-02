@@ -6,7 +6,8 @@
     主营生计
   </div>
   <div>
-    <router-link to='/game'>提升草药能力</router-link>
+    <router-link to='/game'>提升草药能力</router-link><br>
+    <router-link to='/game2'>提升御剑能力</router-link>
   </div>
   <div class="skill-list">
     <div class="skill-card" v-for="(e,i) in Object.keys(you.skills)" :key="i">

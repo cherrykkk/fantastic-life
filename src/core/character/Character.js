@@ -23,7 +23,8 @@ const characterArgs = {
 
   skills: {
     herbology: 0,
-    medicine: 0
+    medicine: 0,
+    flySword: 0
   }, //技能，第一个技能是中草药学
 
   //大五和能力参数共同影响npc决策

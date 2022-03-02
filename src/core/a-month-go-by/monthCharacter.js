@@ -1,5 +1,3 @@
-import { Character } from "../character/Character"
-import { createBody } from "../world/createObject"
 import { monthBody } from "./monthBody"
 const marriageAge = 14   
 export function monthCharacter(game,character) {
@@ -130,7 +128,9 @@ function resolveEvents(GameWorld, A) {
     else if ( event.status == 'reject' && A.cId == event.A ) {
       const B = GameWorld.getCharacterById(event.B)
       const re = A.relationships.find( e => e.cId == B.cId )
-      re.level -= 5
+      if( re ) {
+        re.level -= 5
+      }
       GameWorld.addMemory(A,B,"求婚被拒")
       A.buff.push("不自信")
     }
@@ -164,22 +164,28 @@ function acceptMarriage(A,B) { //A 被求婚者，B 求婚者
 }
 
 function giveBirth(GameWorld,character) {
-  if(character.body.sex != '女' || !character.marriaged )  //不满足怀孕条件
-    return 
-  else if ( character.body.pregnent && character.body.pregnent_month < 10 ) { //妊娠中
-    character.body.pregnent_month ++
+  //此时无法怀孕的情况
+  if(
+    character.body.sex != '女' || !character.marriaged  //不满足怀孕条件
+    || character.body.pregnent && character.body.pregnent_month < 10 //妊娠中
+  ) {
+    return
   }
   else if ( character.body.pregnent && character.body.pregnent_month >= 10 ) {  //give birth
     //give birth
     const father = GameWorld.getCharacterById(character.spouse)
-    const child = GameWorld.giveBirth(character)
+    const child = GameWorld.giveBirth(character,father)
     character.body.pregnent = false
     character.body.pregnent_month = 0
+    character.body.pregnent_fetus = null
     //孩子随父姓
     child.surname = father.surname
   }
   else if( Math.random() > 0.8 ) {  //want to be pregnent
     character.body.pregnent = true
+    character.body.pregnent_fetus = {
+      father: character.spouse
+    }
   }
   else { //没怀上
     //temporary do nothing 

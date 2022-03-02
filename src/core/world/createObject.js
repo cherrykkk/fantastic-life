@@ -49,7 +49,7 @@ export function createCharacterByNvWa() { //女娲造人，天生技能
 
   //天生技能
   Object.keys(character.skills).forEach( e => {
-    character.skills[e] = Math.floor(Math.random() * 100)
+    character.skills[e] = Math.floor(Math.random() * 40)
   })
 
 

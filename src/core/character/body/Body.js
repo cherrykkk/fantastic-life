@@ -17,6 +17,7 @@ const bodyArgs = {
 
   pregnent: false,
   pregnent_month: 0,
+  pregnent_fetus: null,
   mother: null, //生物学母亲
   father: null //生物学父亲
 }
