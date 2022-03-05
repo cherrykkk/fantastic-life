@@ -1,12 +1,9 @@
 <template>
   <div class="view">
-    <div>{{you}}
-    </div>
     <character-panel  :data='you'></character-panel>
   </div>
   <div class="button-board">
-    <button class="next-month" @click="saveArchive(GameWorld)">存档</button>
-    <button class="next-month" @click="GameWorld.aMonthGoBy()">次月</button>
+    <button class="next-month" @click="saveArchive(Manager)">存档</button>
   </div>
   <div class="router-board">
     <router-link to='/Livelihood'>能力</router-link>
@@ -23,11 +20,11 @@ export default {
     characterPanel
   },
   setup() {
-    const GameWorld = inject("GameWorld").value
+    const Manager = inject("Manager").value
     const saveArchive = inject('saveArchive')
-    const you = GameWorld.getCharacterById(GameWorld.theMainCharacterId)
+    const you = Manager.you
     return {
-      GameWorld,
+      Manager,
       you,
       saveArchive
     }

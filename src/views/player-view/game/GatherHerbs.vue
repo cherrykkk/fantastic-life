@@ -3,11 +3,15 @@
   <div>当前月份： {{currentMonth}}</div>
   <div>
     <div>正确率：{{config.currentTries?(config.currentScore/config.currentTries).toFixed(2):0}}/{{config.targetAccuracy}}</div>
-    采集目标：{{config.targetObject['名称']}}
+    <div v-if="config.targetObject">采集目标：{{config.targetObject['名称']}}</div>
     <div>目标数量：{{config.currentScore}}/{{config.level}}</div>
   </div>
   <div>
-    <div class="herb" v-for="(e,i) in herbData" :key="i" @click="gatherHerb(e)">{{seeFeatures(e)}}</div>
+    可见草药
+    <div class="herb" v-for="(e,i) in herbData" :key="i" @click="gatherHerb(e)">
+      <!-- {{seeFeatures(e)}} -->
+      <img :src='e.叶子图片编码' />
+    </div>
   </div>
   <div>
     <div @click="config.herbBookIsShowing=!config.herbBookIsShowing">{{config.herbBookIsShowing?'关闭':'查看'}}药典</div>
@@ -35,16 +39,22 @@ import herbData from './herbs.json'
 export default {
   setup() {
     const skillName = 'herbology'
-    const GameWorld = inject("GameWorld").value
-    const you = GameWorld.getCharacterById(GameWorld.theMainCharacterId)
-    const currentMonth = GameWorld.world_month%12+1
+    const Manager = inject("Manager").value
+    const you = Manager.you
+    const currentMonth = Manager.GameWorld.calendar.month
+    const herbData = ref(null)
+    fetch('http://localhost:3000/herbData').then(res=>res.json()).then((res=>{
+      herbData.value = res
+      newRound()
+    }))
+
     const config = reactive({
       level: you.skills[skillName],
       targetAccuracy: 0.9,
       currentAccuracy: 0,
       currentTries: 0,
       currentScore: 0,
-      targetObject: _.sample(herbData),
+      targetObject: null,
       currentChosenObject: null,
       gameIsOver: false,
       levelChange: 0,
@@ -52,7 +62,7 @@ export default {
       herbDataPage: 0
     })
     const newRound = function() {
-      config.targetObject = _.sample(herbData)
+      config.targetObject = _.sample(herbData.value)
     }
     const seeFeatures = function(herb) {
       const features = {
@@ -84,7 +94,7 @@ export default {
       }
     }
     return {
-      GameWorld,
+      Manager,
       you,
       currentMonth,
       seeFeatures,

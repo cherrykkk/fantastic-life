@@ -10,9 +10,9 @@
     <router-link to='/game2'>提升御剑能力</router-link>
   </div>
   <div class="skill-list">
-    <div class="skill-card" v-for="(e,i) in Object.keys(you.skills)" :key="i">
+    <div class="skill-card" v-for="(e,i) in Object.keys(Manager.you.skills)" :key="i">
       <div class="skill-name">{{e}}</div>
-      <div class="skill-level">{{you.skills[e]}}</div>
+      <div class="skill-level">{{Manager.you.skills[e]}}</div>
     </div>
   </div>
 </template>
@@ -20,11 +20,9 @@
 import { inject } from 'vue'
 export default {
   setup() {
-    const GameWorld = inject("GameWorld").value
-    const you = GameWorld.getCharacterById(GameWorld.theMainCharacterId)
+    const Manager = inject("Manager").value
     return {
-      GameWorld,
-      you
+      Manager
     }
   },
 }

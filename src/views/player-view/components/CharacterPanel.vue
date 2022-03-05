@@ -1,7 +1,7 @@
 <template>
   <div> 
     <div class="info">{{character.surname+character.givenName}}({{(character.body.month/12).toFixed(0)}})
-      <div v-if="character.marriaged">⇋{{showSpouse(GameWorld,character.spouse)}}</div>
+      <div v-if="character.marriaged">⇋{{showSpouse(Manager,character.spouse)}}</div>
     </div>
     <div class="skill-board">
       <div>技能</div>
@@ -9,11 +9,7 @@
     </div>
     <div class="relationships">
       <div>人际关系：</div>
-      <div v-for="(e2,i2) in relationshipShow" :key="i2" class="relationship">{{showRelationship(GameWorld,e2)}}</div>
-    </div>
-    <div class="memory">
-      <div>记忆</div>
-      <div v-for="(e,i) in character.memory" :key="i">{{e}}</div>
+      <div v-for="(e2,i2) in relationshipShow" :key="i2" class="relationship">{{showRelationship(Manager,e2)}}</div>
     </div>
   </div>
 </template>
@@ -23,14 +19,14 @@ import { inject, computed } from 'vue'
 export default {
   props: ['data'],
   setup(props) {
-    const GameWorld = inject('GameWorld').value
+    const Manager = inject('Manager').value
     const character = props.data
     // const relationshipShow = computed(() => {
     //   return character.relationships.filter(item=>item.level>=8)
     // })
     const relationshipShow = character.relationships
     return {
-      GameWorld,
+      Manager,
       character,
       relationshipShow,
       showRelationship,
@@ -39,13 +35,13 @@ export default {
   },
 }
 
-function showRelationship(GameWorld,relathionship) {
-  const ObjectCharacter = GameWorld.getCharacterById(relathionship.cId)
+function showRelationship(Manager,relathionship) {
+  const ObjectCharacter = Manager.getCharacterById(relathionship.id)
   return ObjectCharacter.surname+ObjectCharacter.givenName+":"+relathionship.level
 }
 
-function showSpouse(GameWorld,cId) {
-  const character = GameWorld.getCharacterById(cId)
+function showSpouse(Manager,cId) {
+  const character = Manager.getCharacterById(cId)
   return character.surname+character.givenName+`(${(character.body.month/12).toFixed(0)})`
 }
 
