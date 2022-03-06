@@ -43,7 +43,7 @@ export default {
     const you = Manager.you
     const currentMonth = Manager.GameWorld.calendar.month
     const herbData = ref(null)
-    fetch('http://localhost:3000/herbData').then(res=>res.json()).then((res=>{
+    fetch('http://1.12.218.81:3000/herbData').then(res=>res.json()).then((res=>{
       herbData.value = res
       newRound()
     }))

@@ -1,6 +1,9 @@
 <template>
   <div v-if="!globalState.gameLoaded">加载中 </div>
   <layout v-if="globalState.gameLoaded"></layout>
+  <div v-if="globalState.systemMessage" class="system-message">
+    {{globalState.systemMessage}}
+  </div>
 </template>
 
 <script>
@@ -16,7 +19,8 @@ export default{
     const Manager = ref(new GameManager()) //这里不用 ref， 则子组件不能监听内部变化 （为什么）
     const globalState = reactive({
       gameLoaded: true,
-      archiveChosen: false
+      archiveChosen: false,
+      systemMessage: null,
     })
     const router = useRouter()
     //router.push("/menu")
@@ -41,11 +45,19 @@ export default{
       console.log("已存档")
     }
 
+    const showSystemMessage = function (message) {
+      globalState.systemMessage = message
+      setTimeout(()=>{
+        globalState.systemMessage = null
+      },1000)
+    }
+
     provide("globalState",globalState)
     provide("Manager",Manager)
     provide("loadArchive",_loadArchive)
     provide("saveArchive",saveArchive)
     provide("newGame",newGame)
+    provide("showSystemMessage",showSystemMessage)
 
     return {
       globalState
@@ -77,5 +89,13 @@ export default{
 
 #nav a.router-link-exact-active {
   color: #42b983;
+}
+
+.system-message {
+  position: absolute;
+  color: red;
+  border: 1px red solid;
+  border-radius: 2px;
+  padding: 5px;
 }
 </style>
