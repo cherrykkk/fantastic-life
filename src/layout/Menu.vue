@@ -6,7 +6,10 @@
     <div @click="state.openArchive=true">查看存档</div>
   </div>
   <div v-if="state.openArchive" class="archive-board">
-    <div v-for="(e,i) in archiveList" :key="i" @click="loadArchive(e)">{{e.theMainCharacterId}}</div>
+    <div v-for="(e,i) in archiveList" :key="i">
+      {{e}}
+      <button @click="loadArchive(e)">加载</button>
+    </div>
     <div class="button-board">
       <button @click="clearAllLocalStorage">删除所有存档</button>
       <button @click="state.openArchive=false">关闭</button>
@@ -17,15 +20,21 @@
 import { inject, reactive } from 'vue'
 export default {
   setup() {
-    const archive = JSON.parse(localStorage.getItem('archive'))
-    const archiveList = archive?[archive]:[]
+    const archiveList = JSON.parse(localStorage.getItem('archiveList')) || {}
     const state = reactive({
       openArchive: false
     })
     const loadArchive = inject("loadArchive")
     const newGame = inject("newGame")
+    const globalState = inject("globalState")
+    Object.assign(globalState,{
+      gameStart: false,
+      gameLoaded: true,
+      archiveChosen: false,
+      systemMessage: null,
+    })
     const continueGame = function() {
-      loadArchive(archive)
+      loadArchive(archiveList.pop())
     }
     console.log(archiveList)
     const clearAllLocalStorage = function() {

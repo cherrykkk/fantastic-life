@@ -34,12 +34,16 @@ const characterArgs = {
   children: [],
   memory: [],
 
+  adult_living: null,
+
   buff: [],
 
   skills: {
     herbology: 0,
     medicine: 0,
-    flySword: 0
+    flySword: 0,
+    management: 0,
+    farm: 0
   }, //技能，第一个技能是中草药学
 
   //大五和能力参数共同影响npc决策

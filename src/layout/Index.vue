@@ -1,43 +1,32 @@
 <template>
   <div class="layout">
+    <div v-if="Manager.GameWorld">
+      {{Manager.GameWorld.calendar.year}}年
+      {{Manager.GameWorld.calendar.month}}月
+      {{Manager.GameWorld.calendar.date}}日</div>
     <router-view/>
-    <!-- <buttons-desk class="buttons-desk"></buttons-desk> -->
+    <div class="button-board" v-if="Manager.GameWorld">
+      <div @click="saveArchive(Manager)">存档</div>
+      <div @click="toUrl('/player-view')">个人</div>
+      <div @click="toUrl('/Livelihood')">能力</div>
+      <div @click="toUrl('/memory')">记忆</div>
+      <div @click="toUrl('/relationship')">社交</div>
+    </div>
   </div>
 </template>
 
 <script>
-import { onBeforeMount,onMounted,provide,reactive,ref,watch,watchEffect } from 'vue'
-import ButtonsDesk from './ButtonsDesk.vue'
+import { inject } from 'vue'
 export default {
   name: 'Layout',
-  components: {
-    ButtonsDesk
-  },
   setup(){
-    const resizeArgs = reactive({
-      bodyWidth:0,
-      usableWidth:0,
-      mobile:false,
-      safeWidth:1190
-    })
-    const currentLife = ref(null)
-    const setCurrentLife = (life)=>{
-      currentLife.value = life
-    }
-    provide('getCurrentLife',()=>currentLife.value)
-    provide('setCurrentLife',setCurrentLife)
-    provide('resizeSymbol',resizeArgs)
-    onBeforeMount(()=>{
-      window.addEventListener('resize', resize)
-      resize()
-    })
-    onMounted(()=>{
-      console.log("mounted")
-    })
-    let resize = ()=>{
-      resizeArgs.bodyWidth = document.body.clientWidth
-      resizeArgs.usableWidth = (resizeArgs.bodyWidth>resizeArgs.safeWidth)? resizeArgs.safeWidth : resizeArgs.bodyWidth
-      resizeArgs.mobile = resizeArgs.bodyWidth < 600
+    const Manager = inject("Manager").value
+    const saveArchive = inject('saveArchive')
+    const toUrl = inject('toUrl')
+    return {
+      Manager,
+      saveArchive,
+      toUrl
     }
   }
 }
@@ -54,6 +43,30 @@ export default {
   .buttons-desk {
     position: fixed;
     bottom: 0;
+  }
+}
+
+.button-board {
+  position: fixed;
+  bottom: 5px;
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-around;
+  div {
+    border: 1px blue solid;
+    border-radius: 50%;
+    padding: 10px;
+    background-color: white;
+    height: 50px;
+    width: 50px;
+    line-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    a {
+      text-decoration: none;
+    }
   }
 }
 </style>

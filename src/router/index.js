@@ -9,11 +9,11 @@ const routes = [
   // },
   {
     path: '/',
-    component: ()=> import('@/views/player-view/Menu.vue')
+    component: ()=> import('@/layout/Menu.vue')
   },{
     path: '/god-view',
     component: ()=> import('@/views/god-view/index.vue'),
-    children:[
+    children: [
       {
         path: 'characters',
         name: 'characters',
@@ -45,7 +45,7 @@ const routes = [
     component: ()=> import('@/views/player-view/Memory.vue')
   },{
     path: '/menu',
-    component: ()=> import('@/views/player-view/Menu.vue')
+    component: ()=> import('@/layout/Menu.vue')
   },{
     path: '/errorpage',
     component: ()=> import('@/views/player-view/ErrorPage.vue')

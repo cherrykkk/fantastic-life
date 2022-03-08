@@ -1,14 +1,9 @@
 <template>
   <div class="view">
-    <character-panel  :data='you'></character-panel>
-  </div>
-  <div class="button-board">
-    <button class="next-month" @click="saveArchive(Manager)">存档</button>
-  </div>
-  <div class="router-board">
-    <router-link to='/Livelihood'>能力</router-link>
-    <router-link to='/memory'>记忆</router-link>
-    <router-link to='/relationship'>人际关系</router-link>
+    姓名: {{you.surname+you.givenName}}
+    年龄: {{(you.body.month/12).toFixed(0)}}
+    <button v-if="!Manager.playing" @click="Manager.play()">继续生活</button>
+    <button v-if="Manager.playing" @click="Manager.stop()">暂停</button>
   </div>
 </template>
 
@@ -21,12 +16,11 @@ export default {
   },
   setup() {
     const Manager = inject("Manager").value
-    const saveArchive = inject('saveArchive')
+    Manager.play()
     const you = Manager.you
     return {
       Manager,
-      you,
-      saveArchive
+      you
     }
   },
 }
@@ -36,21 +30,5 @@ export default {
 <style lang="less" scoped>
 .view {
   margin: 40px 0;
-}
-.button-board {
-  position: fixed;
-  bottom: 20px;
-  cursor: pointer;
-}
-.router-board {
-  position: fixed;
-  bottom: 100px;
-  cursor: pointer;
-  a {
-    border: 1px blue solid;
-    border-radius: 5px;
-    padding: 10px;
-    background-color: white;
-  }
 }
 </style>

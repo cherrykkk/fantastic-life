@@ -1,18 +1,16 @@
 <template>
   <div>采药</div>
-  <div>当前月份： {{currentMonth}}</div>
   <div>
     <div>正确率：{{config.currentTries?(config.currentScore/config.currentTries).toFixed(2):0}}/{{config.targetAccuracy}}</div>
     <div v-if="config.targetObject">采集目标：{{config.targetObject['名称']}}</div>
     <div>目标数量：{{config.currentScore}}/{{config.level}}</div>
   </div>
-  <div>
-    可见草药
-    <div class="herb" v-for="(e,i) in herbData" :key="i" @click="gatherHerb(e)">
-      <!-- {{seeFeatures(e)}} -->
+  <div class="plant-area">
+    <div class="plant" v-for="(e,i) in herbData" :key="i" @click="gatherHerb(e)" :style="{top:herbPosition[i].top+'px',left:herbPosition[i].left+'px'}">
       <img :src='e.叶子图片编码' />
     </div>
   </div>
+  <button @click="refreshPosition()">拨弄一下</button>
   <div>
     <div @click="config.herbBookIsShowing=!config.herbBookIsShowing">{{config.herbBookIsShowing?'关闭':'查看'}}药典</div>
     <div class="herbData" v-if="config.herbBookIsShowing">
@@ -35,11 +33,11 @@
 
 <script>
 import { inject, ref, reactive } from 'vue'
-import herbData from './herbs.json'
 export default {
   setup() {
     const skillName = 'herbology'
     const Manager = inject("Manager").value
+    Manager.stop()
     const you = Manager.you
     const currentMonth = Manager.GameWorld.calendar.month
     const herbData = ref(null)
@@ -47,7 +45,7 @@ export default {
       herbData.value = res
       newRound()
     }))
-
+    const herbPosition = ref(null)
     const config = reactive({
       level: you.skills[skillName],
       targetAccuracy: 0.9,
@@ -63,6 +61,7 @@ export default {
     })
     const newRound = function() {
       config.targetObject = _.sample(herbData.value)
+      refreshPosition()
     }
     const seeFeatures = function(herb) {
       const features = {
@@ -93,26 +92,43 @@ export default {
         you.skills.herbology += config.levelChange
       }
     }
+    const refreshPosition = ()=>{
+      const { innerHeight, innerWidth } = window
+      herbPosition.value = []
+      herbData.value.forEach( e => {
+        herbPosition.value.push({
+          left: Math.random()*(innerWidth-100), //图片宽高100
+          //top: Math.random()*(innerHeight-100-300)
+          top: Math.random()*(400-100)
+        })
+      });
+    }
     return {
       Manager,
       you,
-      currentMonth,
       seeFeatures,
       gatherHerb,
       config,
-      herbData
+      herbData,
+      herbPosition,
+      refreshPosition
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.herb {
-  padding: 10px;
-  margin: 10px;
-  border-radius: 5px;
-  border: 2px solid green;
+.plant-area {
+  position: relative;
+  height: 400px;
+  .plant {
+    position: absolute;
+    border-radius: 50%;
+    overflow: hidden;
+    line-height: 0; //img 为行内元素，底下会有一道空白
+  }
 }
+
 .herbData {
   position: absolute;
   top: 0;

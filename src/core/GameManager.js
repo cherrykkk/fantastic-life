@@ -5,7 +5,8 @@ import { Character } from './world/character/Character.js'
 function GameManager () {
   this.GameWorld = null
   this.you = null
-  this.namesArr = []
+  this.namesArr = [],
+  this.playing = false
   this.namesArrReady = new Promise((resolve)=>{
     fetch(`../api/getRandom_npc.php?times=999`)
     .then( res=> res.json() )
@@ -33,7 +34,8 @@ GameManager.prototype.newGame = function() {
   const config = {
     startNum: 10,
     yearsBeforeBorn: 20,
-    nvWaYears: 10
+    nvWaYears: 10,
+    toAge: 16
   }
   this.GameWorld = {
     society: {
@@ -69,6 +71,12 @@ GameManager.prototype.newGame = function() {
       }
       this.you = GameWorld.society.characters[GameWorld.society.characters.length-1]
       GameWorld.theMainCharacterId = this.you.cId
+      //到达指定年龄
+
+      while (this.you.body.month < config.toAge*12) {
+        this.aDayGoBy()
+      }
+
       this.play()
       resolve()
     })
@@ -77,13 +85,15 @@ GameManager.prototype.newGame = function() {
 
 GameManager.prototype.play = function () {
   this.stop() //避免重复 play
+  this.playing = true
   this.clock = setInterval(()=>{
     this.aDayGoBy()
-    console.log(this.GameWorld.calendar.date)
+    this.playing = true
   },1000)
 }
 GameManager.prototype.stop = function () {
   clearInterval(this.clock)
+  this.playing = false
 }
 
 GameManager.prototype.aDayGoBy = function() {
@@ -147,7 +157,14 @@ GameManager.prototype.getName = function (c) {
 }
 
 GameManager.prototype.makeArchive = function() {
-  return JSON.stringify(this.GameWorld)
+  const archive = {
+    time: new Date(),
+    gameTime: this.GameWorld.calendar,
+    GameWorld: this.GameWorld,
+    name: this.you.surname+this.you.givenName,
+    age: (this.you.body.month/12).toFixed(0)
+  }
+  return archive
 }
 
 GameManager.prototype.addMemory = function(A,B,eventName) {
