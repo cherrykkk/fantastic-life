@@ -52,6 +52,9 @@ const routes = [
   },{
     path: '/relationship',
     component: ()=> import('@/views/player-view/Relationship.vue')
+  },{
+    path: '/setting',
+    component: ()=> import('@/layout/Setting.vue')
   }
 ]
 

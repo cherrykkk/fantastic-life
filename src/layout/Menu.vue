@@ -47,7 +47,8 @@ export default {
       loadArchive,
       newGame,
       continueGame,
-      clearAllLocalStorage
+      clearAllLocalStorage,
+      globalState
     }
   },
 }

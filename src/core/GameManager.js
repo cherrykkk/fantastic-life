@@ -1,12 +1,16 @@
 import { daySociety, monthSociety, yearSociety } from './time-run/society.js'
 import SocietySetting from '../DLC/generalWorld/societySetting.json'
 import { Character } from './world/character/Character.js'
+import { _ } from 'core-js'
 
 function GameManager () {
   this.GameWorld = null
   this.you = null
   this.namesArr = [],
   this.playing = false
+  this.config = {
+    "游戏速度": 3
+  }
   this.namesArrReady = new Promise((resolve)=>{
     fetch(`../api/getRandom_npc.php?times=999`)
     .then( res=> res.json() )
@@ -86,14 +90,20 @@ GameManager.prototype.newGame = function() {
 GameManager.prototype.play = function () {
   this.stop() //避免重复 play
   this.playing = true
+  const speed = 1000/this.config.游戏速度
   this.clock = setInterval(()=>{
     this.aDayGoBy()
     this.playing = true
-  },1000)
+  },speed)
 }
 GameManager.prototype.stop = function () {
   clearInterval(this.clock)
   this.playing = false
+}
+
+GameManager.prototype.saveChange = function (config) {
+  Object.assign(this.config, config)
+  this.play()
 }
 
 GameManager.prototype.aDayGoBy = function() {
@@ -194,6 +204,17 @@ GameManager.prototype.parseMemory = function(A,memory) {
   }
 }
 
+const availableAppearance = {
+  "back-hair": "1,2,3".split(","),
+  face: "1,2,3".split(","),
+  eyebrow: "1,2,3".split(","),
+  eye: "1,2,3,4".split(","),
+  ear: [1],
+  mouth: "1,2,3".split(","),
+  "front-hair": "1,2,3,4,5,6,7".split(","),
+  "neck": [1]
+}
+
 
 GameManager.prototype.createCharacter = function() {
   const { namesArr } = this.GameWorld.society
@@ -209,6 +230,11 @@ GameManager.prototype.createCharacter = function() {
   character.cId = Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0')
   //性格(大五)随机
   const theBigFive = ['Openness','Conscientiousness','Extraversion','Agreeableness','Neuroticism']
+  //长相
+  for (const key in availableAppearance) {
+    character.body.appearance[key] = _.sample(availableAppearance[key])
+  }
+
   for( const e of theBigFive) {
     character[`BIG_FIVE_${e}`] = Math.round(Math.random()*10)
   }
@@ -231,11 +257,23 @@ GameManager.prototype.createCharacterByNvWa = function() { //女娲造人，天�
   for( const e of theBigFive) {
     character[`BIG_FIVE_${e}`] = Math.round(Math.random()*10)
   }
+  //长相
+  for (const key in availableAppearance) {
+    character.body.appearance[key] = _.sample(availableAppearance[key])
+  }
 
   //天生技能
   Object.keys(character.skills).forEach( e => {
     character.skills[e] = Math.floor(Math.random() * 40)
   })
+  //分房子
+  const house = {
+    id: Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0'),
+    type: 'house',
+    size: 30 + (Math.random()*100).toFixed(0),
+    quality: 20 + (Math.random()*80).toFixed(0)
+  }
+  character.estate.push(house)
 
   return character
 }

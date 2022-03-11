@@ -11,7 +11,7 @@
     </div>
   </div>
   <button @click="refreshPosition()">拨弄一下</button>
-  <div>
+  <!-- <div>
     <div @click="config.herbBookIsShowing=!config.herbBookIsShowing">{{config.herbBookIsShowing?'关闭':'查看'}}药典</div>
     <div class="herbData" v-if="config.herbBookIsShowing">
       <button @click="config.herbDataPage-=2">上一页</button>
@@ -23,11 +23,11 @@
       </div>
       <button @click="config.herbDataPage+=2">下一页</button>
     </div>
-  </div>
+  </div> -->
   <div class="result-board" v-if="config.gameIsOver">
     当前采药能力
     <div>{{you.skills.herbology}}({{config.levelChange}})</div>
-    <router-link to='/player-view'>确定</router-link>
+    <div @click="toUrl('/player-view')">确定</div>
   </div>
 </template>
 
@@ -111,7 +111,8 @@ export default {
       config,
       herbData,
       herbPosition,
-      refreshPosition
+      refreshPosition,
+      toUrl: inject("toUrl")
     }
   }
 }

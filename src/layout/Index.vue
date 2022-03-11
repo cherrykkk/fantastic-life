@@ -6,6 +6,7 @@
       {{Manager.GameWorld.calendar.date}}日</div>
     <router-view/>
     <div class="button-board" v-if="Manager.GameWorld">
+      <div @click="toUrl('/setting')">设置</div>
       <div @click="saveArchive(Manager)">存档</div>
       <div @click="toUrl('/player-view')">个人</div>
       <div @click="toUrl('/Livelihood')">能力</div>
@@ -54,12 +55,12 @@ export default {
   display: flex;
   justify-content: space-around;
   div {
-    border: 1px blue solid;
+    border: 1px grey solid;
     border-radius: 50%;
     padding: 10px;
     background-color: white;
-    height: 50px;
-    width: 50px;
+    height: 20px;
+    width: 40px;
     line-height: 30px;
     display: flex;
     align-items: center;

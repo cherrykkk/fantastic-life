@@ -4,7 +4,7 @@
     <div class="level">当前水平
       <div>{{Manager.you.skills[chosen[0]]}}</div>
     </div>
-    <router-link :to="chosen[2]" v-if="chosen[2]">进修</router-link>
+    <div @click="toUrl(chosen[2])">前去进修</div>
   </div>
   <div class="skill-list">
     <div :class='{"skill-card":1,"chosen-skill-card":chosen[0]==e[0]}' v-for="(e,i) in list" :key="i" @click="chosen=e">
@@ -17,18 +17,16 @@
 import { inject, ref } from 'vue'
 export default {
   setup() {
-    const Manager = inject("Manager").value
     const list = [
       ['herbology','草药学','/game'],
       ['flySword','御剑','/game2'],
       ['medicine','医术','']
     ]
-    const showSystemMessage = inject("showSystemMessage")
-    const chosen = ref(list[0])
     return {
-      Manager,
+      Manager: inject("Manager").value,
       list,
-      chosen
+      chosen: ref(list[0]),
+      toUrl: inject('toUrl')
     }
   },
 }

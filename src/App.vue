@@ -24,14 +24,16 @@ export default{
       systemMessage: null,
     })
     const router = useRouter()
-    router.push("/menu")
+    router.replace("/menu")
 
     const newGame = function () {
       globalState.gameLoaded = false
-      Manager.value.newGame().then(()=>{
-        globalState.gameLoaded = true
-        router.replace("/player-view")
-      })
+      setTimeout(()=>{
+          Manager.value.newGame().then(()=>{
+          globalState.gameLoaded = true
+          router.replace("/player-view")
+        })
+      },0) //异步，使 js 引擎处理完了 vue 的视图变化再运行游戏内的计算，避免出现 '卡死' 现象
     }
     const _loadArchive = function (archiveName) {
       console.log("正在加载存档")
@@ -43,8 +45,8 @@ export default{
     function saveArchive () {
       const archive = Manager.value.makeArchive()
       const archiveList = JSON.parse(localStorage.getItem('archiveList')) || []
-      
-      if (archiveList.indexOf(archive.name)>=0)
+      const i = archiveList.indexOf(archive.name)
+      if (i>=0)
         archiveList.splice(i,1)
       archiveList.push(archive.name)
 

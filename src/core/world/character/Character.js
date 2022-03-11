@@ -19,8 +19,17 @@ const characterArgs = {
     healthy: 100,
     consititution: 0,
     intelligence: 0,
-    appearance: 0,
-    
+    appearance: { //顺序牵涉图层上下关系，不可乱动
+      "back-hair": 0,
+      "neck": 0,
+      face: 0,
+      eyebrow: 0,
+      eye: 0,
+      ear: 0,
+      mouth: 0,
+      "front-hair": 0,
+    },
+
     walkAble: false,
   
     pregnent: false,
@@ -33,6 +42,8 @@ const characterArgs = {
   events: [],
   children: [],
   memory: [],
+
+  estate: [], //房产
 
   adult_living: null,
 
