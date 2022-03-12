@@ -51,10 +51,10 @@ export default {
   position: fixed;
   bottom: 5px;
   width: 100%;
-  cursor: pointer;
   display: flex;
   justify-content: space-around;
   div {
+    cursor: pointer;
     border: 1px grey solid;
     border-radius: 50%;
     padding: 10px;
@@ -65,9 +65,6 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    a {
-      text-decoration: none;
-    }
   }
 }
 </style>

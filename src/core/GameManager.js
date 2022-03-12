@@ -205,14 +205,15 @@ GameManager.prototype.parseMemory = function(A,memory) {
 }
 
 const availableAppearance = {
-  "back-hair": "1,2,3".split(","),
-  face: "1,2,3".split(","),
-  eyebrow: "1,2,3".split(","),
-  eye: "1,2,3,4".split(","),
-  ear: [1],
-  mouth: "1,2,3".split(","),
-  "front-hair": "1,2,3,4,5,6,7".split(","),
-  "neck": [1]
+  "back-hair": [1,2,3,4,5],
+  face: [1,2,3],
+  eyebrow: [1,2,3,4],
+  eye: [1,2,3,4,5,6],
+  ear: [1,2],
+  mouth: [1,2,3,4],
+  "front-hair": [1,2,3,4,5,6,7,8],
+  neck: [1,2,3],
+  "skin-color": ['#feeecd','#fff2e2','#c3816b','#fffdcd','#fff2e9']
 }
 
 

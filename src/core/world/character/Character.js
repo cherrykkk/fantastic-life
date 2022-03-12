@@ -19,7 +19,7 @@ const characterArgs = {
     healthy: 100,
     consititution: 0,
     intelligence: 0,
-    appearance: { //顺序牵涉图层上下关系，不可乱动
+    appearance: { //顺序有展示层管理，这里无所谓了
       "back-hair": 0,
       "neck": 0,
       face: 0,

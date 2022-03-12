@@ -4,7 +4,7 @@
     年龄: {{(you.body.month/12).toFixed(0)}}
     <button v-if="!Manager.playing" @click="Manager.play()">继续生活</button>
     <button v-if="Manager.playing" @click="Manager.stop()">暂停</button>
-    <character-avater :character="you"></character-avater>
+    <character-avater :character="you" class="avater"></character-avater>
   </div>
 </template>
 
@@ -31,5 +31,9 @@ export default {
 <style lang="less" scoped>
 .view {
   margin: 40px 0;
+  .avater {
+    height: 100px;
+    width: 100px;
+  }
 }
 </style>
