@@ -53,8 +53,11 @@ const routes = [
     path: '/relationship',
     component: ()=> import('@/views/player-view/Relationship.vue')
   },{
-    path: '/setting',
-    component: ()=> import('@/layout/Setting.vue')
+    path: '/SettingBeforeGame',
+    component: ()=> import('@/layout/SettingBeforeGame.vue')
+  },{
+    path: '/SettingInGame',
+    component: ()=> import('@/layout/SettingInGame.vue')
   }
 ]
 

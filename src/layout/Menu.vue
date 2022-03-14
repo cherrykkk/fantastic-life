@@ -2,7 +2,7 @@
   <div class="title">三千小世界</div>
   <div class="menu-list">
     <div @click="continueGame()" v-if="archiveList.length > 0">继续游戏</div>
-    <div @click="newGame()">新游戏</div>
+    <div @click="checkArgs()">新游戏</div>
     <div @click="state.openArchive=true">查看存档</div>
   </div>
   <div v-if="state.openArchive" class="archive-board">
@@ -25,7 +25,9 @@ export default {
       openArchive: false
     })
     const loadArchive = inject("loadArchive")
-    const newGame = inject("newGame")
+    const checkArgs = ()=>{
+      globalState.maskLayer = true
+    }
     const globalState = inject("globalState")
     Object.assign(globalState,{
       gameStart: false,
@@ -45,10 +47,10 @@ export default {
       state,
       archiveList,
       loadArchive,
-      newGame,
       continueGame,
       clearAllLocalStorage,
-      globalState
+      globalState,
+      checkArgs
     }
   },
 }

@@ -30,17 +30,18 @@ function GameManager () {
 
 GameManager.prototype.loadArchive = function (archive) {
   this.GameWorld = archive
+  //把关系里的 buff 改为 Set 格式
+  this.GameWorld.society.characters.forEach( c=>{
+    c.relationships.forEach(re=>{
+      re.buff = new Set(re.buff)
+    })
+  })
+
   this.you = this.getCharacterById(this.GameWorld.theMainCharacterId)
   this.play()
 }
 
-GameManager.prototype.newGame = function() {
-  const config = {
-    startNum: 10,
-    yearsBeforeBorn: 20,
-    nvWaYears: 10,
-    toAge: 16
-  }
+GameManager.prototype.newGame = function(config) {
   this.GameWorld = {
     society: {
       yourLife:null,
@@ -54,35 +55,41 @@ GameManager.prototype.newGame = function() {
       year: 0,
       month: 0,
       date: 0
+    },
+    config: {
+      startNum: config.世界创建之初的NPC个数,
+      yearsBeforeBorn: config.出生前世界运行年份,
+      nvWaYears: config.女娲造人持续年份,
+      toAge: config.出生后直接跳到年龄
     }
   }
+  const { startNum, yearsBeforeBorn, nvWaYears, toAge } = this.GameWorld.config
   return new Promise((resolve)=>{
     const GameWorld = this.GameWorld
     this.namesArrReady.then(()=>{
       //生成初始 npc
-      for (let i = 0;i<config.startNum;i++) {
+      for (let i = 0;i<startNum;i++) {
         const character = this.createCharacterByNvWa()
         GameWorld.society.characters.push(character)
       }
 
-      for (let i = 0;i<config.yearsBeforeBorn*12*30;i++) {
-        this.aDayGoBy()
-          //前n年每月多一个人
-        if (this.world_month < config.nvWaYears*12 ) {
-          const character = this.createCharacterByNvWa()
-          GameWorld.society.characters.push(character)
-        }
-      }
-      this.you = GameWorld.society.characters[GameWorld.society.characters.length-1]
-      GameWorld.theMainCharacterId = this.you.cId
-      //到达指定年龄
+      for (let i = 0;i<=(yearsBeforeBorn+toAge)*12*30;i++) {
+        setTimeout(()=>{ //设为宏任务，避免阻塞UI渲染
+          this.aDayGoBy()
 
-      while (this.you.body.month < config.toAge*12) {
-        this.aDayGoBy()
-      }
+          //此时出生的就是主角你
+          if (!this.you && this.GameWorld.calendar.year == yearsBeforeBorn) {
+            this.you = GameWorld.society.characters[GameWorld.society.characters.length-1]
+            GameWorld.theMainCharacterId = this.you.cId  
+            console.log(this.you)
+          }
 
-      this.play()
-      resolve()
+          if (this.you && this.you.body.month == toAge*12 -1) {
+            this.play()
+            resolve()
+          }
+        },0)
+      }
     })
   })
 }
@@ -133,16 +140,6 @@ GameManager.prototype.giveBirth = function ( mother, father ) {
     father.children.push(child.cId)
     child.body.father = father.cId
   }
-  //绑定社会关系
-  child.relationships.push({
-    type: "母亲",
-    level: 30,
-    id: mother.cId
-  },{
-    type: "父亲",
-    level: 30,
-    id: father.cId
-  })
   return child
 }
 
@@ -167,14 +164,30 @@ GameManager.prototype.getName = function (c) {
 }
 
 GameManager.prototype.makeArchive = function() {
-  const archive = {
+
+  //把关系里的 buff 格式由 set 改为 array 格式，因为 set 不能被  json.stringify 转化
+  this.GameWorld.society.characters.forEach( c=>{
+    c.relationships.forEach(re=>{
+      re.buff = Array.from(re.buff)
+    })
+  })
+
+  const worldArchive = JSON.parse(JSON.stringify(this.GameWorld))
+
+  //转回来, 程序还要继续用 set 格式的
+  this.GameWorld.society.characters.forEach( c=>{
+    c.relationships.forEach(re=>{
+      re.buff = new Set(re.buff)
+    })
+  })
+
+  return {
     time: new Date(),
     gameTime: this.GameWorld.calendar,
-    GameWorld: this.GameWorld,
+    GameWorld: worldArchive,
     name: this.you.surname+this.you.givenName,
     age: (this.you.body.month/12).toFixed(0)
   }
-  return archive
 }
 
 GameManager.prototype.addMemory = function(A,B,eventName) {
@@ -217,12 +230,9 @@ const availableAppearance = {
 }
 
 
-GameManager.prototype.createCharacter = function() {
-  const { namesArr } = this.GameWorld.society
-
+function createCharacter(name) {
   const character = new Character()
   //起名
-  const name = namesArr.pop()
   character.surname = name.surname
   character.givenName = name.givenName
   //性别跟着名字走（就离谱）
@@ -231,37 +241,27 @@ GameManager.prototype.createCharacter = function() {
   character.cId = Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0')
   //性格(大五)随机
   const theBigFive = ['Openness','Conscientiousness','Extraversion','Agreeableness','Neuroticism']
+  for( const e of theBigFive) {
+    character[`BIG_FIVE_${e}`] = Math.round(Math.random()*10)
+  }
   //长相
   for (const key in availableAppearance) {
     character.body.appearance[key] = _.sample(availableAppearance[key])
   }
+  //魅力
+  character.charm = Math.round(Math.random()*10)
+  return character
+}
 
-  for( const e of theBigFive) {
-    character[`BIG_FIVE_${e}`] = Math.round(Math.random()*10)
-  }
+GameManager.prototype.createCharacter = function() {
+  const name = this.GameWorld.society.namesArr.pop()
+  const character = createCharacter(name)
   return character
 }
 
 GameManager.prototype.createCharacterByNvWa = function() { //女娲造人，天生技能
-  const { namesArr } = this.GameWorld.society
-  const character = new Character()
-  //起名
-  const name = namesArr.pop()
-  character.surname = name.surname
-  character.givenName = name.givenName
-  //性别跟着名字走（就离谱）
-  character.body.sex = name.sex
-  //随机ID
-  character.cId = Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0')
-  //性格(大五)随机
-  const theBigFive = ['Openness','Conscientiousness','Extraversion','Agreeableness','Neuroticism']
-  for( const e of theBigFive) {
-    character[`BIG_FIVE_${e}`] = Math.round(Math.random()*10)
-  }
-  //长相
-  for (const key in availableAppearance) {
-    character.body.appearance[key] = _.sample(availableAppearance[key])
-  }
+  const name = this.GameWorld.society.namesArr.pop()
+  const character = createCharacter(name)
 
   //天生技能
   Object.keys(character.skills).forEach( e => {
@@ -277,6 +277,61 @@ GameManager.prototype.createCharacterByNvWa = function() { //女娲造人，天�
   character.estate.push(house)
 
   return character
+}
+
+const Events =[
+  {
+    name: "一见钟情",
+    before: ["陌生人"],
+    after: "追求者",
+    "对方颜值": [7,10],
+    "本人外向": [5,10],
+    "随机度": [0.7,1],
+  },
+  {
+    name: "一见钟情",
+    before: ["陌生人"],
+    after: "暗恋者",
+    "对方颜值": [7,10],
+    "本人外向": [0,5],
+    "随机度": [0.7,1],
+  },
+  {
+    name: "日久生情",
+    before: "朋友，青梅竹马，同学，邻居".split("，"),
+    after: "追求者",
+    "对方颜值": [7,10],
+    "本人外向": [5,10],
+    "随机度": [0.7,1],
+  },
+  {
+    name: "一见钟情",
+    before: ["暗恋者"],
+    after: "追求者",
+    "对方颜值": [7,10],
+    "本人外向": [0,5],
+    "随机度": [0.7,1],
+  }, 
+  {
+    name: "日久生情",
+    before: "朋友，青梅竹马，同学，邻居".split("，"),
+    after: "追求者",
+    "对方颜值": [7,10],
+    "本人外向": [5,10],
+    "随机度": [0.7,1],
+  },
+  {
+    name: "一见钟情",
+    before: "朋友，青梅竹马，同学，邻居".split("，"),
+    after: "暗恋者",
+    "对方颜值": [7,10],
+    "本人外向": [0,5],
+    "随机度": [0.7,1],
+  },
+]
+
+GameManager.prototype.judgeEvent = function () {
+
 }
 
 

@@ -1,4 +1,13 @@
+import EventsList from '../../DLC/relationshipBuff.json'
 const marriageAge = 14   
+
+function RelationshipInterface(id,level,buff) {
+  this.id = id
+  this.level = level
+  this.buff = new Set()
+  this.buff.add(buff)
+}
+
 
 export function intercourse(Manager,A) {
   //外向性高的社交频率更高
@@ -20,16 +29,10 @@ export function intercourse(Manager,A) {
     // temporarily do nothing
   }
   else {   //如果不是熟人
-    A.relationships.push({
-      id: B.cId,
-      level: 5
-    })
+    A.relationships.push(new RelationshipInterface(B.cId,5,"朋友"))
     Manager.addMemory(A,B,"一见如故")
     
-    B.relationships.push({
-      id: A.cId,
-      level: 5
-    })
+    B.relationships.push(new RelationshipInterface(A.cId,5,"朋友"))
     Manager.addMemory(B,A,"一见如故")
   }
 
@@ -85,6 +88,56 @@ export function intercourse(Manager,A) {
     if (Math.random()>0.8) {
       A.buff.splice(i,1)
     }
+  }
+}
+
+export function dailyIntercourse(Manager,A) {
+  //外向性高的社交频率更高
+  if( A.BIG_FIVE_Openness > Math.random()*10 ) {
+    return 
+  }
+  const B = _.sample(Manager.GameWorld.society.characters)
+  let re = A.relationships.find( item => {
+    return item.id == B.cId
+  })
+  if (!re) {
+    re = new RelationshipInterface(B.cId,0,"陌生人")
+    A.relationships.push(re)
+  }
+
+  const allowEvents = EventsList.filter( e=>{
+    const arr1 = re.buff, arr2 = e.前置要求?e.前置要求.split("，"):[]
+    //查找 arr1 与 arr2 是否有交集
+    const result = arr2.filter( e=>arr1.has(e))
+    return result.length
+  })
+  const e = _.sample(allowEvents)
+  if (e) {
+    let succeed = true, range
+    const checkValueKeys = '对方颜值,本人外向度,关系级别,本人年龄,随机度'.split(',')
+    const values = [B.charm,A.BIG_FIVE_Openness,re.level,A.body.month/12,Math.random()]
+
+    for (const index in checkValueKeys) {
+      if (e[checkValueKeys[index]]) {
+        range = e[checkValueKeys[index]].split(',')
+        if (values[index]<range[0] || values[index]>range[1])
+          succeed = false
+      }
+    }
+  
+    if (succeed) {
+      if (e.A获得效果)
+        re.buff.add(e.A获得效果)
+      const lostBuff = e.A失去效果 ? e.A失去效果.split(',') : []
+      lostBuff.forEach( e=>re.buff.delete(e))
+    }  
+  }
+  //关系buff 为空的必然被遗忘
+  for (const index in A.relationships) {
+    if (A.relationships[index].buff.size == 0) {
+      A.relationships.splice(index,1)
+      break;
+    } 
   }
 }
 
@@ -155,12 +208,18 @@ export function giveBirth(Manager,character) {
   else if (character.body.pregnent && character.body.pregnent_month >= 10) {  //give birth
     //give birth
     const father = Manager.getCharacterById(character.spouse)
-    const child = Manager.giveBirth(character,father)
+    const mother = character
+    const child = Manager.giveBirth(mother,father)
     character.body.pregnent = false
     character.body.pregnent_month = 0
     character.body.pregnent_fetus = null
     //孩子随父姓
     child.surname = father.surname
+      //绑定社会关系
+    child.relationships.push(
+      new RelationshipInterface(mother.cId,30,'母亲'),
+      new RelationshipInterface(father.cId,30,'父亲')
+    )
   }
   else if( Math.random() > 0.8 ) {  //want to be pregnent
     character.body.pregnent = true

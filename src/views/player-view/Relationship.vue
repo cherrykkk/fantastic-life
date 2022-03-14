@@ -9,7 +9,8 @@
   <div class="friend-board">
     <div>朋友</div>
     <div v-for="(e2,i2) in you.relationships" :key="i2" class="relationship">
-      {{e2.type}} <br> {{Manager.getName(e2.id)}} <br> {{e2.level}}
+      <span v-for="(e,i) in e2.buff" :key="i" class="buff">{{e}}</span>
+      <br> {{Manager.getName(e2.id)}} <br> {{e2.level}}
       <character-avater :character="Manager.getCharacterById(e2.id)" size="60" class="avater"></character-avater>
     </div>
   </div>
@@ -54,8 +55,8 @@ export default {
 }
 .friend-board {
   position: absolute;
-  width: 50%;
-  left: 50%;
+  width: 45%;
+  left: 55%;
   top: 40px;
   .relationship {
     position: relative;
@@ -64,6 +65,9 @@ export default {
     border: 1px solid grey;
     margin: 1px;
     padding: 1px;
+    .buff {
+      padding-right: 10px;
+    }
     .avater {
       position: absolute;
       right: 0;
