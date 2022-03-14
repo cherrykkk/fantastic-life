@@ -51,11 +51,14 @@ export default {
     const newGame = ()=>{
       globalState.gameLoaded = false
       globalState.maskLayer = false
+      const t1 = Date.now()
 
       Manager.newGame(config).then(()=>{
         console.log('done')
         globalState.gameLoaded = true
         toUrl('/player-view')
+        const t2 = Date.now()
+        console.log(t2-t1)
       })
     }
     return {

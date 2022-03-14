@@ -10,6 +10,7 @@ export default {
   setup() {
     const Manager = inject("Manager").value
     const you = Manager.you
+    console.log(you)
     return {
       Manager,
       you
@@ -19,6 +20,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .memory-list {
+  padding-bottom: 50px;
   div {
     font-size: 12px;
     color: #999;

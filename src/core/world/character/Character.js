@@ -20,7 +20,7 @@ const characterArgs = {
     consititution: 0,
     intelligence: 0,
     charm: 0,
-    appearance: { //顺序有展示层管理，这里无所谓了
+    appearance: {
       "back-hair": 0,
       "neck": 0,
       face: 0,
@@ -47,6 +47,7 @@ const characterArgs = {
   estate: [], //房产
 
   adult_living: null,
+  fertility_desire: 10,
 
   buff: [],
 

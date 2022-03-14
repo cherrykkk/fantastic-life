@@ -30,7 +30,7 @@ export default {
       config,
       setting: (e, num)=>{
         config[e] += num
-        if( config[e]<1 || config[e]>5) {
+        if( config[e]<1 || config[e]>10) {
           config[e] -= num
         }
       },
@@ -52,10 +52,6 @@ export default {
     font-size: 30px;
     display: flex;
     justify-content: space-around;
-    .less-more {
-
-    } 
-
   }
 }
 </style>

@@ -5,13 +5,11 @@
     <div v-if="Manager.GameWorld">
       {{Manager.GameWorld.calendar.year}}年
       {{Manager.GameWorld.calendar.month}}月
-      {{Manager.GameWorld.calendar.date}}日
     </div>
     目标
     <div v-if="Manager.GameWorld">
       {{Manager.GameWorld.config.yearsBeforeBorn+Manager.GameWorld.config.toAge}}年
       1月
-      1日
     </div>
   </div>
   <layout v-if="globalState.gameLoaded"></layout>
@@ -41,16 +39,6 @@ export default{
     const router = useRouter()
     router.replace("/menu")
 
-    const newGame = function () {
-      globalState.gameLoaded = false
-      const worker = new Worker('@/core/.js');
-      setTimeout(()=>{
-          Manager.value.newGame().then(()=>{
-          globalState.gameLoaded = true
-          router.replace("/player-view")
-        })
-      },0) //异步，使 js 引擎处理完了 vue 的视图变化再运行游戏内的计算，避免出现 '卡死' 现象 //但也时常无效
-    }
     const _loadArchive = function (archiveName) {
       console.log("正在加载存档")
       const archive = JSON.parse(localStorage.getItem(archiveName))
@@ -82,7 +70,6 @@ export default{
     provide("Manager",Manager)
     provide("loadArchive",_loadArchive)
     provide("saveArchive",saveArchive)
-    provide("newGame",newGame)
     provide("showSystemMessage",showSystemMessage)
     provide("toUrl",(url)=>{
       router.replace(url)

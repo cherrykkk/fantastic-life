@@ -1,5 +1,6 @@
 import { daySociety, monthSociety, yearSociety } from './time-run/society.js'
 import SocietySetting from '../DLC/generalWorld/societySetting.json'
+import EventList from '../DLC/relationshipBuff.json'
 import { Character } from './world/character/Character.js'
 import { _ } from 'core-js'
 
@@ -84,7 +85,7 @@ GameManager.prototype.newGame = function(config) {
             console.log(this.you)
           }
 
-          if (this.you && this.you.body.month == toAge*12 -1) {
+          if (this.you && this.you.body.month >= toAge*12 -1) {
             this.play()
             resolve()
           }
@@ -205,15 +206,16 @@ GameManager.prototype.addMemory = function(A,B,eventName) {
 }
 
 GameManager.prototype.parseMemory = function(A,memory) {
-  const { BId, eventId } = memory
-  const B = this.getCharacterById(BId)
-  const eventName = Object.keys( SocietySetting.events )[eventId]
-  const events = SocietySetting.events
-  if( events[eventName] ) {
-    let ev = events[eventName]
-    ev = ev.replace('[A]',A.surname+A.givenName)
-    ev = ev.replace('[B]',B.surname+B.givenName)
-    return ev
+  const B = this.getCharacterById(memory.B)
+
+  const event = EventList.find( e=>{
+    return e.id == memory.event
+  })
+  let string = event ? event.描述 : null
+  if (string) {
+    string = string.replace('A',A.surname+A.givenName)
+    string = string.replace('B',B.surname+B.givenName)
+    return string
   }
 }
 

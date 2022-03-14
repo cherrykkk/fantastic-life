@@ -8,20 +8,27 @@ function RelationshipInterface(id,level,buff) {
   this.buff.add(buff)
 }
 
+function MemoryInterface(idA,idB,idEvent) {
+  this.A = idA
+  this.B = idB
+  this.event = idEvent
+}
+
+
 
 export function intercourse(Manager,A) {
   //外向性高的社交频率更高
   if( A.BIG_FIVE_Openness > Math.random()*10 ) {
     return 
   }
-  //认识新朋友（不排除偶遇熟人的可能）
+  //交互对象
   const B = _.sample(Manager.GameWorld.society.characters)
 
   //辨认是否是熟人（以及是否是自己，理解为独处）
   const result = A.relationships.find( item => {
     return item.id == B.cId
   })
-  if( result ) { // 如果是熟人
+  if (result) { // 如果是熟人
     Manager.addMemory(A,B,"偶遇熟人")
     result.level ++ 
   }
@@ -92,21 +99,33 @@ export function intercourse(Manager,A) {
 }
 
 export function dailyIntercourse(Manager,A) {
-  //外向性高的社交频率更高
-  if( A.BIG_FIVE_Openness > Math.random()*10 ) {
+  //今日交际对象
+  if (A.BIG_FIVE_Openness > Math.random()*10) {
     return 
   }
-  const B = _.sample(Manager.GameWorld.society.characters)
-  let re = A.relationships.find( item => {
-    return item.id == B.cId
-  })
-  if (!re) {
-    re = new RelationshipInterface(B.cId,0,"陌生人")
-    A.relationships.push(re)
+  let B, re
+  if (Math.random() > 0.9) {   //与熟人交际
+    re = _.sample(A.relationships)
+    B = Manager.getCharacterById(re.id)
+  }
+  else {   //与生人交际
+    B = _.sample(Manager.GameWorld.society.characters)
+    const notAcquaintance = A.relationships.every(_re=>{
+      if (_re.id != B.id)
+        return true
+      else {
+        re = _re
+        return false
+      }
+    })
+    if (notAcquaintance) {
+      re = new RelationshipInterface(B.cId,0,"陌生人")
+      A.relationships.push(re)
+    }
   }
 
   const allowEvents = EventsList.filter( e=>{
-    const arr1 = re.buff, arr2 = e.前置要求?e.前置要求.split("，"):[]
+    const arr1 = re.buff, arr2 = e.需求buff?e.需求buff.split("，"):[]
     //查找 arr1 与 arr2 是否有交集
     const result = arr2.filter( e=>arr1.has(e))
     return result.length
@@ -114,8 +133,8 @@ export function dailyIntercourse(Manager,A) {
   const e = _.sample(allowEvents)
   if (e) {
     let succeed = true, range
-    const checkValueKeys = '对方颜值,本人外向度,关系级别,本人年龄,随机度'.split(',')
-    const values = [B.charm,A.BIG_FIVE_Openness,re.level,A.body.month/12,Math.random()]
+    const checkValueKeys = '对方颜值,本人外向度,关系级别,本人年龄,对方年龄,随机度'.split(',')
+    const values = [B.charm,A.BIG_FIVE_Openness,re.level,A.body.month/12,B.body.month/12,Math.random()]
 
     for (const index in checkValueKeys) {
       if (e[checkValueKeys[index]]) {
@@ -124,20 +143,28 @@ export function dailyIntercourse(Manager,A) {
           succeed = false
       }
     }
-  
     if (succeed) {
-      if (e.A获得效果)
-        re.buff.add(e.A获得效果)
-      const lostBuff = e.A失去效果 ? e.A失去效果.split(',') : []
+      if (e.A获得buff)
+        re.buff.add(e.A获得buff)
+      const lostBuff = e.A失去buff ? e.A失去buff.split(',') : []
       lostBuff.forEach( e=>re.buff.delete(e))
+      if (e.关系变动) {
+        re.level += Number(e.关系变动)
+      }
+      //存入记忆
+      A.memory.push (new MemoryInterface(A.cId,B.cId,e.id))
     }  
   }
-  //关系buff 为空的必然被遗忘
+
+  //关系buff 为空的必然被遗忘，陌生人标签的概率遗忘
   for (const index in A.relationships) {
     if (A.relationships[index].buff.size == 0) {
       A.relationships.splice(index,1)
       break;
     } 
+    if (A.relationships[index].buff.has('陌生人') && Math.random()>0.5) {
+      A.relationships.splice(index,1)
+    }
   }
 }
 
@@ -215,13 +242,35 @@ export function giveBirth(Manager,character) {
     character.body.pregnent_fetus = null
     //孩子随父姓
     child.surname = father.surname
-      //绑定社会关系
+    //绑定社会关系
     child.relationships.push(
       new RelationshipInterface(mother.cId,30,'母亲'),
       new RelationshipInterface(father.cId,30,'父亲')
     )
+    //与其他人的两两关系
+    mother.relationships.push(new RelationshipInterface(child.cId,50,'子女'))
+    father.relationships.push(new RelationshipInterface(child.cId,50,'子女'))
+    for (const cId of mother.children) {
+      if (cId == child.cId) return
+
+      const character = Manager.getCharacterById(cId)
+      if (character.body.sex == '男') {
+        child.relationships.push(new RelationshipInterface(cId,10,'哥哥'))
+      } else {
+        child.relationships.push(new RelationshipInterface(cId,10,'姐姐'))
+      }
+      
+      if (child.body.sex == '男') {
+        character.relationships.push(new RelationshipInterface(child.cId,10,'弟弟'))
+      } else {
+        character.relationships.push(new RelationshipInterface(child.cId,10,'妹妹'))
+      }
+    }
+
+    //每生一个，生育欲望降低 2 
+    character.fertility_desire *= 0.5
   }
-  else if( Math.random() > 0.8 ) {  //want to be pregnent
+  else if( Math.random() < character.fertility_desire/100) {  //want to be pregnent
     character.body.pregnent = true
     character.body.pregnent_fetus = {
       father: character.spouse

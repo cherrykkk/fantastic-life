@@ -12,6 +12,11 @@ export function monthSociety(Manager) {
   //每个人度过一月
   for( const character of Manager.GameWorld.society.characters) {
     monthCharacter(Manager,character)
+
+    //清除垃圾记忆
+    character.memory = character.memory.filter( e=>{
+      return e.event != 17
+    })
   }
 
   //女娲造人期
