@@ -26,20 +26,6 @@ function GameManager () {
   })
 }
 
-GameManager.prototype.loadArchive = function (archive) {
-  this.GameWorld = archive
-  //把关系里的 buff 改为 Set 格式
-  this.GameWorld.society.characters.forEach( c=>{
-    c.buff = new Set(c.buff)
-    c.relationships.forEach(re=>{
-      re.buff = new Set(re.buff)
-    })
-  })
-
-  this.you = this.getCharacterById(this.GameWorld.theMainCharacterId)
-  this.play()
-}
-
 GameManager.prototype.newGame = function(config) {
   this.GameWorld = {
     society: {
@@ -159,6 +145,9 @@ GameManager.prototype.getName = function (c) {
   return character.surname+character.givenName+"("+(character.body.month/12).toFixed(0)+")"
 }
 
+/*
+  运行时格式和存储格式的互相转化
+*/
 GameManager.prototype.makeArchive = function() {
 
   //把关系里的 buff 格式由 set 改为 array 格式，因为 set 不能被  json.stringify 转化
@@ -186,6 +175,20 @@ GameManager.prototype.makeArchive = function() {
     name: this.you.surname+this.you.givenName,
     age: (this.you.body.month/12).toFixed(0)
   }
+}
+
+GameManager.prototype.loadArchive = function (archive) {
+  this.GameWorld = archive
+  //把关系里的 buff 改为 Set 格式
+  this.GameWorld.society.characters.forEach( c=>{
+    c.buff = new Set(c.buff)
+    c.relationships.forEach(re=>{
+      re.buff = new Set(re.buff)
+    })
+  })
+
+  this.you = this.getCharacterById(this.GameWorld.theMainCharacterId)
+  this.play()
 }
 
 GameManager.prototype.addMemory = function(A,B,eventName) {
@@ -270,9 +273,9 @@ GameManager.prototype.createCharacterByNvWa = function() { //女娲造人，天�
   //分房子
   const house = {
     id: Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0'),
-    type: 'house',
-    size: 30 + (Math.random()*100).toFixed(0),
-    quality: 20 + (Math.random()*80).toFixed(0)
+    '类型': '屋子',
+    '尺寸': 30 + (Math.random()*100).toFixed(0),
+    '质量': 20 + (Math.random()*80).toFixed(0)
   }
   character.estate.push(house)
 

@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-import { createManyHare, createManyGrass, createMapObject, createPerson } from './createSprite'
+import { createManyHare, createManyGrass, createMapObject, createPerson, createSword } from './createSprite'
 
 const mapSourceData = {
   buildings: [
@@ -59,8 +59,6 @@ export function createMap() {
   app.renderer.autoResize = true;
   app.stage.sortableChildren = true
   app.stage.hitArea = new PIXI.Rectangle(0, 0, width, height); //Container 本身不可点击，需要设置 hitArea
-  app.stage.buttonMode = true;//鼠标变手型
-  app.stage.interactive = true;//响应交互
 
   const mapContainer = new PIXI.Container()
   mapContainer.sortableChildren = true
@@ -71,11 +69,10 @@ export function createMap() {
   app.stage.addChild(mapContainer)
 
   loader.load(()=>{
-
     const tiling = new PIXI.TilingSprite.from('郊外',2000,2000) //height 和width 无法设置大小，其子元素的边界才能决定Container的边界
     mapContainer.addChild(tiling)
 
-    // const sword = createSword(app.screen.width/2,app.screen.height/2)
+    //handler.focus  = createSword(app.screen.width/2,app.screen.height/2)
     handler.focus = createPerson(app.screen.width/2,app.screen.height/2)
     mapContainer.addChild(handler.focus)
     initBuilding(mapSourceData,mapContainer)
@@ -114,8 +111,8 @@ export function createLoader() {
       name: 'butterfly',
       url: 'butterfly.json'
     },{
-      name: "map",
-      url: 'map/map.json'
+      name: "grass",
+      url: 'map/map1.json'
     },{
       name: "郊外",
       url: 'map/郊外3.png'
@@ -129,23 +126,8 @@ export function createLoader() {
       name: "野兔3",
       url: 'map/野兔3.png'
     },{
-      name: "朝前",
-      url: "map/朝前.png"
-    },{
-      name: "走前1",
-      url: "map/走前1.png"
-    },{
-      name: "走前2",
-      url: "map/走前2.png"
-    },{
-      name: "朝左",
-      url: "map/朝左.png"
-    },{
-      name: "走左1",
-      url: "map/走左1.png"
-    },{
-      name: "走左2",
-      url: "map/走左2.png"
+      name: "人",
+      url: "map/map2.json"
     }
   ])
   // loader.add('sword','/sword.png')

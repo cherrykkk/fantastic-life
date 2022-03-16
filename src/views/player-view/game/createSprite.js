@@ -1,25 +1,31 @@
 import * as PIXI from 'pixi.js'
 
 export function createPerson(x,y) {
-  const frontTextures = '朝前,走前1,走前2'.split(',').reduce((e1,e2)=>{
-    e1.push(PIXI.Texture.from(e2))
-    return e1
-  },[])
-  const leftTextures = '朝左,走左1,走左2'.split(',').reduce((e1,e2)=>{
-    e1.push(PIXI.Texture.from(e2))
-    return e1
-  },[])
+  const frontTextures = convertStringToTextures('正面1,正面2,正面3')
+  const leftTextures = convertStringToTextures('左面1,左面2,左面3')
+  const rightTextures = convertStringToTextures('右面1,右面2,右面3')
   const aniSprite = new PIXI.AnimatedSprite(frontTextures)
-  aniSprite.zIndex = y
   aniSprite.x = x
   aniSprite.y = y
   aniSprite.anchor.set(0.5)
-  aniSprite.animationSpeed = 0.05
-  aniSprite.goDirection = (vx,vy)=>{
-    if (Math.abs(vy) > Math.abs(vx) && aniSprite.textures!=frontTextures) {
+  aniSprite.animationSpeed = 0.1
+  console.log(aniSprite)
+  setTimeout(()=>aniSprite.play(),3000)
+  aniSprite.move = (vx,vy)=>{
+    if (Math.abs(vy) > Math.abs(vx) && aniSprite.textures!=frontTextures) { 
       aniSprite.textures = frontTextures
-    } else if (Math.abs(vy) < Math.abs(vx) && aniSprite.textures!=leftTextures){
+    } else if (Math.abs(vy) < Math.abs(vx) && vx < 0 && aniSprite.textures!=leftTextures){
       aniSprite.textures = leftTextures
+    }else if (Math.abs(vy) < Math.abs(vx) && vx > 0 && aniSprite.textures!=rightTextures){
+      aniSprite.textures = rightTextures
+    } else if (vx !=0 && vy != 0) {
+      aniSprite.play()
+      aniSprite.x += vx
+      aniSprite.y += vy
+      aniSprite.zIndex = aniSprite.y
+      aniSprite.animationSpeed = (Math.abs(vy)+Math.abs(vx))/30
+    } else {
+      aniSprite.gotoAndStop(0)
     }
   }
   return aniSprite
@@ -33,6 +39,12 @@ export function createSword(x,y) {
   sword.width = 200
   sword.height = 200
   sword.anchor.set(0.5)
+  sword.move = (vx,vy)=>{
+    sword.x += vx
+    sword.y += vy
+    sword.rotation = Math.atan2(vy , vx)
+    sword.zIndex = 2000
+  }
   return sword
 }
 
@@ -141,4 +153,12 @@ function createHareAniSprite(x,y) {
 
   aniSprite.x = x, aniSprite.y = y
   return aniSprite
+}
+
+
+function convertStringToTextures(string) {
+  return string.split(',').reduce((e1,e2)=>{
+    e1.push(PIXI.Texture.from(e2))
+    return e1
+  },[])
 }

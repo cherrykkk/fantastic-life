@@ -8,6 +8,7 @@
       <button class="less-more" @click="setting(e,1)">&gt;</button>
     </div>
     <div @click="saveChange(config)">确定修改</div>
+    <button @click="saveArchive(Manager)">存档</button>
   </div>
 </template>
 
@@ -42,7 +43,8 @@ export default {
           config[e] = config[e]=='逆序'? '顺序': '逆序'
         }
       },
-      saveChange
+      saveChange,
+      saveArchive:inject('saveArchive')
     }
   },
 }

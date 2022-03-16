@@ -15,6 +15,9 @@
       </div>
     </div>
     <div v-for="(e,i) in you.buff" :key="i">拥有状态:{{e}}</div> 
+    <div>财产资源
+      <div v-for="(e,i) in you.estate" :key="i">{{e}}</div>
+    </div>
     <div v-for="(e,i) in Object.keys(bigFive)" :key="i">{{bigFive[e]}}:{{you[e]}}</div>
     <router-link to="/god-view">上帝模式</router-link>
   </div>

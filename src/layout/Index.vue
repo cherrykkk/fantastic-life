@@ -7,7 +7,6 @@
     <router-view/>
     <div class="button-board" v-if="Manager.GameWorld">
       <div @click="toUrl('/SettingInGame')">设置</div>
-      <div @click="saveArchive(Manager)">存档</div>
       <div @click="toUrl('/player-view')">个人</div>
       <div @click="toUrl('/Livelihood')">能力</div>
       <div @click="toUrl('/memory')">记忆</div>
@@ -34,7 +33,6 @@ export default {
   name: 'Layout',
   setup(){
     const Manager = inject("Manager").value
-    const saveArchive = inject('saveArchive')
     const globalState = inject('globalState')
     const toUrl = inject('toUrl')
     const config = reactive({
@@ -63,7 +61,6 @@ export default {
     }
     return {
       Manager,
-      saveArchive,
       toUrl,
       newGame,
       globalState,

@@ -5,79 +5,15 @@
 <script>
 import { ref, inject, onMounted, reactive } from 'vue'
 import { createMap } from './createPixiMap.js'
+import { MoveControl } from './MoveControl.js' 
 export default {
   setup() {
     const pixiHandler = createMap()  //同步返回 app、loader、mapContainer, 异步返回 tiling
-    const { app,loader,mapContainer } = pixiHandler
     const pixiMap = ref(null)
-    const moveControl = reactive({
-      vx: 0,
-      vy: 0,
-      time: 0,
-      rotation: 0,
-      pointerdown: false
-    })
-    app.stage.on("pointermove",(e)=>{
-      if (moveControl.pointerdown) {
-        const { x, y } = e.data.global
-        const vx = (x - app.screen.width/2)/20, vy = (y - app.screen.height/2)/20
-        moveControl.vx = vx
-        moveControl.vy = vy
-        moveControl.rotation = Math.atan2(vy , vx)
-      }
-    })
-    app.stage.on("pointerdown",()=>{
-      moveControl.pointerdown = true
-    })
-    app.stage.on("pointerup",(e)=>{
-      moveControl.pointerdown = false
-    })
-    app.stage.on("pointerout",(e)=>{
-      moveControl.pointerdown = false
-    })
     onMounted(()=>{
-      pixiMap.value.appendChild(app.view)
-      loader.load(() => {
-        app.ticker.maxFPS = 60
-        console.log(pixiHandler.focus)
-        app.ticker.add(()=>{
-          const { focus } = pixiHandler
-          const { vx, vy, rotation, pointerdown } = moveControl
-          focus.x += vx
-          focus.y += vy
-          //focus.rotation = rotation
-          focus.play()
-          focus.zIndex = focus.y
-          focus.animationSpeed = vy/20
-          mapContainer.x -= vx
-          mapContainer.y -= vy
-          if (vx==0 && vy == 0) {
-            focus.gotoAndStop(0)
-          } else  {
-            focus.goDirection(vx,vy)
-          }
-          if (!pointerdown) {
-            const a = 0.95
-            if (vx+vy < 0.05) {
-              moveControl.vx = 0
-              moveControl.vy = 0
-            }
-            else {
-              moveControl.vx = vx*a
-              moveControl.vy = vy*a
-            }
-          }
-
-          if (focus.x < app.screen.width/2 || focus.x > mapContainer.width - app.screen.width/2)
-            mapContainer.x += vx
-          if (focus.y < app.screen.height/2 || focus.y > mapContainer.height - app.screen.height/2)
-            mapContainer.y += vy
-          if (focus.x < 0 || focus.x > mapContainer.width)
-            focus.x -= vx
-          if(focus.y < 0 || focus.y > mapContainer.height)
-            focus.y -= vy
-
-        })
+      pixiMap.value.appendChild(pixiHandler.app.view)
+      pixiHandler.loader.load(() => {
+        new MoveControl(pixiHandler.focus,pixiHandler.mapContainer,pixiHandler.app,'person')
       })
     })
     return {

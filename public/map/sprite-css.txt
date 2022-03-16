@@ -1,4 +1,0 @@
-{imgs\grass-color1.png,background-position: -0px -0px,width:100px,height:100px}
-{imgs\grass-color2.png,background-position: -100px -0px,width:100px,height:100px}
-{imgs\grass1.png,background-position: -200px -0px,width:100px,height:100px}
-{imgs\grass2.png,background-position: -300px -0px,width:100px,height:100px}
