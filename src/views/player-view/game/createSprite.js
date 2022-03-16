@@ -101,6 +101,51 @@ export function createMapObject(buildingData) {
   return sprite
 }
 
+export function createManyAniObject(mapContainer,name, max) {
+
+  let num = Math.floor(Math.random()*max)
+  const allGrass = []
+  while (num>0) {
+    const grass = createAniObject(name,Math.random()*1900,Math.random()*1900)
+    allGrass.push(grass)
+    mapContainer.addChild(grass)
+    num--
+  }
+  const fun1 = ()=> setTimeout(()=>{
+    allGrass.forEach(grass=>grass.playAll())
+    fun2()
+  },Math.random()*10000)
+  const fun2 = ()=> setTimeout(()=>{
+    allGrass.forEach(grass=>grass.stopAll())
+    fun1()
+  },Math.random()*10000)
+
+  fun1()
+}
+
+function createAniObject (name,x,y) {
+  const textures = {
+    '当归': ['当归1','当归2'],
+    '三七': ['三七1','三七2']
+  } 
+  if (!textures[name])
+  throw new Error(`name shouldn't be ${name} !`);
+
+  
+  const aniSprite = new PIXI.AnimatedSprite.fromFrames(textures[name])
+  aniSprite.animationSpeed = 0.1
+  aniSprite.x = x
+  aniSprite.y = y
+  aniSprite.zIndex = y
+  aniSprite.playAll = ()=>{
+    aniSprite.play()
+  }
+  aniSprite.stopAll = ()=>{
+    aniSprite.gotoAndStop(1)
+  }
+  return aniSprite
+}
+
 function createGrassAniSprite(x,y) {
   const sources = 'grass1,grass2'.split(',')
   const aniSprite = new PIXI.AnimatedSprite.fromFrames(sources)

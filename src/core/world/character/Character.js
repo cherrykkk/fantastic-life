@@ -46,6 +46,7 @@ const characterArgs = {
   memory: [],
 
   estate: [], //房产
+  property: [], //其他财产
 
   adult_living: null,
   fertility_desire: 10,
@@ -57,7 +58,8 @@ const characterArgs = {
     medicine: 0,
     flySword: 0,
     management: 0,
-    farm: 0
+    farm: 0,
+    hunt: 0
   }, //技能，第一个技能是中草药学
 
   //大五和能力参数共同影响npc决策

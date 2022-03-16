@@ -4,7 +4,7 @@
     <div class="level">当前水平
       <div>{{Manager.you.skills[chosen[0]]}}</div>
     </div>
-    <div @click="toUrl(chosen[2])">前去进修</div>
+    <div @click="toUrl(chosen[2])">进入</div>
   </div>
   <div class="skill-list">
     <div :class='{"skill-card":1,"chosen-skill-card":chosen[0]==e[0]}' v-for="(e,i) in list" :key="i" @click="chosen=e">
@@ -19,8 +19,10 @@ export default {
   setup() {
     const list = [
       ['herbology','草药学','/game'],
-      ['flySword','御剑','/game2'],
-      ['medicine','医术','']
+      // ['flySword','御剑','/game2'],
+      ['medicine','医术',''],
+      ['farm','种植','/gameFarm'],
+      ['hunt','狩猎','/gameHunt']
     ]
     return {
       Manager: inject("Manager").value,

@@ -23,10 +23,17 @@ export function monthSociety(Manager) {
   if (Manager.GameWorld.calendar.year < Manager.GameWorld.config.nvWaYears ) {
     const character = Manager.createCharacterByNvWa()
     Manager.GameWorld.society.characters.push(character)
-    console.log(Manager.GameWorld.society.characters.length)
   }
 }
 
 export function yearSociety (Manager) {
 
+}
+
+export function dailyWorld (Manager) {
+  Manager.GameWorld.material.forEach(e=>{
+    if (e['类型']=='耕地' && e.plant && e.plant['成长度']<100) {
+      e.plant['成长度'] += 1
+    }
+  })
 }

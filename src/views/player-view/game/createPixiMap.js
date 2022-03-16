@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-import { createManyHare, createManyGrass, createMapObject, createPerson, createSword } from './createSprite'
+import { createManyHare, createManyGrass, createMapObject, createPerson, createSword, createManyAniObject} from './createSprite'
 
 const mapSourceData = {
   buildings: [
@@ -82,6 +82,8 @@ export function createMap() {
 
     createManyGrass(mapContainer)
     createManyHare(mapContainer)
+    createManyAniObject(mapContainer,'当归',20)
+    createManyAniObject(mapContainer,'三七',20)
   })
 
   handler.mapContainer = mapContainer
@@ -128,6 +130,18 @@ export function createLoader() {
     },{
       name: "人",
       url: "map/map2.json"
+    },{
+      name: "当归1",
+      url: "map/当归1.png",
+    },{
+      name: "当归2",
+      url: "map/当归2.png",
+    },{
+      name: "三七1",
+      url: "map/三七1.png",
+    },{
+      name: "三七2",
+      url: "map/三七2.png",
     }
   ])
   // loader.add('sword','/sword.png')

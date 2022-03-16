@@ -1,4 +1,4 @@
-import { daySociety, monthSociety, yearSociety } from './time-run/society.js'
+import { daySociety, monthSociety, yearSociety, dailyWorld } from './time-run/index.js'
 import SocietySetting from '../DLC/generalWorld/societySetting.json'
 import EventList from '../DLC/relationshipBuff.json'
 import { Character } from './world/character/Character.js'
@@ -34,6 +34,7 @@ GameManager.prototype.newGame = function(config) {
       characters: [], //社会内npc
       npcs: [] //提前准备的N
     },
+    material: [], //物质，比如房产和耕地
     natural: null,
     theMainCharacterId: null,
     calendar: {
@@ -99,6 +100,7 @@ GameManager.prototype.aDayGoBy = function() {
   const calendar = this.GameWorld.calendar
   calendar.date += 1
   daySociety(this)
+  dailyWorld(this)
   if (calendar.date == 31) {
     calendar.date = 1
     calendar.month += 1
@@ -131,6 +133,12 @@ GameManager.prototype.getCharacterById = function(cId) {
   })
   return character || `找不到id为${cId}的角色`
 }
+GameManager.prototype.getMaterialById = function(id) {
+  const object = this.GameWorld.material.find( item => {
+    return item.id == id
+  })
+  return object || `找不到id为${cId}的对象`
+}
 
 GameManager.prototype.getName = function (c) {
   let character = null
@@ -144,6 +152,7 @@ GameManager.prototype.getName = function (c) {
   }
   return character.surname+character.givenName+"("+(character.body.month/12).toFixed(0)+")"
 }
+
 
 /*
   运行时格式和存储格式的互相转化
@@ -274,68 +283,40 @@ GameManager.prototype.createCharacterByNvWa = function() { //女娲造人，天�
   const house = {
     id: Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0'),
     '类型': '屋子',
-    '尺寸': 30 + (Math.random()*100).toFixed(0),
-    '质量': 20 + (Math.random()*80).toFixed(0)
+    '尺寸': Number(30) + (Math.random()*100).toFixed(0),
+    '质量': Number(20) + (Math.random()*80).toFixed(0)
   }
-  character.estate.push(house)
+  character.estate.push(house.id)
+  this.GameWorld.material.push(house)
+  //获得耕地
+  const property = {
+    id: Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0'),
+    '类型': '耕地',
+    '尺寸': 30 + Number((Math.random()*100).toFixed(0)),
+    '质量': 20 + Number((Math.random()*80).toFixed(0))
+  }
+  character.property.push(property.id)
+  this.GameWorld.material.push(property)
 
   return character
 }
 
-const Events =[
-  {
-    name: "一见钟情",
-    before: ["陌生人"],
-    after: "追求者",
-    "对方颜值": [7,10],
-    "本人外向": [5,10],
-    "随机度": [0.7,1],
-  },
-  {
-    name: "一见钟情",
-    before: ["陌生人"],
-    after: "暗恋者",
-    "对方颜值": [7,10],
-    "本人外向": [0,5],
-    "随机度": [0.7,1],
-  },
-  {
-    name: "日久生情",
-    before: "朋友，青梅竹马，同学，邻居".split("，"),
-    after: "追求者",
-    "对方颜值": [7,10],
-    "本人外向": [5,10],
-    "随机度": [0.7,1],
-  },
-  {
-    name: "一见钟情",
-    before: ["暗恋者"],
-    after: "追求者",
-    "对方颜值": [7,10],
-    "本人外向": [0,5],
-    "随机度": [0.7,1],
-  }, 
-  {
-    name: "日久生情",
-    before: "朋友，青梅竹马，同学，邻居".split("，"),
-    after: "追求者",
-    "对方颜值": [7,10],
-    "本人外向": [5,10],
-    "随机度": [0.7,1],
-  },
-  {
-    name: "一见钟情",
-    before: "朋友，青梅竹马，同学，邻居".split("，"),
-    after: "暗恋者",
-    "对方颜值": [7,10],
-    "本人外向": [0,5],
-    "随机度": [0.7,1],
-  },
-]
-
-GameManager.prototype.judgeEvent = function () {
-
+GameManager.prototype.sow = function (character, farmland) {
+  farmland.plant = {
+    "名称": "小麦",
+    "质量": character.skills.farm,
+    "成长度": 0 
+  }
 }
+
+GameManager.prototype.harvest = function (character, farmland) {
+  character.property.push({
+    '类型': farmland.plant['名称'],
+    '数量': farmland['尺寸']
+  })
+  farmland.plant = null
+}
+
 
 
 
