@@ -22,10 +22,6 @@ const routes = [
         path: 'families',
         name: 'families',
         component: ()=> import('@/views/god-view/seeFamily.vue')
-      },{
-        path: 'archives',
-        name: 'archives',
-        component: ()=> import('@/views/god-view/seeArchive.vue')
       }
     ]
   },{

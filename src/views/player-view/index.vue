@@ -14,7 +14,9 @@
         {{he}}
       </div>
     </div>
+    <div v-for="(e,i) in you.buff" :key="i">拥有状态:{{e}}</div> 
     <div v-for="(e,i) in Object.keys(bigFive)" :key="i">{{bigFive[e]}}:{{you[e]}}</div>
+    <router-link to="/god-view">上帝模式</router-link>
   </div>
 </template>
 
@@ -27,7 +29,6 @@ export default {
   },
   setup() {
     const Manager = inject("Manager").value
-    Manager.play()
     const you = Manager.you
     const bigFive = {
       BIG_FIVE_Openness: '开放性',

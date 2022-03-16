@@ -1,36 +1,32 @@
 <!--调试模式-->
 <template>
   <div class="nav-bar">
-    <button @click="nextMonth(1)">nextMonth</button>
-    <button @click="nextMonth(12)">nextYear</button>
-    <div>上次操作花费时间(ms)<br>{{lastOperaterTime}}</div>
     <div class="router-nav">
-      <router-link :to="{name:'characters'}">角色信息</router-link>
-      <router-link :to="{name:'families'}">成家信息</router-link>
-      <router-link :to="{name:'archives'}">存档信息</router-link>
+      <!-- <router-link :to="{name:'characters'}">角色信息</router-link>
+      <router-link :to="{name:'player-view'}">回用户界面</router-link> -->
+      <router-link to="/player-view">返回玩家界面</router-link>
     </div>
   </div>
-  <div class="router-view">
-    <router-view></router-view>
+  <div v-for="(e,i) in Manager.GameWorld.society.characters" :key="i" @click="changeMainCharacter(e)">
+    {{Manager.getName(e)}}
   </div>
+  <!-- <div class="router-view">
+    <router-view></router-view>
+  </div> -->
 </template>
 
 <script>
 import { inject, ref } from 'vue'
 export default {
   setup() {
-    const GameWorld = inject("GameWorld").value
-    const lastOperaterTime = ref( 0 )
-    const nextMonth = (time)=>{   
-      const t1 = Date.now()
-      for( let i = 0 ; i < time ; i++ ) 
-        GameWorld.aMonthGoBy()
-      const t2 = Date.now() 
-      lastOperaterTime.value = t2-t1
+    const Manager = inject("Manager").value
+    const changeMainCharacter = (character)=>{
+      console.log(Manager)
+      Manager.you = character
     }
     return {
-      lastOperaterTime,
-      nextMonth
+      Manager,
+      changeMainCharacter
     }
   },
 }

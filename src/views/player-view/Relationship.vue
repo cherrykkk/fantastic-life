@@ -8,7 +8,7 @@
   </div>
   <div class="friend-board">
     <div>朋友</div>
-    <div v-for="(e2,i2) in you.relationships" :key="i2" class="relationship">
+    <div v-for="(e2) in you.relationships" :key="e2" class="relationship">
       <span v-for="(e,i) in e2.buff" :key="i" class="buff">{{e}}</span>
       <br> {{Manager.getName(e2.id)}} <br> {{e2.level}}
       <character-avater :character="Manager.getCharacterById(e2.id)" size="60" class="avater"></character-avater>

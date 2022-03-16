@@ -15,23 +15,31 @@
 import { reactive, inject } from 'vue'
 export default {
   setup() {
-    const config = reactive({
-      "游戏速度": 3
-    })
     const Manager = inject("Manager").value
+    const config = reactive({
+      "游戏速度": Manager.GameWorld.config['游戏速度'],
+      '记忆展示顺序': Manager.GameWorld.config['记忆展示顺序'] || '逆序'
+    })
     const showSystemMessage = inject("showSystemMessage")
     const toUrl = inject("toUrl")
     const saveChange = ()=>{
-      Manager.saveChange(config)
+      Object.assign(Manager.GameWorld.config, config)
+      console.log(Manager.GameWorld.config)
+      Manager.play()
       showSystemMessage("已修改配置")
       toUrl('./player-view')
     }
     return {
       config,
       setting: (e, num)=>{
-        config[e] += num
-        if( config[e]<1 || config[e]>10) {
-          config[e] -= num
+        if (e=='游戏速度') {
+          config[e] += num
+          if (config[e]<1 || config[e]>20)
+            config[e] -= num
+        }
+        if (e=='记忆展示顺序') {
+          console.log(config[e])
+          config[e] = config[e]=='逆序'? '顺序': '逆序'
         }
       },
       saveChange

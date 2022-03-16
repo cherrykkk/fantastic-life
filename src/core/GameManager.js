@@ -9,9 +9,6 @@ function GameManager () {
   this.you = null
   this.namesArr = [],
   this.playing = false
-  this.config = {
-    "游戏速度": 3
-  }
   this.namesArrReady = new Promise((resolve)=>{
     fetch(`../api/getRandom_npc.php?times=999`)
     .then( res=> res.json() )
@@ -33,6 +30,7 @@ GameManager.prototype.loadArchive = function (archive) {
   this.GameWorld = archive
   //把关系里的 buff 改为 Set 格式
   this.GameWorld.society.characters.forEach( c=>{
+    c.buff = new Set(c.buff)
     c.relationships.forEach(re=>{
       re.buff = new Set(re.buff)
     })
@@ -61,7 +59,9 @@ GameManager.prototype.newGame = function(config) {
       startNum: config.世界创建之初的NPC个数,
       yearsBeforeBorn: config.出生前世界运行年份,
       nvWaYears: config.女娲造人持续年份,
-      toAge: config.出生后直接跳到年龄
+      toAge: config.出生后直接跳到年龄,
+      "游戏速度": 3,
+      "记忆展示顺序": "逆序"
     }
   }
   const { startNum, yearsBeforeBorn, nvWaYears, toAge } = this.GameWorld.config
@@ -98,7 +98,7 @@ GameManager.prototype.newGame = function(config) {
 GameManager.prototype.play = function () {
   this.stop() //避免重复 play
   this.playing = true
-  const speed = 1000/this.config.游戏速度
+  const speed = 1000/this.GameWorld.config.游戏速度
   this.clock = setInterval(()=>{
     this.aDayGoBy()
     this.playing = true
@@ -107,11 +107,6 @@ GameManager.prototype.play = function () {
 GameManager.prototype.stop = function () {
   clearInterval(this.clock)
   this.playing = false
-}
-
-GameManager.prototype.saveChange = function (config) {
-  Object.assign(this.config, config)
-  this.play()
 }
 
 GameManager.prototype.aDayGoBy = function() {
@@ -168,6 +163,7 @@ GameManager.prototype.makeArchive = function() {
 
   //把关系里的 buff 格式由 set 改为 array 格式，因为 set 不能被  json.stringify 转化
   this.GameWorld.society.characters.forEach( c=>{
+    c.buff = Array.from(c.buff)
     c.relationships.forEach(re=>{
       re.buff = Array.from(re.buff)
     })
@@ -177,6 +173,7 @@ GameManager.prototype.makeArchive = function() {
 
   //转回来, 程序还要继续用 set 格式的
   this.GameWorld.society.characters.forEach( c=>{
+    c.buff = new Set(c.buff)
     c.relationships.forEach(re=>{
       re.buff = new Set(re.buff)
     })
@@ -220,15 +217,16 @@ GameManager.prototype.parseMemory = function(A,memory) {
 }
 
 const availableAppearance = {
-  "back-hair": [1,2,3,4,5],
-  face: [1,2,3],
-  eyebrow: [1,2,3,4],
-  eye: [1,2,3,4,5,6],
+  "back-hair": [1,2,3,4,5,6],
+  face: [1,2,3,4,5],
+  eyebrow: [1,2,3,4,5,6,7],
+  eye: [1,2,3,4,5,6,7,8],
   ear: [1,2],
-  mouth: [1,2,3,4],
-  "front-hair": [1,2,3,4,5,6,7,8],
+  mouth: [1,2,3,4,5,6],
+  "front-hair": [1,2,3,4,5,6,7,8,9],
   neck: [1,2,3],
-  "skin-color": ['#feeecd','#fff2e2','#c3816b','#fffdcd','#fff2e9']
+  "skin-color": ['#feeecd','#fff2e2','#c3816b','#fffdcd','#fff2e9'],
+  "hair-color": ['#000000','#111111','#222222','#333333','#444444','#555555','#666666','#777777','#888888','#999999','#353434','#4c4848','#390101','#604901','#886800','#655423']
 }
 
 

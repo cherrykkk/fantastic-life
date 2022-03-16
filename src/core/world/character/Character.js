@@ -3,6 +3,7 @@
 */
 export function Character(){
   Object.assign(this,JSON.parse(JSON.stringify(characterArgs)))
+  this.buff = new Set()
 }
 
 const characterArgs = {

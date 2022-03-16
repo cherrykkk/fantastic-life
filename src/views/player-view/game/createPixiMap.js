@@ -1,43 +1,23 @@
 import * as PIXI from 'pixi.js'
+import { createManyHare, createManyGrass, createMapObject, createPerson } from './createSprite'
 
 const mapSourceData = {
   buildings: [
-    {
-      name: "monster",
-      texture: "monster",
-      x: 1090,
-      y: 30,
-      sizeX: 100,
-      sizeY: 100,
-    },{
-      name: "monster",
-      texture: "monster",
-      x: 250,
-      y: 300,
-      sizeX: 100,
-      sizeY: 100,
-    },{
-      name: "monster",
-      texture: "monster",
-      x: 350,
-      y: 160,
-      sizeX: 100,
-      sizeY: 100,
-    },{
-      name: "monster",
-      texture: "monster",
-      x: 850,
-      y: 500,
-      sizeX: 100,
-      sizeY: 100,
-    },{
-      name: "butterfly",
-      texture: "butterfly15",
-      x: 200,
-      y: 200,
-      sizeX: 100,
-      sizeY: 100,
-    }
+    // {
+    //   name: "monster",
+    //   texture: "monster",
+    //   x: 100,
+    //   y: 100,
+    //   sizeX: 100,
+    //   sizeY: 100,
+    // },{
+    //   name: "monster",
+    //   texture: "monster",
+    //   x: 350,
+    //   y: 160,
+    //   sizeX: 100,
+    //   sizeY: 100,
+    // }
   ]
 }
 
@@ -84,26 +64,27 @@ export function createMap() {
 
   const mapContainer = new PIXI.Container()
   mapContainer.sortableChildren = true
-  mapContainer.width = 2000
-  mapContainer.height = 2000
+  // mapContainer.width = 2000
+  // mapContainer.height = 2000 
+
   mapContainer.zIndex = 12
   app.stage.addChild(mapContainer)
 
   loader.load(()=>{
-    const sword = new PIXI.Sprite(PIXI.Texture.from('sword'))
-    sword.zIndex = 10
-    sword.x = app.screen.width/2
-    sword.y = app.screen.height/2
-    sword.width = 200
-    sword.height = 200
-    sword.anchor.set(0.5)
-    handler.focus = sword
-    mapContainer.addChild(sword)
+
+    const tiling = new PIXI.TilingSprite.from('郊外',2000,2000) //height 和width 无法设置大小，其子元素的边界才能决定Container的边界
+    mapContainer.addChild(tiling)
+
+    // const sword = createSword(app.screen.width/2,app.screen.height/2)
+    handler.focus = createPerson(app.screen.width/2,app.screen.height/2)
+    mapContainer.addChild(handler.focus)
     initBuilding(mapSourceData,mapContainer)
 
     const butterfly = createButterfly()
     mapContainer.addChild(butterfly)
 
+    createManyGrass(mapContainer)
+    createManyHare(mapContainer)
   })
 
   handler.mapContainer = mapContainer
@@ -120,27 +101,6 @@ function initBuilding(mapData,mapContainer) {
     mapContainer.addChild(building)
   }
 }
-
-export function createMapObject(buildingData) {
-  const { name,texture,x,y,sizeX,sizeY } = buildingData
-  const sprite = new PIXI.Sprite(PIXI.Texture.from(texture))
-  sprite.x = x
-  sprite.y = y
-  sprite.width = sizeX
-  sprite.height = sizeY
-  sprite.zIndex = 1
-  //building.name= name
-  sprite.anchor.set(0.5) //图像居中
-      
-  //建筑的名字
-  let namesprite = new PIXI.Text(name,{fontSize:20}); //虽然不明白为什么字随着建筑的大小变大，但这样的效果好像也不错
-  namesprite.zIndex = 4
-  namesprite.x = 0
-  namesprite.y = -30
-  namesprite.anchor.set(0.5) //图像居中
-  sprite.addChild(namesprite)
-  return sprite
-}
 export function createLoader() {
   const loader = new PIXI.Loader()
   loader.add([
@@ -153,6 +113,39 @@ export function createLoader() {
     },{
       name: 'butterfly',
       url: 'butterfly.json'
+    },{
+      name: "map",
+      url: 'map/map.json'
+    },{
+      name: "郊外",
+      url: 'map/郊外3.png'
+    },{
+      name: "野兔1",
+      url: 'map/野兔1.png'
+    },{
+      name: "野兔2",
+      url: 'map/野兔2.png'
+    },{
+      name: "野兔3",
+      url: 'map/野兔3.png'
+    },{
+      name: "朝前",
+      url: "map/朝前.png"
+    },{
+      name: "走前1",
+      url: "map/走前1.png"
+    },{
+      name: "走前2",
+      url: "map/走前2.png"
+    },{
+      name: "朝左",
+      url: "map/朝左.png"
+    },{
+      name: "走左1",
+      url: "map/走左1.png"
+    },{
+      name: "走左2",
+      url: "map/走左2.png"
     }
   ])
   // loader.add('sword','/sword.png')

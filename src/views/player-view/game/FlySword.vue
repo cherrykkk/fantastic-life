@@ -45,9 +45,17 @@ export default {
           const { vx, vy, rotation, pointerdown } = moveControl
           focus.x += vx
           focus.y += vy
-          focus.rotation = rotation
+          //focus.rotation = rotation
+          focus.play()
+          focus.zIndex = focus.y
+          focus.animationSpeed = vy/20
           mapContainer.x -= vx
           mapContainer.y -= vy
+          if (vx==0 && vy == 0) {
+            focus.gotoAndStop(0)
+          } else  {
+            focus.goDirection(vx,vy)
+          }
           if (!pointerdown) {
             const a = 0.95
             if (vx+vy < 0.05) {
@@ -59,6 +67,16 @@ export default {
               moveControl.vy = vy*a
             }
           }
+
+          if (focus.x < app.screen.width/2 || focus.x > mapContainer.width - app.screen.width/2)
+            mapContainer.x += vx
+          if (focus.y < app.screen.height/2 || focus.y > mapContainer.height - app.screen.height/2)
+            mapContainer.y += vy
+          if (focus.x < 0 || focus.x > mapContainer.width)
+            focus.x -= vx
+          if(focus.y < 0 || focus.y > mapContainer.height)
+            focus.y -= vy
+
         })
       })
     })
@@ -71,6 +89,11 @@ export default {
 
 </script>
 <style lang="less" scoped>
+.pixi-map {
+  position: absolute;
+  top: 0;
+  z-index: -1;
+}
 .view {
   margin: 40px 0;
 }

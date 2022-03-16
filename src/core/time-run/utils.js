@@ -66,7 +66,7 @@ export function intercourse(Manager,A) {
   })
 
   //婚姻需求
-  if (A.body.month > 12*marriageAge && !A.marriaged && A.buff.indexOf("不自信") < 0) {
+  if (A.body.month > 12*marriageAge && !A.marriaged && A.buff.has("不自信") < 0) {
     //寻找目标：好感等级高的异性，effect:对好感度的要求随年龄变大而降低
     const effect = (A.body.month - 12*marriageAge)/4
     for (const re of A.relationships) {
@@ -89,13 +89,6 @@ export function intercourse(Manager,A) {
       }
     }
   }
-
-  //概率性消除 buff
-  for (const i in A.buff) {
-    if (Math.random()>0.8) {
-      A.buff.splice(i,1)
-    }
-  }
 }
 
 export function dailyIntercourse(Manager,A) {
@@ -104,7 +97,14 @@ export function dailyIntercourse(Manager,A) {
     return 
   }
   let B, re
-  if (Math.random() > 0.9) {   //与熟人交际
+  if (A.buff.has['心有所属'] && Math.random()>0.9) { //优先找喜欢的人
+    re = A.relationships.find( re=> {
+      if (re.buff.has('暗恋中') || re.buff.has('追求中') ||re.buff.has('恋人')) {
+        return re
+      }
+    })
+  }
+  if (A.relationships.length>0 && Math.random() > 0.9) {   //与熟人交际
     re = _.sample(A.relationships)
     B = Manager.getCharacterById(re.id)
   }
@@ -125,9 +125,9 @@ export function dailyIntercourse(Manager,A) {
   }
 
   const allowEvents = EventsList.filter( e=>{
-    const arr1 = re.buff, arr2 = e.需求buff?e.需求buff.split("，"):[]
-    //查找 arr1 与 arr2 是否有交集
-    const result = arr2.filter( e=>arr1.has(e))
+    const own = re.buff, require = e.需求buff?e.需求buff.split("，"):[], shouldnot = e.相斥全局buff
+    //查找 arr1 与 arr2 是否有交集，且不冲突
+    const result = require.filter(e=> (own.has(e) && !A.buff.has(shouldnot)))
     return result.length
   })
   const e = _.sample(allowEvents)
@@ -144,8 +144,11 @@ export function dailyIntercourse(Manager,A) {
       }
     }
     if (succeed) {
-      if (e.A获得buff)
+      if (e.A获得buff) {
         re.buff.add(e.A获得buff)
+      }
+      if (e.A获得全局buff)
+        A.buff.add(e.A获得全局buff)
       const lostBuff = e.A失去buff ? e.A失去buff.split(',') : []
       lostBuff.forEach( e=>re.buff.delete(e))
       if (e.关系变动) {
@@ -193,7 +196,7 @@ export function resolveEvents(Manager, A) {
         re.level -= 5
       }
       Manager.addMemory(A,B,"求婚被拒")
-      A.buff.push("不自信")
+      A.buff.add("不自信")
     }
   }
   // 去除已解决事件
