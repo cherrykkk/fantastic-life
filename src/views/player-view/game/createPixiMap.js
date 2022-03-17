@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js'
 import { createManyHare, createManyGrass, createMapObject, createPerson, createSword, createManyAniObject} from './createSprite'
-
+import { MoveControl } from './MoveControl.js' 
 const mapSourceData = {
   buildings: [
     // {
@@ -84,12 +84,15 @@ export function createMap() {
     createManyHare(mapContainer)
     createManyAniObject(mapContainer,'当归',20)
     createManyAniObject(mapContainer,'三七',20)
+
+    handler.moveControl = new MoveControl(handler.focus,mapContainer,app,'person')
   })
 
   handler.mapContainer = mapContainer
   handler.app = app
   handler.loader = loader
   handler.focus = focus
+  handler.moveControl
   return handler
 }
 
@@ -106,9 +109,6 @@ export function createLoader() {
     {
       name: 'sword',
       url: "sword3.png"
-    },{
-      name: "monster",
-      url: "monster.png"
     },{
       name: 'butterfly',
       url: 'butterfly.json'
@@ -142,6 +142,15 @@ export function createLoader() {
     },{
       name: "三七2",
       url: "map/三七2.png",
+    },{
+      name: "弓",
+      url: "map/弓.png"
+    },{
+      name: "弦",
+      url: "map/弦.png"
+    },{
+      name: "箭",
+      url: "map/箭3.png"
     }
   ])
   // loader.add('sword','/sword.png')

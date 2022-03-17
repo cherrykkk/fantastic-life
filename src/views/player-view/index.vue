@@ -2,8 +2,6 @@
   <div class="view">
     姓名: {{you.surname+you.givenName}}
     年龄: {{(you.body.month/12).toFixed(0)}}
-    <button v-if="!Manager.playing" @click="Manager.play()">继续生活</button>
-    <button v-if="Manager.playing" @click="Manager.stop()">暂停</button>
     <character-avater :character="you" class="avater"></character-avater>
     <div v-if="!you.spouse">未婚</div>
     <div v-if="you.spouse">配偶: 
@@ -16,10 +14,16 @@
     </div>
     <div v-for="(e,i) in you.buff" :key="i">拥有状态:{{e}}</div> 
     <div>财产资源
-      <div v-for="(e,i) in you.estate" :key="i">{{e}}</div>
+      <div v-for="(e,i) in estates" :key="i">
+        类型：{{e.类型}} | 尺寸：{{e.尺寸}} | 质量：{{e.质量}}
+      </div>
+    </div>
+    <div>拥有物品
+      <div v-for="(e,i) in estates" :key="i">
+        类型：{{e.类型}} | 尺寸：{{e.尺寸}} | 质量：{{e.质量}}
+      </div>
     </div>
     <div v-for="(e,i) in Object.keys(bigFive)" :key="i">{{bigFive[e]}}:{{you[e]}}</div>
-    <router-link to="/god-view">上帝模式</router-link>
   </div>
 </template>
 
@@ -40,10 +44,15 @@ export default {
       BIG_FIVE_Agreeableness: '宜人性',
       BIG_FIVE_Neuroticism: '神经质'
     } 
+    const estates = you.estates.reduce((e1,e2)=>{
+      e1.push(Manager.getEstateById(e2))
+      return e1
+    },[])
     return {
       Manager,
       you,
-      bigFive
+      bigFive,
+      estates
     }
   },
 }

@@ -8,7 +8,7 @@ export function monthCharacter(Manager,character) {
   //careBody(game,character)
 
   //交际需求
-  intercourse(Manager,character)
+  //intercourse(Manager,character)
 
   //生子
   giveBirth(Manager,character)

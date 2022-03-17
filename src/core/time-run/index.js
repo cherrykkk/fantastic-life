@@ -31,7 +31,7 @@ export function yearSociety (Manager) {
 }
 
 export function dailyWorld (Manager) {
-  Manager.GameWorld.material.forEach(e=>{
+  Manager.GameWorld.estates.forEach(e=>{
     if (e['类型']=='耕地' && e.plant && e.plant['成长度']<100) {
       e.plant['成长度'] += 1
     }

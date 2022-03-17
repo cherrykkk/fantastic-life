@@ -30,15 +30,12 @@ export default {
     }
     const globalState = inject("globalState")
     Object.assign(globalState,{
-      gameStart: false,
-      gameLoaded: true,
       archiveChosen: false,
       systemMessage: null,
     })
     const continueGame = function() {
       loadArchive(archiveList.pop())
     }
-    console.log(archiveList)
     const clearAllLocalStorage = function() {
       localStorage.clear()
       location.reload()

@@ -9,7 +9,6 @@ export function createPerson(x,y) {
   aniSprite.y = y
   aniSprite.anchor.set(0.5)
   aniSprite.animationSpeed = 0.1
-  console.log(aniSprite)
   setTimeout(()=>aniSprite.play(),3000)
   aniSprite.move = (vx,vy)=>{
     if (Math.abs(vy) > Math.abs(vx) && aniSprite.textures!=frontTextures) { 
@@ -28,6 +27,18 @@ export function createPerson(x,y) {
       aniSprite.gotoAndStop(0)
     }
   }
+
+  const weapon = createBow()
+  aniSprite.addChild(weapon)
+
+  aniSprite.attackMode = false
+  aniSprite.setAttackMode = ()=>{
+    weapon.alpha = 1
+  }
+  aniSprite.setWalkMode = ()=>{
+    weapon.alpha = 0
+  }
+
   return aniSprite
 }
 
@@ -47,6 +58,89 @@ export function createSword(x,y) {
   }
   return sword
 }
+
+function createBow() {
+  const weapon = new PIXI.Sprite(PIXI.Texture.from('弓'))
+  weapon.width = 100
+  weapon.height = 100
+  weapon.alpha = 0
+  weapon.anchor.set(0,0.5)
+  const bowstring = new PIXI.Sprite(PIXI.Texture.from('弦'))
+  bowstring.width = 10
+  // bowstring.height = 30
+  bowstring.anchor.set(0.9,0.5)
+  weapon.addChild(bowstring)
+
+  let accumulate = 0 //弓箭的蓄力
+
+
+  let arrow
+
+  weapon.use = (vx,vy)=>{
+    if (vx==0 && vy==0) {
+      if (accumulate) { //发射
+        //moveSpriteToGrandParent(arrow)
+        arrow.flying(accumulate)
+      }
+      accumulate = 0
+      if (weapon.width==100) {
+        weapon.width = 30
+        weapon.height = 30
+      }
+    }
+    else if (accumulate==0 && Math.abs(vx) < 50 && Math.abs(vy) < 50) {
+      accumulate = 1
+      arrow = createArrow()
+      weapon.addChild(arrow)
+      if (weapon.width==30) {
+        weapon.width = 100
+        weapon.height = 100
+      }
+    }
+    else if (accumulate >= 0.1 && accumulate < 10 && (Math.abs(vx) > 30 || Math.abs(vy) > 30)) {
+      weapon.rotation = Math.atan2(vy , vx) + Math.PI
+      accumulate += 0.5
+      arrow.x -= 1
+      arrow.vx = vx
+      arrow.vy = vy
+    } else if (Math.abs(vx) > 0.05 && Math.abs(vy) > 0.05) {
+      weapon.rotation = Math.atan2(vy , vx) + Math.PI
+    } else {
+      accumulate = 0
+    }
+    bowstring.width = accumulate*10
+  }
+  return weapon  
+}
+
+function createArrow() {
+  const arrow = new PIXI.Sprite(PIXI.Texture.from('箭'))
+  arrow.anchor.set(0,0.5)
+  arrow.width = 140
+  arrow.x = -40
+
+  arrow.flying = (accumulate)=>{
+    const track = new PIXI.Container()
+    track.rotation = arrow.parent.rotation
+    track.x = arrow.parent.x + arrow.parent.parent.x
+    track.y = arrow.parent.y + arrow.parent.parent.y
+    arrow.parent.parent.parent.addChild(track)
+    track.addChild(arrow)
+    track.zIndex = 2000
+
+    const id = setInterval(()=>{
+      arrow.x += accumulate
+      accumulate -= 0.1
+      if (accumulate<=0) {
+        clearInterval(id)
+        track.parent.removeChild(track)
+      }
+    },30)
+  }
+
+  return arrow
+}
+
 
 export function createManyHare(mapContainer) {
   let num = Math.floor(20+Math.floor(Math.random()*80))
@@ -206,4 +300,12 @@ function convertStringToTextures(string) {
     e1.push(PIXI.Texture.from(e2))
     return e1
   },[])
+}
+
+
+function moveSpriteToGrandParent(sprite) {
+  sprite.rotation = sprite.parent.rotation
+  sprite.x = sprite.parent.x + sprite.parent.parent.x
+  sprite.y = sprite.parent.y + sprite.parent.parent.y
+  sprite.parent.parent.parent.addChild(sprite)
 }

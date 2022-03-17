@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!globalState.gameLoaded">
+  <div v-if="Manager.fastRunning">
     世界运行中... <br>
     当前
     <div v-if="Manager.GameWorld">
@@ -9,10 +9,9 @@
     目标
     <div v-if="Manager.GameWorld">
       {{Manager.GameWorld.config.yearsBeforeBorn+Manager.GameWorld.config.toAge}}年
-      1月
     </div>
   </div>
-  <layout v-if="globalState.gameLoaded"></layout>
+  <layout v-if="!Manager.fastRunning"></layout>
   <div v-if="globalState.systemMessage" class="system-message">
     {{globalState.systemMessage}}
   </div>
@@ -30,8 +29,6 @@ export default{
   setup() {
     const Manager = ref(new GameManager()) //这里不用 ref， 则子组件不能监听内部变化 （为什么）
     const globalState = reactive({
-      gameStart: false,
-      gameLoaded: true,
       archiveChosen: false,
       systemMessage: null,
       maskLayer: false

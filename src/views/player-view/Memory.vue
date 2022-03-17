@@ -33,8 +33,8 @@ export default {
 .memory-list {
   padding-bottom: 50px;
   .memory-word {
-    font-size: 12px;
-    color: #999;
+    font-size: 16px;
+    color: #666;
     text-align: left;
   }
 }

@@ -45,8 +45,8 @@ const characterArgs = {
   children: [],
   memory: [],
 
-  estate: [], //房产
-  property: [], //其他财产
+  estates: [], //房产
+  possession: [], //批量统计物件，比如小麦，药材
 
   adult_living: null,
   fertility_desire: 10,

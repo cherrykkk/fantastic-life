@@ -9,6 +9,7 @@
     </div>
     <div @click="saveChange(config)">确定修改</div>
     <button @click="saveArchive(Manager)">存档</button>
+    <br><router-link to="/god-view">上帝模式</router-link>(临时查看他人信息)
   </div>
 </template>
 

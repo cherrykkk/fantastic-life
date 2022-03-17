@@ -1,5 +1,4 @@
 import { daySociety, monthSociety, yearSociety, dailyWorld } from './time-run/index.js'
-import SocietySetting from '../DLC/generalWorld/societySetting.json'
 import EventList from '../DLC/relationshipBuff.json'
 import { Character } from './world/character/Character.js'
 import { _ } from 'core-js'
@@ -8,7 +7,8 @@ function GameManager () {
   this.GameWorld = null
   this.you = null
   this.namesArr = [],
-  this.playing = false
+  this.playing = false,
+  this.fastRunning = false
   this.namesArrReady = new Promise((resolve)=>{
     fetch(`../api/getRandom_npc.php?times=999`)
     .then( res=> res.json() )
@@ -34,7 +34,7 @@ GameManager.prototype.newGame = function(config) {
       characters: [], //社会内npc
       npcs: [] //提前准备的N
     },
-    material: [], //物质，比如房产和耕地
+    estates: [], //物质，比如房产和耕地
     natural: null,
     theMainCharacterId: null,
     calendar: {
@@ -60,24 +60,24 @@ GameManager.prototype.newGame = function(config) {
         const character = this.createCharacterByNvWa()
         GameWorld.society.characters.push(character)
       }
-
-      for (let i = 0;i<=(yearsBeforeBorn+toAge)*12*30;i++) {
-        setTimeout(()=>{ //设为宏任务，避免阻塞UI渲染
-          this.aDayGoBy()
-
-          //此时出生的就是主角你
-          if (!this.you && this.GameWorld.calendar.year == yearsBeforeBorn) {
-            this.you = GameWorld.society.characters[GameWorld.society.characters.length-1]
-            GameWorld.theMainCharacterId = this.you.cId  
-            console.log(this.you)
-          }
-
-          if (this.you && this.you.body.month >= toAge*12 -1) {
-            this.play()
-            resolve()
-          }
-        },0)
-      }
+      this.fastRunning = true
+      const fastRun = ()=>setTimeout(()=>{ //使用 setTimeout 把主线任务变成宏任务，使得每运行完一个宏任务都重新渲染一次UI
+        this.aDayGoBy()
+        if (this.GameWorld.calendar.year<yearsBeforeBorn) 
+          fastRun()
+        else if (!this.you) {
+          this.you = GameWorld.society.characters[GameWorld.society.characters.length-1]
+          GameWorld.theMainCharacterId = this.you.cId  
+          fastRun()
+        } else if (this.you.body.month <= toAge*12) {
+          fastRun()
+        } else {
+          this.fastRunning = false
+          this.play()
+          resolve()
+        }
+      },0)
+      fastRun()
     })
   })
 }
@@ -133,8 +133,8 @@ GameManager.prototype.getCharacterById = function(cId) {
   })
   return character || `找不到id为${cId}的角色`
 }
-GameManager.prototype.getMaterialById = function(id) {
-  const object = this.GameWorld.material.find( item => {
+GameManager.prototype.getEstateById = function(id) {
+  const object = this.GameWorld.estates.find( item => {
     return item.id == id
   })
   return object || `找不到id为${cId}的对象`
@@ -201,22 +201,21 @@ GameManager.prototype.loadArchive = function (archive) {
 }
 
 GameManager.prototype.addMemory = function(A,B,eventName) {
-  const eventNameList = Object.keys( SocietySetting.events )
-  const eventId = eventNameList.indexOf(eventName)
-  if( eventId >= 0 ) {
-    A.memory.unshift({
-      "BId": B.cId,
-      "eventId": eventId
-    })
-  }
-  else {
-    console.log("不存在事件："+eventName,",A:",A,",B:",B)
-  }
+  // const eventNameList = Object.keys( SocietySetting.events )
+  // const eventId = eventNameList.indexOf(eventName)
+  // if( eventId >= 0 ) {
+  //   A.memory.unshift({
+  //     "BId": B.cId,
+  //     "eventId": eventId
+  //   })
+  // }
+  // else {
+  //   console.log("不存在事件："+eventName,",A:",A,",B:",B)
+  // }
 }
 
 GameManager.prototype.parseMemory = function(A,memory) {
   const B = this.getCharacterById(memory.B)
-
   const event = EventList.find( e=>{
     return e.id == memory.event
   })
@@ -275,6 +274,8 @@ GameManager.prototype.createCharacterByNvWa = function() { //女娲造人，天�
   const name = this.GameWorld.society.namesArr.pop()
   const character = createCharacter(name)
 
+  //捏出来就是14岁
+  character.body.month = 12*14
   //天生技能
   Object.keys(character.skills).forEach( e => {
     character.skills[e] = Math.floor(Math.random() * 40)
@@ -283,20 +284,20 @@ GameManager.prototype.createCharacterByNvWa = function() { //女娲造人，天�
   const house = {
     id: Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0'),
     '类型': '屋子',
-    '尺寸': Number(30) + (Math.random()*100).toFixed(0),
-    '质量': Number(20) + (Math.random()*80).toFixed(0)
+    '尺寸': 30 + Math.floor(Math.random()*100),
+    '质量': 20 + Math.floor(Math.random()*80)
   }
-  character.estate.push(house.id)
-  this.GameWorld.material.push(house)
+  character.estates.push(house.id)
+  this.GameWorld.estates.push(house)
   //获得耕地
-  const property = {
+  const farmland = {
     id: Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0'),
     '类型': '耕地',
-    '尺寸': 30 + Number((Math.random()*100).toFixed(0)),
-    '质量': 20 + Number((Math.random()*80).toFixed(0))
+    '尺寸': 30 + Math.floor(Math.random()*100),
+    '质量': 20 + Math.floor(Math.random()*80)
   }
-  character.property.push(property.id)
-  this.GameWorld.material.push(property)
+  character.estates.push(farmland.id)
+  this.GameWorld.estates.push(farmland)
 
   return character
 }
@@ -310,14 +311,19 @@ GameManager.prototype.sow = function (character, farmland) {
 }
 
 GameManager.prototype.harvest = function (character, farmland) {
-  character.property.push({
-    '类型': farmland.plant['名称'],
-    '数量': farmland['尺寸']
-  })
+  if (farmland.plant.成长度<100) return
+  this.gainPossession(character,farmland.plant['名称'],farmland['尺寸'])
   farmland.plant = null
 }
 
-
+GameManager.prototype.gainPossession = function(A, type, number) {
+  const sameThing = A.possession.find(e=> e.类型==type)
+  if (sameThing) sameThing.数量 += number
+  else A.possession.push({
+    '类型': type,
+    '数量': number
+  })
+}
 
 
 export { GameManager }

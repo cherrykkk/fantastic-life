@@ -3,7 +3,10 @@
     <div v-if="Manager.GameWorld">
       {{Manager.GameWorld.calendar.year}}年
       {{Manager.GameWorld.calendar.month}}月
-      {{Manager.GameWorld.calendar.date}}日</div>
+      {{Manager.GameWorld.calendar.date}}日
+      <button v-if="!Manager.playing" @click="Manager.play()">继续生活</button>
+      <button v-if="Manager.playing" @click="Manager.stop()">暂停</button>
+    </div>
     <router-view/>
     <div class="button-board" v-if="Manager.GameWorld">
       <div @click="toUrl('/SettingInGame')">设置</div>
@@ -36,9 +39,9 @@ export default {
     const globalState = inject('globalState')
     const toUrl = inject('toUrl')
     const config = reactive({
-      "出生前世界运行年份": 20,
-      "出生后直接跳到年龄": 2,
-      "女娲造人持续年份": 5,
+      "出生前世界运行年份": 2,
+      "出生后直接跳到年龄": 0,
+      "女娲造人持续年份": 1,
       "世界创建之初的NPC个数": 10
     })
     const closeMaskLayer = (e)=>{
@@ -47,13 +50,11 @@ export default {
       }
     }
     const newGame = ()=>{
-      globalState.gameLoaded = false
       globalState.maskLayer = false
       const t1 = Date.now()
 
       Manager.newGame(config).then(()=>{
         console.log('done')
-        globalState.gameLoaded = true
         toUrl('/player-view')
         const t2 = Date.now()
         console.log(t2-t1)
