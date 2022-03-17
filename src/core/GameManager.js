@@ -222,8 +222,8 @@ GameManager.prototype.parseMemory = function(A,memory) {
   })
   let string = event ? event.描述 : null
   if (string) {
-    string = string.replace('A',A.surname+A.givenName)
-    string = string.replace('B',B.surname+B.givenName)
+    string = string.replace(/A/g,A.surname+A.givenName)
+    string = string.replace(/B/g,B.surname+B.givenName)
     return string
   }
 }
