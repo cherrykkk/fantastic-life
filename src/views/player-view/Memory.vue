@@ -1,7 +1,10 @@
 <template>
   <div class="title">{{you.surname+you.givenName}}的记忆</div>
   <div class="memory-list">
-    <div v-for="(e,i) in memoryList" :key="i" class="memory-word">{{Manager.parseMemory(you,e)}}</div>
+    <div v-for="(e,i) in memoryList" :key="i" class="memory-word">
+      <div v-if="e.event!=0">{{Manager.parseMemory(you,e)}}</div>
+      <div v-if="e.event==0">————————————————{{e.date}}</div>
+    </div>
   </div>
 </template>
 <script>

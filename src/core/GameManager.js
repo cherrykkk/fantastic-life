@@ -42,6 +42,7 @@ GameManager.prototype.newGame = function(config) {
       month: 0,
       date: 0
     },
+    maxId: 0,
     config: {
       startNum: config.世界创建之初的NPC个数,
       yearsBeforeBorn: config.出生前世界运行年份,
@@ -200,21 +201,30 @@ GameManager.prototype.loadArchive = function (archive) {
   this.play()
 }
 
-GameManager.prototype.addMemory = function(A,B,eventName) {
-  // const eventNameList = Object.keys( SocietySetting.events )
-  // const eventId = eventNameList.indexOf(eventName)
-  // if( eventId >= 0 ) {
-  //   A.memory.unshift({
-  //     "BId": B.cId,
-  //     "eventId": eventId
-  //   })
-  // }
-  // else {
-  //   console.log("不存在事件："+eventName,",A:",A,",B:",B)
-  // }
+GameManager.prototype.addMemory = function(A,B,e) {
+  //找到上一次的日期
+  const { year,month,date } = this.GameWorld.calendar 
+  const currentDate = `${year}/${month}/${date}`
+  for (let i = A.memory.length-1 ; i >= 0 ; i--) {
+    if (A.memory[i].event == 0) {
+      if (A.memory[i].date != currentDate)
+        A.memory.push({
+          event: 0,
+          date: currentDate
+        })
+      break;
+    } else if (i==0) {
+      A.memory.push({
+        event: 0,
+        date: currentDate
+      })
+    }
+  }
+  A.memory.push(new MemoryInterface(A.cId,B.cId,e.id))
 }
 
 GameManager.prototype.parseMemory = function(A,memory) {
+  //id = 0 的是日期分界线
   const B = this.getCharacterById(memory.B)
   const event = EventList.find( e=>{
     return e.id == memory.event
@@ -248,8 +258,6 @@ function createCharacter(name) {
   character.givenName = name.givenName
   //性别跟着名字走（就离谱）
   character.body.sex = name.sex
-  //随机ID
-  character.cId = Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0')
   //性格(大五)随机
   const theBigFive = ['Openness','Conscientiousness','Extraversion','Agreeableness','Neuroticism']
   for( const e of theBigFive) {
@@ -267,12 +275,14 @@ function createCharacter(name) {
 GameManager.prototype.createCharacter = function() {
   const name = this.GameWorld.society.namesArr.pop()
   const character = createCharacter(name)
+  character.cId = this.allocateId()
   return character
 }
 
 GameManager.prototype.createCharacterByNvWa = function() { //女娲造人，天生技能
   const name = this.GameWorld.society.namesArr.pop()
   const character = createCharacter(name)
+  character.cId = this.allocateId()
 
   //捏出来就是14岁
   character.body.month = 12*14
@@ -282,7 +292,7 @@ GameManager.prototype.createCharacterByNvWa = function() { //女娲造人，天�
   })
   //分房子
   const house = {
-    id: Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0'),
+    id: this.allocateId(),
     '类型': '屋子',
     '尺寸': 30 + Math.floor(Math.random()*100),
     '质量': 20 + Math.floor(Math.random()*80)
@@ -291,14 +301,13 @@ GameManager.prototype.createCharacterByNvWa = function() { //女娲造人，天�
   this.GameWorld.estates.push(house)
   //获得耕地
   const farmland = {
-    id: Date.now() + (Math.random()*100).toFixed(0).padStart(2,'0'),
+    id: this.allocateId(),
     '类型': '耕地',
     '尺寸': 30 + Math.floor(Math.random()*100),
     '质量': 20 + Math.floor(Math.random()*80)
   }
   character.estates.push(farmland.id)
   this.GameWorld.estates.push(farmland)
-
   return character
 }
 
@@ -325,5 +334,16 @@ GameManager.prototype.gainPossession = function(A, type, number) {
   })
 }
 
+GameManager.prototype.allocateId = function () {
+  this.GameWorld.maxId ++ 
+  return this.GameWorld.maxId
+}
+
+
+function MemoryInterface(idA,idB,idEvent) {
+  this.A = idA
+  this.B = idB
+  this.event = idEvent
+}
 
 export { GameManager }

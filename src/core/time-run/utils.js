@@ -9,19 +9,13 @@ function RelationshipInterface(id,level,buff) {
     this.buff.add(buff)
 }
 
-function MemoryInterface(idA,idB,idEvent) {
-  this.A = idA
-  this.B = idB
-  this.event = idEvent
-}
-
 export function dailyIntercourse(Manager,A) {
   //解决昨日遗留事件
   A.relationships.forEach(re=>{
     re.buff.forEach(buff=>{
       if (buff[0] == "被") {
         const B = Manager.getCharacterById(re.id)
-        ResolveBuff(A,B,re,buff)
+        ResolveBuff(Manager,A,B,re,buff)
       }
     })
   })
@@ -59,16 +53,14 @@ export function dailyIntercourse(Manager,A) {
     }
   }
 
-  const own = re.buff
-  const allowEvents = EventsList.filter( e=>{
+  EventsList.forEach(e=>{
     if (!e.前置关系buff) return false
     const require = e.前置关系buff.split("，")
     const shouldnot = e.相斥全局buff
     //查找 arr1 与 arr2 是否有交集，且不冲突
-    const result = require.filter(e=> (own.has(e) && !A.buff.has(shouldnot)))
-    return result.length
-  })
-  allowEvents.forEach( e=>{
+    const result = require.filter(e=> (re.buff.has(e) && !A.buff.has(shouldnot)))
+    if (!result.length) return
+    
     let succeed = true, range
     const checkValueKeys = '对方颜值,外倾性,关系级别,本人年龄,对方年龄,随机度'.split(',')
     const values = [B.charm,A.BIG_FIVE_Extraversion,re.level,A.body.month/12,B.body.month/12,Math.random()]
@@ -92,7 +84,7 @@ export function dailyIntercourse(Manager,A) {
         else B.relationships.push(new RelationshipInterface(A.cId,0,B.获得buff))
       }
       //存入记忆
-      A.memory.push(new MemoryInterface(A.cId,B.cId,e.id))
+      Manager.addMemory(A,B,e)
     }  
   })
 
@@ -105,62 +97,6 @@ export function dailyIntercourse(Manager,A) {
   A.relationships.sort((a,b)=>{
     return b.level-a.level
   })
-}
-
-export function resolveEvents(Manager, A) {
-  for( const event of A.events ) {
-    if( event.status == 'pending' && A.cId == event.B ) {
-      const B = Manager.getCharacterById(event.A)
-      Manager.addMemory(A,B,event.BType)
-      const result = acceptMarriage(A,B)
-      event.status = result.status
-      if( result.status == "fulfilled" ) {
-        Manager.addMemory(A,B,"接受求婚")
-        getMarried(Manager,A,B)
-      }
-      else {
-        Manager.addMemory(A,B,"拒绝求婚")
-      }
-    }
-    else if ( event.status == 'resolve' && A.cId == event.A ) {
-      
-    }
-    else if ( event.status == 'reject' && A.cId == event.A ) {
-      const B = Manager.getCharacterById(event.B)
-      const re = A.relationships.find( e => e.id == B.cId )
-      if( re ) {
-        re.level -= 5
-      }
-      Manager.addMemory(A,B,"求婚被拒")
-      A.buff.add("不自信")
-    }
-  }
-  // 去除已解决事件
-  A.events = A.events.filter( e => {
-    return e.status == 'pending'
-  })
-}
-
-function acceptMarriage(A,B) { //A 被求婚者，B 求婚者
-  const result = {
-    status: 'pending',
-    reason: null
-  }
-  //检定好感度，成功则结婚，不成功则加好感
-  const relationship = A.relationships.find(item=>item.id==B.cId)
-  if(A.body.month < 12*marriageAge || A.marriaged) {
-    result.status = 'reject' //不满足结婚年龄或者已婚则跳出 
-    result.reason = "未到婚龄"
-  }
-  else if(relationship && relationship.level > 5 && !B.marriaged ) {
-    result.status = 'fulfilled'
-    result.reason = "两情相悦"
-  }
-  else { //被求婚者不认识求婚者
-    result.status = 'reject'
-    result.reason = "不喜欢"
-  }
-  return result
 }
 
 export function giveBirth(Manager,character) {
@@ -220,16 +156,7 @@ export function giveBirth(Manager,character) {
   }
 }
 
-function getMarried(Manager,characterA,characterB) {
-  characterA.marriaged = true
-  characterB.marriaged = true
-  characterA.spouse = characterB.cId
-  characterB.spouse = characterA.cId
-  characterA.memory.unshift(`${Manager.getName(characterA)}接受了${Manager.getName(characterB)}的求婚`)
-  characterB.memory.unshift(`${Manager.getName(characterB)}向${Manager.getName(characterA)}求婚被接受了`)
-}
-
-function ResolveBuff(A, B, re, buff) {
+function ResolveBuff(Manager,A, B, re, buff) {
   const allowResults = EventsList.filter( e=>{
     if (e.前置关系buff && e.前置关系buff.indexOf(buff)!=-1) 
       return true
@@ -258,7 +185,14 @@ function ResolveBuff(A, B, re, buff) {
         else B.relationships.push(new RelationshipInterface(A.cId,0,B.获得buff))
       }
       //存入记忆
-      A.memory.push(new MemoryInterface(A.cId,B.cId,e.id))
+      Manager.addMemory(A,B,e)
     }  
   })
+}
+
+export function upDateActive (Manager, A) {
+  if (A.body.month < 14*12) {
+    A.actions.push('玩耍')
+  }
+
 }

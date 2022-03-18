@@ -1,5 +1,5 @@
 import { monthBody } from "./monthBody"
-import { intercourse, giveBirth, resolveEvents } from './utils.js'
+import { intercourse, giveBirth } from './utils.js'
 export function monthCharacter(Manager,character) {
   //身体成长
   monthBody(character)
@@ -11,9 +11,8 @@ export function monthCharacter(Manager,character) {
   //intercourse(Manager,character)
 
   //生子
-  giveBirth(Manager,character)
+  giveBirth(Manager,character)  
 
-  //事件处理
-  resolveEvents(Manager,character)
-  
+  //本月新的行为策略
+  upDateActive(Manager,character)
 }

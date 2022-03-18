@@ -26,8 +26,6 @@ export default {
     const toUrl = inject("toUrl")
     const saveChange = ()=>{
       Object.assign(Manager.GameWorld.config, config)
-      console.log(Manager.GameWorld.config)
-      Manager.play()
       showSystemMessage("已修改配置")
       toUrl('./player-view')
     }

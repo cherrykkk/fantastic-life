@@ -53,6 +53,9 @@ const characterArgs = {
 
   buff: [],
 
+
+  actions: [],
+
   skills: {
     herbology: 0,
     medicine: 0,
