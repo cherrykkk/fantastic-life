@@ -40,12 +40,12 @@ export default {
 }
 
 function showRelationship(GameWorld,relathionship) {
-  const ObjectCharacter = GameWorld.getCharacterById(relathionship.cId)
+  const ObjectCharacter = GameWorld.getCharacterById(relathionship.uid)
   return ObjectCharacter.surname+ObjectCharacter.givenName+":"+relathionship.level
 }
 
-function showSpouse(GameWorld,cId) {
-  const character = GameWorld.getCharacterById(cId)
+function showSpouse(GameWorld,uid) {
+  const character = GameWorld.getCharacterById(uid)
   return character.surname+character.givenName+`(${(character.body.month/12).toFixed(0)})`
 }
 

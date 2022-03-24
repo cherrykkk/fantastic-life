@@ -9,9 +9,12 @@ export function Character(){
 const characterArgs = {
   surname: null,
   givenName: null,
-  cId: null,
+  uid: null,
   marriaged: false,
   spouse: null,
+  networking: {
+    lover: null
+  },
   
   body: {
     month: 0,

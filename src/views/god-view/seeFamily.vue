@@ -23,15 +23,15 @@ export default {
       GameWorld.society.characters.forEach( character => {
         if( character.marriaged && character.body.sex=='女') {
           const family = {
-            idA: character.cId,
+            idA: character.uid,
             idB: character.spouse,
             correction: true
           }
           tempList.push(family)
           //检查自己的对象的对象是否是自己
           const spouseCharacter = GameWorld.getCharacterById(character.spouse)
-          if( spouseCharacter.spouse != character.cId ) {
-            console.log(showName(GameWorld,character.cId) + "出问题了")
+          if( spouseCharacter.spouse != character.uid ) {
+            console.log(showName(GameWorld,character.uid) + "出问题了")
           }
         }
       })
@@ -44,8 +44,8 @@ export default {
     }
   }, 
 }
-function showName(GameWorld,cId) {
-  const character = GameWorld.getCharacterById(cId)
+function showName(GameWorld,uid) {
+  const character = GameWorld.getCharacterById(uid)
   return character.surname+character.givenName+`(${(character.body.month/12).toFixed(0)})`
 }
 

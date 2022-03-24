@@ -1,27 +1,14 @@
-import EventsList from '../../DLC/relationshipBuff.json'
-const marriageAge = 14   
-
-function RelationshipInterface(id,level,buff) {
-  this.id = id
-  this.level = level
-  this.buff = new Set()
-  if (buff)
-    this.buff.add(buff)
-}
+import EVENT from '../world/Events.js'
+import { RelationshipInterface } from '../Interface'
 
 export function dailyIntercourse(Manager,A) {
-  //解决昨日遗留事件
-  A.relationships.forEach(re=>{
-    re.buff.forEach(buff=>{
-      if (buff[0] == "被") {
-        const B = Manager.getCharacterById(re.id)
-        ResolveBuff(Manager,A,B,re,buff)
-      }
-    })
-  })
+  // A.relationships.forEach(re=>{
+  //   const B = Manager.getCharacterById(re.uid)
+  //   EVENT.解决被动(Manager,A,B,re)
+  // })
 
   //今日交际对象
-  if (A.BIG_FIVE_Openness > Math.random()*10) {
+  if (A.BIG_FIVE_Openness < Math.random()*10) {
     return 
   }
   let B, re
@@ -34,13 +21,13 @@ export function dailyIntercourse(Manager,A) {
   }
   if (A.relationships.length>0 && Math.random() > 0.9) {   //与熟人交际
     re = _.sample(A.relationships)
-    B = Manager.getCharacterById(re.id)
+    B = Manager.getCharacterById(re.uid)
   }
   else {   //与生人交际
     B = _.sample(Manager.GameWorld.society.characters)
-    if (B.cId == A.cId) return //跳过今日交际
+    if (B.uid == A.uid) return //跳过今日交际
     const notAcquaintance = A.relationships.every(_re=>{
-      if (_re.id != B.cId)
+      if (_re.uid != B.uid)
         return true
       else {
         re = _re
@@ -48,50 +35,15 @@ export function dailyIntercourse(Manager,A) {
       }
     })
     if (notAcquaintance) {
-      re = new RelationshipInterface(B.cId,0,"陌生人")
+      re = new RelationshipInterface(B.uid,0,0)
       A.relationships.push(re)
     }
   }
+  EVENT.触发当日随机(Manager,A,B,re)
 
-  EventsList.forEach(e=>{
-    if (!e.前置关系buff) return false
-    const require = e.前置关系buff.split("，")
-    const shouldnot = e.相斥全局buff
-    //查找 arr1 与 arr2 是否有交集，且不冲突
-    const result = require.filter(e=> (re.buff.has(e) && !A.buff.has(shouldnot)))
-    if (!result.length) return
-    
-    let succeed = true, range
-    const checkValueKeys = '对方颜值,外倾性,关系级别,本人年龄,对方年龄,随机度'.split(',')
-    const values = [B.charm,A.BIG_FIVE_Extraversion,re.level,A.body.month/12,B.body.month/12,Math.random()]
-
-    for (const index in checkValueKeys) {
-      if (e[checkValueKeys[index]]) {
-        range = e[checkValueKeys[index]].split(',')
-        if (values[index]<range[0] || values[index]>range[1])
-          succeed = false
-      }
-    }
-    if (succeed) {
-      if (e.关系变动)   re.level += Number(e.关系变动)
-      if (e.A获得buff)  re.buff.add(e.A获得buff)
-      if (e.A失去buff)  e.A失去buff.split('，').forEach(buff=>re.buff.delete(buff))
-      if (e.A获得全局buff) A.buff.add(e.A获得全局buff)
-      if (e.A失去全局buff) e.A失去全局buff.split('，').forEach(buff=>A.buff.delete(buff))
-      if (e.B获得buff) {
-        const reB = B.relationships.find(re=>re.id==A.cId)
-        if (reB)  reB.buff.add(e.B获得buff)
-        else B.relationships.push(new RelationshipInterface(A.cId,0,B.获得buff))
-      }
-      //存入记忆
-      Manager.addMemory(A,B,e)
-    }  
-  })
-
-  //关系buff 为空的必然被遗忘，陌生人标签的概率遗忘
+  //熟悉值为 0 的概率遗忘
   A.relationships = A.relationships.filter(re=>{
-    if (re.buff.size == 0)  return false
-    else if (re.buff.has('陌生人') && Math.random()>0.5) return Math.random()>0.5
+    if (re.熟悉 == 0 && Math.random()>0.5) return Math.random()>0.5
     else return true
   })
   A.relationships.sort((a,b)=>{
@@ -119,26 +71,26 @@ export function giveBirth(Manager,character) {
     child.surname = father.surname
     //绑定社会关系
     child.relationships.push(
-      new RelationshipInterface(mother.cId,30,'母亲'),
-      new RelationshipInterface(father.cId,30,'父亲')
+      new RelationshipInterface(mother.uid,30,100,'母亲'), //家人的纯洁度极高
+      new RelationshipInterface(father.uid,30,100,'父亲')
     )
     //与其他人的两两关系
-    mother.relationships.push(new RelationshipInterface(child.cId,50,'子女'))
-    father.relationships.push(new RelationshipInterface(child.cId,50,'子女'))
-    for (const cId of mother.children) {
-      if (cId == child.cId) return
+    mother.relationships.push(new RelationshipInterface(child.uid,50,100,'子女'))
+    father.relationships.push(new RelationshipInterface(child.uid,50,100,'子女'))
+    for (const uid of mother.children) {
+      if (uid == child.uid) return
 
-      const character = Manager.getCharacterById(cId)
+      const character = Manager.getCharacterById(uid)
       if (character.body.sex == '男') {
-        child.relationships.push(new RelationshipInterface(cId,10,'哥哥'))
+        child.relationships.push(new RelationshipInterface(uid,10,100,'哥哥'))
       } else {
-        child.relationships.push(new RelationshipInterface(cId,10,'姐姐'))
+        child.relationships.push(new RelationshipInterface(uid,10,100,'姐姐'))
       }
       
       if (child.body.sex == '男') {
-        character.relationships.push(new RelationshipInterface(child.cId,10,'弟弟'))
+        character.relationships.push(new RelationshipInterface(child.uid,10,100,'弟弟'))
       } else {
-        character.relationships.push(new RelationshipInterface(child.cId,10,'妹妹'))
+        character.relationships.push(new RelationshipInterface(child.uid,10,100,'妹妹'))
       }
     }
 
@@ -154,40 +106,6 @@ export function giveBirth(Manager,character) {
   else { //没怀上
     //temporary do nothing 
   }
-}
-
-function ResolveBuff(Manager,A, B, re, buff) {
-  const allowResults = EventsList.filter( e=>{
-    if (e.前置关系buff && e.前置关系buff.indexOf(buff)!=-1) 
-      return true
-  })
-  allowResults.forEach(e=>{
-    let succeed = true, range = null
-    const checkValueKeys = '对方颜值,外倾性,宜人性,关系级别,本人年龄,对方年龄,随机度'.split(',')
-    const values = [B.charm,A.BIG_FIVE_Extraversion,A.BIG_FIVE_Agreeableness,re.level,A.body.month/12,B.body.month/12,Math.random()]
-
-    for (const index in checkValueKeys) {
-      if (e[checkValueKeys[index]]) {
-        range = e[checkValueKeys[index]].split(',')
-        if (values[index]<range[0] || values[index]>range[1])
-          succeed = false
-      }
-    }
-    if (succeed) {
-      if (e.关系变动)   re.level += Number(e.关系变动)
-      if (e.A获得buff)  re.buff.add(e.A获得buff)
-      if (e.A失去buff)  e.A失去buff.split(',').forEach(buff=>re.buff.delete(buff))
-      if (e.A获得全局buff) A.buff.add(e.A获得全局buff)
-      if (e.A失去全局buff) e.A失去全局buff.split(',').forEach(buff=>A.buff.delete(buff))
-      if (e.B获得buff) {
-        const reB = B.relationships.find(re=>re.id==A.cId)
-        if (reB)  reB.buff.add(e.B获得buff)
-        else B.relationships.push(new RelationshipInterface(A.cId,0,B.获得buff))
-      }
-      //存入记忆
-      Manager.addMemory(A,B,e)
-    }  
-  })
 }
 
 export function upDateActive (Manager, A) {

@@ -63,7 +63,7 @@ export default {
   height: 6vw;
   border-radius: 50%;
   background-color: white;
-  left: 5vw;
+  right: 5vw;
   bottom: 100px;
 }
 </style>

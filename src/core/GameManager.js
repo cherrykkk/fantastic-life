@@ -1,7 +1,7 @@
 import { daySociety, monthSociety, yearSociety, dailyWorld } from './time-run/index.js'
-import EventList from '../DLC/relationshipBuff.json'
 import { Character } from './world/character/Character.js'
-import { _ } from 'core-js'
+import EVENT from './world/Events.js'
+import { MemoryInterface } from './Interface'
 
 function GameManager () {
   this.GameWorld = null
@@ -68,7 +68,7 @@ GameManager.prototype.newGame = function(config) {
           fastRun()
         else if (!this.you) {
           this.you = GameWorld.society.characters[GameWorld.society.characters.length-1]
-          GameWorld.theMainCharacterId = this.you.cId  
+          GameWorld.theMainCharacterId = this.you.uid  
           fastRun()
         } else if (this.you.body.month <= toAge*12) {
           fastRun()
@@ -119,33 +119,33 @@ GameManager.prototype.giveBirth = function ( mother, father ) {
   const child = this.createCharacter()
   characters.push(child)
   //绑定血缘母子、父子关系
-  mother.children.push(child.cId)
-  child.body.mother = mother.cId
+  mother.children.push(child.uid)
+  child.body.mother = mother.uid
   if ( father ) {
-    father.children.push(child.cId)
-    child.body.father = father.cId
+    father.children.push(child.uid)
+    child.body.father = father.uid
   }
   return child
 }
 
-GameManager.prototype.getCharacterById = function(cId) {
+GameManager.prototype.getCharacterById = function(uid) {
   const character = this.GameWorld.society.characters.find( item => {
-    return item.cId == cId
+    return item.uid == uid
   })
-  return character || `找不到id为${cId}的角色`
+  return character || `找不到id为${uid}的角色`
 }
 GameManager.prototype.getEstateById = function(id) {
   const object = this.GameWorld.estates.find( item => {
     return item.id == id
   })
-  return object || `找不到id为${cId}的对象`
+  return object || `找不到id为${uid}的对象`
 }
 
 GameManager.prototype.getName = function (c) {
   let character = null
   if( typeof c == 'number' || typeof c=='string' ) { //类型为id 
     character = this.GameWorld.society.characters.find( item => {
-      return item.cId == c
+      return item.uid == c
     })
   }
   else {
@@ -204,37 +204,24 @@ GameManager.prototype.loadArchive = function (archive) {
 GameManager.prototype.addMemory = function(A,B,e) {
   //找到上一次的日期
   const { year,month,date } = this.GameWorld.calendar 
-  const currentDate = `${year}/${month}/${date}`
-  for (let i = A.memory.length-1 ; i >= 0 ; i--) {
-    if (A.memory[i].event == 0) {
-      if (A.memory[i].date != currentDate)
-        A.memory.push({
-          event: 0,
-          date: currentDate
-        })
-      break;
-    } else if (i==0) {
-      A.memory.push({
-        event: 0,
-        date: currentDate
-      })
-    }
-  }
-  A.memory.push(new MemoryInterface(A.cId,B.cId,e.id))
+  A.memory.push(new MemoryInterface(A.uid,B.uid,e.id,year,month,date))
 }
 
 GameManager.prototype.parseMemory = function(A,memory) {
   //id = 0 的是日期分界线
   const B = this.getCharacterById(memory.B)
-  const event = EventList.find( e=>{
+  const event = EVENT.availableList.find( e=>{
     return e.id == memory.event
   })
   let string = event ? event.描述 : null
   if (string) {
     string = string.replace(/A/g,A.surname+A.givenName)
     string = string.replace(/B/g,B.surname+B.givenName)
-    return string
   }
+  if (event.范围=='对话') {
+    string = `(对${B.surname+B.givenName})`+string
+  }
+  return string
 }
 
 const availableAppearance = {
@@ -275,14 +262,14 @@ function createCharacter(name) {
 GameManager.prototype.createCharacter = function() {
   const name = this.GameWorld.society.namesArr.pop()
   const character = createCharacter(name)
-  character.cId = this.allocateId()
+  character.uid = ++ this.GameWorld.maxId 
   return character
 }
 
 GameManager.prototype.createCharacterByNvWa = function() { //女娲造人，天生技能
   const name = this.GameWorld.society.namesArr.pop()
   const character = createCharacter(name)
-  character.cId = this.allocateId()
+  character.uid = ++ this.GameWorld.maxId 
 
   //捏出来就是14岁
   character.body.month = 12*14
@@ -292,7 +279,7 @@ GameManager.prototype.createCharacterByNvWa = function() { //女娲造人，天�
   })
   //分房子
   const house = {
-    id: this.allocateId(),
+    id: ++ this.GameWorld.maxId,
     '类型': '屋子',
     '尺寸': 30 + Math.floor(Math.random()*100),
     '质量': 20 + Math.floor(Math.random()*80)
@@ -301,7 +288,7 @@ GameManager.prototype.createCharacterByNvWa = function() { //女娲造人，天�
   this.GameWorld.estates.push(house)
   //获得耕地
   const farmland = {
-    id: this.allocateId(),
+    id: ++ this.GameWorld.maxId,
     '类型': '耕地',
     '尺寸': 30 + Math.floor(Math.random()*100),
     '质量': 20 + Math.floor(Math.random()*80)
@@ -332,18 +319,6 @@ GameManager.prototype.gainPossession = function(A, type, number) {
     '类型': type,
     '数量': number
   })
-}
-
-GameManager.prototype.allocateId = function () {
-  this.GameWorld.maxId ++ 
-  return this.GameWorld.maxId
-}
-
-
-function MemoryInterface(idA,idB,idEvent) {
-  this.A = idA
-  this.B = idB
-  this.event = idEvent
 }
 
 export { GameManager }

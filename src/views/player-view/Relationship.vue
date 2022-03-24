@@ -1,19 +1,19 @@
 <template>
   <div class="title">{{you.surname+you.givenName}}的关系谱</div>
-  <div class="family-board">
+  <!-- <div class="family-board">
     <div>家庭</div>
     <div>父亲：{{family.father?Manager.getName(family.father):null}} </div>
     <div>母亲：{{family.mother?Manager.getName(family.mother):null}} </div>
     <div v-for="(e,i) in family.children" :key="i">{{Manager.getName(e)}}</div>
-  </div>
+  </div> -->
   <div class="friend-board">
     <div>朋友</div>
     <div v-for="(e2) in you.relationships" :key="e2" class="relationship">
       <div class="buff-area">
         <span v-for="(e,i) in e2.buff" :key="i" class="buff">{{e}}</span>
       </div>
-      {{Manager.getName(e2.id)}} <br> {{e2.level}}
-      <character-avater :character="Manager.getCharacterById(e2.id)" size="60" class="avater"></character-avater>
+      {{Manager.getName(e2.uid)}} <br>熟悉{{e2.熟悉}} 纯洁{{e2.纯洁}}
+      <character-avater :character="Manager.getCharacterById(e2.uid)" size="60" class="avater"></character-avater>
     </div>
   </div>
 

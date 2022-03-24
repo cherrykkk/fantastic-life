@@ -2,8 +2,8 @@
   <div class="title">{{you.surname+you.givenName}}的记忆</div>
   <div class="memory-list">
     <div v-for="(e,i) in memoryList" :key="i" class="memory-word">
-      <div v-if="e.event!=0">{{Manager.parseMemory(you,e)}}</div>
-      <div v-if="e.event==0">————————————————{{e.date}}</div>
+      <span class="calendar">{{e.month}}/{{e.date}}</span>
+      {{Manager.parseMemory(you,e)}}
     </div>
   </div>
 </template>
@@ -39,6 +39,9 @@ export default {
     font-size: 16px;
     color: #666;
     text-align: left;
+    .calendar {
+      width: 40px;
+    }
   }
 }
 </style>

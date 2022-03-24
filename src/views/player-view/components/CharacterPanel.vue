@@ -40,8 +40,8 @@ function showRelationship(Manager,relathionship) {
   return ObjectCharacter.surname+ObjectCharacter.givenName+":"+relathionship.level
 }
 
-function showSpouse(Manager,cId) {
-  const character = Manager.getCharacterById(cId)
+function showSpouse(Manager,uid) {
+  const character = Manager.getCharacterById(uid)
   return character.surname+character.givenName+`(${(character.body.month/12).toFixed(0)})`
 }
 

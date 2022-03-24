@@ -70,6 +70,9 @@ export function createMap() {
 
   loader.load(()=>{
     const tiling = new PIXI.TilingSprite.from('郊外',2000,2000) //height 和width 无法设置大小，其子元素的边界才能决定Container的边界
+    tiling.tileScale.x = 2
+    tiling.tileScale.y = 2
+    console.log(tiling.texture.baseTexture)
     mapContainer.addChild(tiling)
 
     //handler.focus  = createSword(app.screen.width/2,app.screen.height/2)
@@ -117,7 +120,7 @@ export function createLoader() {
       url: 'map/map1.json'
     },{
       name: "郊外",
-      url: 'map/郊外3.png'
+      url: 'map/郊外4.png'
     },{
       name: "野兔1",
       url: 'map/野兔1.png'

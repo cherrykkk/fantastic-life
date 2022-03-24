@@ -1,5 +1,5 @@
 import { monthBody } from "./monthBody"
-import { intercourse, giveBirth } from './utils.js'
+import { intercourse, giveBirth, upDateActive } from './utils.js'
 export function monthCharacter(Manager,character) {
   //身体成长
   monthBody(character)
