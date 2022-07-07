@@ -27,7 +27,7 @@
   <div class="result-board" v-if="config.gameIsOver">
     当前采药能力
     <div>{{you.skills.herbology}}({{config.levelChange}})</div>
-    <div @click="toUrl('/player-view')">确定</div>
+    <div @click="toUrl('/personal-view')">确定</div>
   </div>
 </template>
 
@@ -39,7 +39,7 @@ export default {
     const Manager = inject("Manager").value
     Manager.stop()
     const you = Manager.you
-    const currentMonth = Manager.GameWorld.calendar.month
+    const currentMonth = Manager.World.calendar.month
     const herbData = ref(null)
     fetch('http://1.12.218.81:3000/herbData').then(res=>res.json()).then((res=>{
       herbData.value = res

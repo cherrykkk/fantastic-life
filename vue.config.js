@@ -1,6 +1,11 @@
+
+const path = require('path')
 module.exports = {
+  // publicPath: './',
   publicPath: './',
+
   devServer: {
+    host: '0.0.0.0',
     port: 8080, 
     proxy: {
       '/api': {
@@ -11,6 +16,13 @@ module.exports = {
           '^/api': ''
         }
       }
+    }
+  },
+
+  pluginOptions: {
+    'style-resources-loader': {
+      preProcessor: 'less',
+      patterns: [path.resolve(__dirname, './src/assets/base.less')]
     }
   }
 }

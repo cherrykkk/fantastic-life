@@ -1,16 +1,16 @@
 <template>
   <div> 
-    <div class="info">{{character.surname+character.givenName}}({{(character.body.month/12).toFixed(0)}})
-      <div v-if="character.marriaged">⇋{{showSpouse(GameWorld,character.spouse)}}</div>
+    <div class="info">{{character.name}}({{(character.month/12).toFixed(0)}})
+      <div v-if="character.marriaged">⇋{{showSpouse(World,character.spouse)}}</div>
     </div>
     <div @click="showRawInfo=!showRawInfo">展开原始信息<div  v-if="showRawInfo">{{data}}</div></div>
     <div @click="showMemory=!showMemory">展开记忆
       <div  class="memory" v-if="showMemory"> 
-        <div v-for="(e,i) in character.memory" :key="i">{{GameWorld.parseMemory(character,e)}}</div>
+        <div v-for="(e,i) in character.memories" :key="i">{{World.parseMemory(character,e)}}</div>
       </div>
     </div>
     <div class="relationships">
-      <div v-for="(e2,i2) in relationshipShow" :key="i2" class="relationship">{{showRelationship(GameWorld,e2)}}</div>
+      <div v-for="(e2,i2) in relationshipShow" :key="i2" class="relationship">{{showRelationship(World,e2)}}</div>
     </div>
   </div>
 </template>
@@ -20,7 +20,7 @@ import { inject, computed,ref } from 'vue'
 export default {
   props: ['data'],
   setup(props) {
-    const GameWorld = inject('GameWorld').value
+    const World = inject('World').value
     const character = props.data
     const relationshipShow = computed(() => {
       return character.relationships.filter(item=>item.level>=8)
@@ -28,7 +28,7 @@ export default {
     const showRawInfo = ref(false)
     const showMemory = ref(false)
     return {
-      GameWorld,
+      World,
       character,
       relationshipShow,
       showRelationship,
@@ -39,14 +39,14 @@ export default {
   },
 }
 
-function showRelationship(GameWorld,relathionship) {
-  const ObjectCharacter = GameWorld.getCharacterById(relathionship.uid)
+function showRelationship(World,relathionship) {
+  const ObjectCharacter = World.getCharacterById(relathionship.uid)
   return ObjectCharacter.surname+ObjectCharacter.givenName+":"+relathionship.level
 }
 
-function showSpouse(GameWorld,uid) {
-  const character = GameWorld.getCharacterById(uid)
-  return character.surname+character.givenName+`(${(character.body.month/12).toFixed(0)})`
+function showSpouse(World,uid) {
+  const character = World.getCharacterById(uid)
+  return character.surname+character.givenName+`(${(character.month/12).toFixed(0)})`
 }
 
 </script>

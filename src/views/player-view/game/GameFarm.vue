@@ -21,7 +21,7 @@ export default {
   setup() {
     const Manager = inject('Manager').value
     const you = Manager.you
-    const farmland = you.estates.reduce((e1,e2)=>{ 
+    const farmland = you.不动产.reduce((e1,e2)=>{ 
       const object = Manager.getEstateById(e2)
       if (object['类型'] == '耕地') e1.push(object) 
       return e1

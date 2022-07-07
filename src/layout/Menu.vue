@@ -1,8 +1,8 @@
 <template>
-  <div class="title">三千小世界</div>
+  <div class="title">世外之世</div>
   <div class="menu-list">
     <div @click="continueGame()" v-if="archiveList.length > 0">继续游戏</div>
-    <div @click="checkArgs()">新游戏</div>
+    <div @click="setMaskLayer('新游戏参数')">新游戏</div>
     <div @click="state.openArchive=true">查看存档</div>
   </div>
   <div v-if="state.openArchive" class="archive-board">
@@ -25,9 +25,6 @@ export default {
       openArchive: false
     })
     const loadArchive = inject("loadArchive")
-    const checkArgs = ()=>{
-      globalState.maskLayer = true
-    }
     const globalState = inject("globalState")
     Object.assign(globalState,{
       archiveChosen: false,
@@ -47,7 +44,7 @@ export default {
       continueGame,
       clearAllLocalStorage,
       globalState,
-      checkArgs
+      setMaskLayer: inject('setMaskLayer'),
     }
   },
 }
@@ -63,7 +60,7 @@ export default {
     color: #333;
     margin: 20px;
     padding: 20px;
-    border: double 5px green;
+    border: double 5px @themeColor;
   }
 }
 .archive-board {
@@ -72,7 +69,7 @@ export default {
   width: 80%;
   height: 80%;
   margin: 10%;
-  border: ridge 5px green;
+  border: ridge 5px @themeColor;
   background-color: #f4fff4;
   overflow: hidden;
   .button-board {

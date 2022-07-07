@@ -1,0 +1,39 @@
+{
+  "surname": "蓝",
+  "givenName": "飞雪",
+
+  "职业": "修士",
+  "money": 2000000,
+  "辟谷": true,
+
+  "sex": "女",
+  "charm": 8,
+  "month": 400,
+  "appearance": {
+    "前发": 4,
+    "发色": "#39010155",
+    "后发": 7,
+    "嘴": 5,
+    "眉毛": 6,
+    "眼睛": 6,
+    "耳朵": 2,
+    "肤色": "#feeecd55",
+    "脖子": 2,
+    "脸型": 4
+    },
+
+  "BIG_FIVE_Openness": 5, 
+  "BIG_FIVE_Conscientiousness": 5, 
+  "BIG_FIVE_Extraversion": 5,
+  "BIG_FIVE_Agreeableness": 5,
+  "BIG_FIVE_Neuroticism": 5,
+
+  "金": 5,
+  "木": 10,
+  "水": 5,
+  "火": 10,
+  "土": 5,
+  "灵根": "火木",
+  "灵力": 30000,
+  "境界": "结丹前期"
+}

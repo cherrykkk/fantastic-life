@@ -6,10 +6,12 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
-    "test": "jest"
+    "test": "jest",
+    "temp": "tsc --init"
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "d3": "^7.3.0",
     "echarts": "^5.2.1",
     "less": "^4.1.2",
     "less-loader": "^4.0.5",
@@ -29,7 +31,9 @@
     "@vue/compiler-sfc": "^3.0.0",
     "@vue/test-utils": "^2.0.0-rc.17",
     "jest": "^27.5.1",
+    "style-resources-loader": "^1.4.1",
     "typescript": "~3.9.3",
+    "vue-cli-plugin-style-resources-loader": "~0.1.5",
     "vue-jest": "^5.0.0-0"
   }
 }

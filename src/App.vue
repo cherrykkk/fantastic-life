@@ -2,13 +2,13 @@
   <div v-if="Manager.fastRunning">
     世界运行中... <br>
     当前
-    <div v-if="Manager.GameWorld">
-      {{Manager.GameWorld.calendar.year}}年
-      {{Manager.GameWorld.calendar.month}}月
+    <div v-if="Manager.World">
+      {{Manager.World.calendar.year}}年
+      {{Manager.World.calendar.month}}月
     </div>
     目标
-    <div v-if="Manager.GameWorld">
-      {{Manager.GameWorld.config.yearsBeforeBorn+Manager.GameWorld.config.toAge}}年
+    <div v-if="Manager.World">
+      {{Manager.World.config.快进到某年}}年
     </div>
   </div>
   <layout v-if="!Manager.fastRunning"></layout>
@@ -31,20 +31,42 @@ export default{
     const globalState = reactive({
       archiveChosen: false,
       systemMessage: null,
-      maskLayer: false
+      maskLayer: false,
+      isTellingStory: false,
+      storyText: '',
+      autoNextDay: true
     })
     const router = useRouter()
     router.replace("/menu")
 
-    const _loadArchive = function (archiveName) {
-      console.log("正在加载存档")
-      const archive = JSON.parse(localStorage.getItem(archiveName))
-      Manager.value.loadArchive(archive.GameWorld)
-      router.replace("/player-view")
+    const showSystemMessage = function (message) {
+      globalState.systemMessage = message
+      setTimeout(()=>{
+        globalState.systemMessage = null
+      },1000)
     }
 
-    function saveArchive () {
+    provide("newGame", (config)=>{
+      globalState.maskLayer = false
+      const t_start = Date.now()
+      Manager.value.newGame(config).then(()=>{
+        toUrl('/personal-view')
+        const t_end = Date.now()
+        console.log('快速运行花费:',t_end-t_start)
+      })
+    })
+
+    provide("loadArchive", function (archiveName) {
+      console.log("正在加载存档")
+      const archive = JSON.parse(localStorage.getItem(archiveName))
+      Manager.value.loadArchive(archive.items,archive.you)
+      router.replace("/personal-view")
+      Manager.value.play()
+    })
+
+    provide("saveArchive",function () {
       const archive = Manager.value.makeArchive()
+      console.log(JSON.stringify(archive))
       const archiveList = JSON.parse(localStorage.getItem('archiveList')) || []
       const i = archiveList.indexOf(archive.name)
       if (i>=0)
@@ -54,24 +76,16 @@ export default{
       localStorage.setItem("archiveList",JSON.stringify(archiveList))
       localStorage.setItem(archive.name,JSON.stringify(archive))
       showSystemMessage('已存档')
-    }
-
-    const showSystemMessage = function (message) {
-      globalState.systemMessage = message
-      setTimeout(()=>{
-        globalState.systemMessage = null
-      },1000)
-    }
+    })
 
     provide("globalState",globalState)
     provide("Manager",Manager)
-    provide("loadArchive",_loadArchive)
-    provide("saveArchive",saveArchive)
     provide("showSystemMessage",showSystemMessage)
-    provide("toUrl",(url)=>{
-      router.replace(url)
-    })
 
+    const toUrl = (url)=>{
+      router.replace(url)
+    }
+    provide("toUrl",toUrl)
 
     return {
       globalState,
@@ -81,9 +95,6 @@ export default{
 }
 
 </script>
-
-
-
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -108,9 +119,14 @@ export default{
 
 .system-message {
   position: absolute;
-  color: red;
+  color: white;
+  background-color: red;
   border: 1px red solid;
   border-radius: 2px;
   padding: 5px;
+}
+
+.theme-1 {
+  border: 1px green double;
 }
 </style>

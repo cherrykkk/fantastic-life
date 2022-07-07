@@ -2,17 +2,12 @@
 <template>
   <div class="nav-bar">
     <div class="router-nav">
-      <!-- <router-link :to="{name:'characters'}">角色信息</router-link>
-      <router-link :to="{name:'player-view'}">回用户界面</router-link> -->
-      <router-link to="/player-view">返回玩家界面</router-link>
+      <router-link to="/personal-view">返回玩家界面</router-link>
     </div>
   </div>
-  <div v-for="(e,i) in Manager.GameWorld.society.characters" :key="i" @click="changeMainCharacter(e)">
-    {{Manager.getName(e)}}
+  <div v-for="(e,i) in Manager.World.characters" :key="i" @click="changeMainCharacter(e)">
+    {{e.name}}
   </div>
-  <!-- <div class="router-view">
-    <router-view></router-view>
-  </div> -->
 </template>
 
 <script>
@@ -21,7 +16,6 @@ export default {
   setup() {
     const Manager = inject("Manager").value
     const changeMainCharacter = (character)=>{
-      console.log(Manager)
       Manager.you = character
     }
     return {

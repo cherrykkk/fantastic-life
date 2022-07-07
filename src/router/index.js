@@ -1,32 +1,15 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
-const currentView = "player-view"
-
 const routes = [
-  // {
-  //   path: '/',
-  //   component: ()=> currentView=='god-view'? import('@/views/god-view/index.vue') : import("@/views/player-view/index.vue")
-  // },
   {
     path: '/',
     component: ()=> import('@/layout/Menu.vue')
   },{
     path: '/god-view',
-    component: ()=> import('@/views/god-view/index.vue'),
-    children: [
-      {
-        path: 'characters',
-        name: 'characters',
-        component: ()=> import('@/views/god-view/SeeCharacters.vue')
-      },{
-        path: 'families',
-        name: 'families',
-        component: ()=> import('@/views/god-view/seeFamily.vue')
-      }
-    ]
+    component: ()=> import('@/views/GodView.vue')
   },{
-    path: '/player-view',
-    component: ()=> import("@/views/player-view/index.vue")
+    path: '/personal-view',
+    component: ()=> import("@/views/PersonalView.vue")
   },{
     path: '/game',
     component: ()=> import('@/views/player-view/game/GatherHerbs.vue')
@@ -41,10 +24,10 @@ const routes = [
     component: ()=> import('@/views/player-view/game/GameFarm.vue')
   },{
     path: '/livelihood',
-    component: ()=> import('@/views/player-view/Livelihood.vue')
+    component: ()=> import('@/views/LivelihoodView.vue')
   },{
-    path: '/memory',
-    component: ()=> import('@/views/player-view/Memory.vue')
+    path: '/memory-view',
+    component: ()=> import('@/views/MemoryView.vue')
   },{
     path: '/menu',
     component: ()=> import('@/layout/Menu.vue')
@@ -53,10 +36,13 @@ const routes = [
     component: ()=> import('@/views/player-view/ErrorPage.vue')
   },{
     path: '/relationship',
-    component: ()=> import('@/views/player-view/Relationship.vue')
+    component: ()=> import('@/views/RelationshipView.vue')
   },{
     path: '/SettingInGame',
-    component: ()=> import('@/layout/SettingInGame.vue')
+    component: ()=> import('@/views/SettingInGame.vue')
+  },{
+    path: '/area-view',
+    component: ()=> import('@/views/AreaView.vue')
   }
 ]
 

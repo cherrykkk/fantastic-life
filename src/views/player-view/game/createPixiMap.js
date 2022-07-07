@@ -134,6 +134,42 @@ export function createLoader() {
       name: "人",
       url: "map/map2.json"
     },{
+      name: "朝左1",
+      url: "map/朝左1.png"
+    },{
+      name: "朝左2",
+      url: "map/朝左2.png"
+    },{
+      name: "朝左3",
+      url: "map/朝左3.png"
+    },{
+      name: "朝右1",
+      url: "map/朝右1.png"
+    },{
+      name: "朝右2",
+      url: "map/朝右2.png"
+    },{
+      name: "朝右3",
+      url: "map/朝右3.png"
+    },{
+      name: "朝下1",
+      url: "map/朝下1.png"
+    },{
+      name: "朝下2",
+      url: "map/朝下2.png"
+    },{
+      name: "朝下3",
+      url: "map/朝下3.png"
+    },{
+      name: "朝上1",
+      url: "map/朝上1.png"
+    },{
+      name: "朝上2",
+      url: "map/朝上2.png"
+    },{
+      name: "朝上3",
+      url: "map/朝上3.png"
+    },{
       name: "当归1",
       url: "map/当归1.png",
     },{

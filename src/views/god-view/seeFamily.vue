@@ -1,13 +1,11 @@
 <template>
   <div>
-    世界运行{{(GameWorld.world_month/12).toFixed(0)}}年{{GameWorld.world_month%12}}月
+    世界运行{{(World.world_month/12).toFixed(0)}}年{{World.world_month%12}}月
   </div>
   <div v-for="(e,i) in familyList" :key="i">
-    <div class="parents">{{showName(GameWorld,e.idA)}} ⇋ {{showName(GameWorld,e.idB)}}</div>
+    <div class="parents">{{showName(World,e.idA)}} ⇋ {{showName(World,e.idB)}}</div>
     <div class="children">
-      <div v-for="(e2,i2) in GameWorld.getCharacterById(e.idA).children" :key="i2">
-        {{GameWorld.getName(e2)}}
-      </div>
+     
     </div>
   </div>
 </template>
@@ -17,36 +15,21 @@ import { inject, ref, computed } from 'vue'
 
 export default {
   setup() {
-    const GameWorld = inject('GameWorld').value
+    const World = inject('World').value
     const familyList = computed(()=>{
       const tempList = []
-      GameWorld.society.characters.forEach( character => {
-        if( character.marriaged && character.body.sex=='女') {
-          const family = {
-            idA: character.uid,
-            idB: character.spouse,
-            correction: true
-          }
-          tempList.push(family)
-          //检查自己的对象的对象是否是自己
-          const spouseCharacter = GameWorld.getCharacterById(character.spouse)
-          if( spouseCharacter.spouse != character.uid ) {
-            console.log(showName(GameWorld,character.uid) + "出问题了")
-          }
-        }
-      })
-      return tempList
+     
     })
     return {
-      GameWorld,
+      World,
       familyList,
       showName
     }
   }, 
 }
-function showName(GameWorld,uid) {
-  const character = GameWorld.getCharacterById(uid)
-  return character.surname+character.givenName+`(${(character.body.month/12).toFixed(0)})`
+function showName(World,uid) {
+  const character = World.getCharacterById(uid)
+  return character.name +`(${(character.month/12).toFixed(0)})`
 }
 
 </script>
