@@ -4,7 +4,6 @@ export default {
   init: function(that) {
     that.memories = []
     that.todayWork = []
-    that.notificationList = []
   },
 
   mixin: {
@@ -12,7 +11,6 @@ export default {
       const { year,month,date } = this.World.calendar 
       const memory = Object.assign({year,month,date},args)
       this.memories.push(memory)
-      this.notificationList.push(memory)
      
       //必要
       const ruleTemplate = MemoryList.find(e => e[0] == rule)
